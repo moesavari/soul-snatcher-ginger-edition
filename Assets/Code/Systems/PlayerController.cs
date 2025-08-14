@@ -23,9 +23,9 @@ public class PlayerController : MonoBehaviour
         if (_moveInput.x != 0f)
             transform.localScale = new Vector3(0.2f * Mathf.Sign(_moveInput.x), 0.2f, 1f);
 
-        _animator.SetFloat("MoveX", _moveInput.x);
-        _animator.SetFloat("MoveY", _moveInput.y);
-        _animator.SetBool("IsMoving", _moveInput != Vector2.zero);
+        _animator?.SetFloat("MoveX", _moveInput.x);
+        _animator?.SetFloat("MoveY", _moveInput.y);
+        _animator?.SetBool("IsMoving", _moveInput != Vector2.zero);
     }
 
     private void FixedUpdate()
