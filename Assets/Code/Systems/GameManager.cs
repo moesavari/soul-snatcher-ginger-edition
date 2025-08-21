@@ -22,6 +22,7 @@ public class GameManager : MonoSingleton<GameManager>
         TimeCycleManager.OnDayStarted -= OnDayStarted;
         TimeCycleManager.OnNightStarted -= OnNightStarted;
     }
+
     private void SpawnOrFindPlayer()
     {
         _player = GameObject.FindWithTag("Player");
@@ -33,7 +34,7 @@ public class GameManager : MonoSingleton<GameManager>
             return;
         }
 
-        _player = Instantiate(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
+        _player = SpawnManager.Instance.Spawn(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
     }
 
     private void OnDayStarted()

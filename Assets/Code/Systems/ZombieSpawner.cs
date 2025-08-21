@@ -8,6 +8,8 @@ public class ZombieSpawner : MonoBehaviour
     [SerializeField] private float _spawnInterval = 3f;
     [SerializeField] private int _maxAlive = 25;
 
+    [SerializeField] private AudioCue _spawnCue;
+
     private int _aliveCount;
     private Coroutine _spawnRoutine;
 
@@ -58,7 +60,10 @@ public class ZombieSpawner : MonoBehaviour
         }
 
         Transform point = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
-        var zombie = Instantiate(_zombiePrefab, point.position, Quaternion.identity);
+        var zombie = SpawnManager.Instance.Spawn(_zombiePrefab, point.position, Quaternion.identity);
+
+        if (_spawnCue != null)
+            AudioManager.Instance.PlayCue(_spawnCue, worldPos: point.position);
 
         if (zombie.TryGetComponent<Zombie>(out var zombieP))
             zombieP.RegisterSpawner(this);
