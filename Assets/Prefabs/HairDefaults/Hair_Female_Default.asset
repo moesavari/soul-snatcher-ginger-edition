@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efa814e0b5af39b4298a448a434eb9b4, type: 3}
+  m_Name: Hair_Female_Default
+  m_EditorClassIdentifier: Assembly-CSharp::HairProfile
+  _gender: 1
+  _stages:
+  - {fileID: 21300000, guid: 625ce638655ec524d993046343d3b797, type: 3}
+  - {fileID: 21300000, guid: f04ac9ac26061a5409abf374662eeb93, type: 3}
+  - {fileID: 21300000, guid: f2cd4342e5b0aed48b60a0ceb7b8fb4b, type: 3}

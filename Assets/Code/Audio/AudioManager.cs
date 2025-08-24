@@ -5,6 +5,8 @@ using UnityEngine.Audio;
 
 public class AudioManager : MonoSingleton<AudioManager>
 {
+    [SerializeField] private Transform _poolRoot;
+
     [Header("Mixer and Groups")]
     [SerializeField] private AudioMixer _mixer;
     [SerializeField] private AudioMixerGroup _musicGroup;
@@ -65,6 +67,13 @@ public class AudioManager : MonoSingleton<AudioManager>
         InitializePools();
         InitializeMusic();
         LoadMixerVolumes();
+
+        if (_poolRoot == null)
+        {
+            var go = new GameObject("AudioPool");
+            go.transform.SetParent(transform);
+            _poolRoot = go.transform;
+        }
     }
     #endregion
 
@@ -95,7 +104,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         }
     }
 
-
     private void InitializeMusic()
     {
         _musicSrc = new AudioSource[_musicSources];
@@ -113,6 +121,23 @@ public class AudioManager : MonoSingleton<AudioManager>
         }
 
         _activeMusicIndex = 0;
+    }
+
+    private void TrackNonLooping(AudioSource src)
+    {
+        if (src && !src.loop) StartCoroutine(ReturnToPool(src));
+    }
+
+    private IEnumerator ReturnToPool(AudioSource src)
+    {
+        yield return new WaitWhile(() => src && src.isPlaying);
+
+        if (!src) yield break;
+
+        src.Stop();
+        src.clip = null;
+        src.transform.SetParent(_poolRoot, false);
+        src.gameObject.SetActive(false);
     }
     #endregion
 
@@ -179,6 +204,7 @@ public class AudioManager : MonoSingleton<AudioManager>
         var src = GetPooledSource(channel);
         Configure2D(src, clip, volume, pitch, loop);
         src.Play();
+        TrackNonLooping(src);
         return src;
     }
 
@@ -189,6 +215,7 @@ public class AudioManager : MonoSingleton<AudioManager>
         Configure3D(src, clip, volume, pitch, loop, spatialBlend, minDist, maxDist);
         src.transform.position = position;
         src.Play();
+        TrackNonLooping(src);
         return src;
     }
 
@@ -200,6 +227,7 @@ public class AudioManager : MonoSingleton<AudioManager>
         src.transform.SetParent(target);
         src.transform.localPosition = Vector3.zero;
         src.Play();
+        TrackNonLooping(src);
         return src;
     }
 

@@ -40,6 +40,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 
     private void StartDay()
     {
+        NightOverlay.Instance.SetNight(false);
         _isNight = false;
         _timer = _dayDurationSeconds;
         OnDayStarted?.Invoke();
@@ -47,6 +48,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 
     private void StartNight()
     {
+        NightOverlay.Instance.SetNight(true);
         _isNight = true;
         _timer = _nightDurationSeconds;
         OnNightStarted?.Invoke();

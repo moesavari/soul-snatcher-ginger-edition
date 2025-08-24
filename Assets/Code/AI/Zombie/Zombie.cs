@@ -1,22 +1,25 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Health))]
+
 public class Zombie : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 1.2f;
     [SerializeField] private int _maxHealth = 3;
     [SerializeField] private Transform _primaryTarget;
 
-    private int _health;
+    [SerializeField] private AudioCue _deathCue;
+
     private Rigidbody2D _rb;
     private ZombieSpawner _spawner;
-
-    public int health => _health;
+    private Health _health;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _health = _maxHealth;
+        _health = this.Require<Health>();
+        _health.OnDeath += HandleDeath;
     }
 
     private void OnEnable()
@@ -45,23 +48,19 @@ public class Zombie : MonoBehaviour
         _spawner.NotifyZombieSpawned();
     }
 
-
-    public void TakeDamage(int amount)
-    {
-        _health -= amount;
-        if (_health <= 0) Die();
-    }
-
-    private void Die()
-    {
-        Destroy(gameObject);
-    }
-
     private Transform ResolveTarget()
     {
         if(_primaryTarget != null) return _primaryTarget;
 
         var player = GameManager.Instance?.player;
         return player != null ? player.transform : null;
+    }
+
+    private void HandleDeath(Health hp)
+    {
+        if (_deathCue != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlayCue(_deathCue, transform.position);
+
+        Debug.Log("[Zombie] Died at " + transform.position);
     }
 }
