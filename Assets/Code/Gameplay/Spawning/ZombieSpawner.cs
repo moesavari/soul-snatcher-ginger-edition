@@ -7,7 +7,7 @@ public class ZombieSpawner : MonoBehaviour
     [SerializeField] private Transform[] _spawnPoints;
     [SerializeField] private float _spawnInterval = 3f;
     [SerializeField] private int _maxAlive = 25;
-
+    [SerializeField] private float _nightSpawnDelaySeconds = 5f;
     [SerializeField] private AudioCue _spawnCue;
 
     private int _aliveCount;
@@ -42,6 +42,8 @@ public class ZombieSpawner : MonoBehaviour
 
     private IEnumerator SpawnLoop()
     {
+        yield return new WaitForSeconds(_nightSpawnDelaySeconds);
+
         while (TimeCycleManager.Instance.isNight)
         {
             if (_aliveCount < _maxAlive)

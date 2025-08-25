@@ -1,12 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
 public class AudioManager : MonoSingleton<AudioManager>
 {
-    [SerializeField] private Transform _poolRoot;
-
     [Header("Mixer and Groups")]
     [SerializeField] private AudioMixer _mixer;
     [SerializeField] private AudioMixerGroup _musicGroup;
@@ -25,15 +23,8 @@ public class AudioManager : MonoSingleton<AudioManager>
     [SerializeField] private string _uiParam = "UIVol";
     [SerializeField] private string _footstepsParam = "FootstepsVol";
 
-    [Header("Pools")]
-    [SerializeField] private int _sfxPoolSize = 16;
-    [SerializeField] private int _voicePoolSize = 8;
-    [SerializeField] private int _ambientPoolSize = 8;
-    [SerializeField] private int _uiPoolSize = 8;
-    [SerializeField] private int _footstepsPoolSize = 8;
-
     [Header("Music")]
-    [SerializeField] private int _musicSources = 2; //for crossfades
+    [SerializeField] private int _musicSources = 2;      // for crossfades
     [SerializeField] private float _defaultMusicFade = 0.8f;
 
     [Header("Ducking")]
@@ -41,16 +32,18 @@ public class AudioManager : MonoSingleton<AudioManager>
     [SerializeField] private float _duckAmountDb = -10f;
     [SerializeField] private float _duckFadeSeconds = 0.15f;
 
-    private readonly Dictionary<AudioChannel, List<AudioSource>> _pools = new();
-    private readonly Dictionary<AudioChannel, int> _poolIndices = new();
+    // Active spawned sources by channel (to allow StopChannel & cleanup of loops)
+    private readonly Dictionary<AudioChannel, List<AudioSource>> _active = new();
 
+    // Music (created lazily on first PlayMusic)
     private AudioSource[] _musicSrc;
     private int _activeMusicIndex;
     private Coroutine _musicFadeRoutine;
-    private int _activeVoices;
 
+    private int _activeVoices;
     private readonly Dictionary<string, float> _cooldownUntilTime = new();
 
+    // PlayerPrefs keys (volumes)
     private const string _ppMaster = "vol_master";
     private const string _ppMusic = "vol_music";
     private const string _ppSFX = "vol_sfx";
@@ -59,89 +52,14 @@ public class AudioManager : MonoSingleton<AudioManager>
     private const string _ppUI = "vol_ui";
     private const string _ppFoot = "vol_foot";
 
-    #region Unity
     protected override void Awake()
     {
         base.Awake();
-
-        InitializePools();
-        InitializeMusic();
         LoadMixerVolumes();
-
-        if (_poolRoot == null)
-        {
-            var go = new GameObject("AudioPool");
-            go.transform.SetParent(transform);
-            _poolRoot = go.transform;
-        }
-    }
-    #endregion
-
-    #region Initalization
-    private void InitializePools()
-    {
-        InitPool(AudioChannel.SFX, _sfxPoolSize, _sfxGroup);
-        InitPool(AudioChannel.Voice, _voicePoolSize, _voiceGroup);
-        InitPool(AudioChannel.Ambient, _ambientPoolSize, _ambientGroup);
-        InitPool(AudioChannel.UI, _uiPoolSize, _uiGroup);
-        InitPool(AudioChannel.Footsteps, _footstepsPoolSize, _footstepsGroup);
-    }
-
-    private void InitPool(AudioChannel channel, int size, AudioMixerGroup group)
-    {
-        if (!_pools.ContainsKey(channel)) _pools[channel] = new List<AudioSource>(size);
-        _poolIndices[channel] = 0;
-
-        for (int i = 0; i < size; i++)
-        {
-            GameObject go = new GameObject($"Audio_{channel}_{i}");
-            go.transform.SetParent(transform);
-            AudioSource src = go.AddComponent<AudioSource>();
-            src.playOnAwake = false;
-            src.outputAudioMixerGroup = ResolveGroup(channel);
-            src.spatialBlend = 0f;
-            _pools[channel].Add(src);
-        }
-    }
-
-    private void InitializeMusic()
-    {
-        _musicSrc = new AudioSource[_musicSources];
-
-        for (int i = 0; i < _musicSources; i++)
-        {
-            GameObject go = new GameObject($"Music_{i}");
-            go.transform.SetParent(transform);
-            AudioSource src = go.AddComponent<AudioSource>();
-            src.loop = true;
-            src.playOnAwake = false;
-            src.outputAudioMixerGroup = _musicGroup;
-            src.spatialBlend = 0f;
-            _musicSrc[i] = src;
-        }
-
         _activeMusicIndex = 0;
     }
 
-    private void TrackNonLooping(AudioSource src)
-    {
-        if (src && !src.loop) StartCoroutine(ReturnToPool(src));
-    }
-
-    private IEnumerator ReturnToPool(AudioSource src)
-    {
-        yield return new WaitWhile(() => src && src.isPlaying);
-
-        if (!src) yield break;
-
-        src.Stop();
-        src.clip = null;
-        src.transform.SetParent(_poolRoot, false);
-        src.gameObject.SetActive(false);
-    }
-    #endregion
-
-    #region Public Volume API (dB)
+    // ---------- Public Volume API (dB) ----------
     public void SetMasterVolumeDb(float db) => SetMixerDb(_masterParam, db, _ppMaster);
     public void SetMusicVolumeDb(float db) => SetMixerDb(_musicParam, db, _ppMusic);
     public void SetSFXVolumeDb(float db) => SetMixerDb(_sfxParam, db, _ppSFX);
@@ -152,22 +70,16 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public float GetMixerVolumeDb(string param)
     {
-        if (_mixer == null) return 0f;
-        if(_mixer.GetFloat(param, out float v)) return v;
-
+        if (_mixer != null && _mixer.GetFloat(param, out float v)) return v;
         Debug.LogWarning($"[AudioManager] Mixer param '{param}' not found");
         return 0f;
     }
-    #endregion
 
-    #region Music Controls
+    // ---------- Music ----------
     public void PlayMusic(AudioClip clip, float fadeSeconds = -1f)
     {
-        if (clip == null)
-        {
-            Debug.LogWarning("[AudioManager] PlayMusic called with null clip.");
-            return;
-        }
+        if (clip == null) { Debug.LogWarning("[AudioManager] PlayMusic null."); return; }
+        EnsureMusicSources();
 
         float dur = fadeSeconds >= 0f ? fadeSeconds : _defaultMusicFade;
 
@@ -178,6 +90,7 @@ public class AudioManager : MonoSingleton<AudioManager>
         b.clip = clip;
         b.time = 0f;
         b.volume = 0f;
+        b.loop = true;
         b.Play();
 
         if (_musicFadeRoutine != null) StopCoroutine(_musicFadeRoutine);
@@ -187,57 +100,57 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public void StopMusic(float fadeSeconds = -1f)
     {
+        if (_musicSrc == null) return;
         float dur = fadeSeconds >= 0f ? fadeSeconds : _defaultMusicFade;
         var a = _musicSrc[_activeMusicIndex];
         if (_musicFadeRoutine != null) StopCoroutine(_musicFadeRoutine);
         _musicFadeRoutine = StartCoroutine(FadeOut(a, dur));
     }
 
-    public void PauseMusic() => _musicSrc[_activeMusicIndex].Pause();
-    public void ResumeMusic() => _musicSrc[_activeMusicIndex].UnPause();
-#endregion
+    public void PauseMusic() { if (_musicSrc != null) _musicSrc[_activeMusicIndex].Pause(); }
+    public void ResumeMusic() { if (_musicSrc != null) _musicSrc[_activeMusicIndex].UnPause(); }
 
-    #region One-Shot & Loop (SFX/Voice/Ambient/UI/Footsteps)
+    // ---------- One‑shot & looped playback (spawn → play → destroy) ----------
     public AudioSource Play(AudioClip clip, AudioChannel channel, float volume = 1f, float pitch = 1f, bool loop = false)
     {
-        if (clip == null) { Debug.LogWarning("[AudioManager] Play called with null clip."); return null; }
-        var src = GetPooledSource(channel);
+        if (clip == null) { Debug.LogWarning("[AudioManager] Play null clip."); return null; }
+        var src = CreateSource(channel);
         Configure2D(src, clip, volume, pitch, loop);
         src.Play();
-        TrackNonLooping(src);
+        TrackLifetime(channel, src);
         return src;
     }
 
     public AudioSource PlayAtPoint(AudioClip clip, AudioChannel channel, Vector3 position, float spatialBlend = 1f, float minDist = 1f, float maxDist = 25f, float volume = 1f, float pitch = 1f, bool loop = false)
     {
-        if (clip == null) { Debug.LogWarning("[AudioManager] PlayAtPoint called with null clip."); return null; }
-        var src = GetPooledSource(channel);
+        if (clip == null) { Debug.LogWarning("[AudioManager] PlayAtPoint null clip."); return null; }
+        var src = CreateSource(channel);
         Configure3D(src, clip, volume, pitch, loop, spatialBlend, minDist, maxDist);
         src.transform.position = position;
         src.Play();
-        TrackNonLooping(src);
+        TrackLifetime(channel, src);
         return src;
     }
 
     public AudioSource PlayAttached(AudioClip clip, AudioChannel channel, Transform target, float spatialBlend = 1f, float minDist = 1f, float maxDist = 25f, float volume = 1f, float pitch = 1f, bool loop = false)
     {
-        if (clip == null || target == null) { Debug.LogWarning("[AudioManager] PlayAttached called with null."); return null; }
-        var src = GetPooledSource(channel);
+        if (clip == null || target == null) { Debug.LogWarning("[AudioManager] PlayAttached null."); return null; }
+        var src = CreateSource(channel);
         Configure3D(src, clip, volume, pitch, loop, spatialBlend, minDist, maxDist);
         src.transform.SetParent(target);
         src.transform.localPosition = Vector3.zero;
         src.Play();
-        TrackNonLooping(src);
+        TrackLifetime(channel, src);
         return src;
     }
 
     public AudioSource PlayCue(AudioCue cue, Vector3? worldPos = null, Transform attachTo = null)
     {
-        if (cue == null) { Debug.LogWarning("[AudioManager] PlayCue called with null."); return null; }
+        if (cue == null) { Debug.LogWarning("[AudioManager] PlayCue null."); return null; }
         var clip = PickClip(cue.clips);
         if (clip == null) { Debug.LogWarning("[AudioManager] AudioCue has no clips."); return null; }
 
-        // Cooldown by cue key (SO instance ID)
+        // cooldown per cue (by name or you can expose a key on the SO)
         string key = cue.name;
         if (cue.cooldownSeconds > 0f)
         {
@@ -260,12 +173,16 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public void StopChannel(AudioChannel channel)
     {
-        if (!_pools.TryGetValue(channel, out var list)) return;
-        foreach (var s in list) if (s.isPlaying) s.Stop();
+        if (!_active.TryGetValue(channel, out var list)) return;
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            var s = list[i];
+            if (s != null) Destroy(s.gameObject);
+        }
+        list.Clear();
     }
-    #endregion
 
-    #region Voice Ducking
+    // ---------- Voice ducking ----------
     public AudioSource PlayVoice(AudioClip clip, float volume = 1f, float pitch = 1f, bool loop = false)
     {
         var src = Play(clip, AudioChannel.Voice, volume, pitch, loop);
@@ -283,24 +200,50 @@ public class AudioManager : MonoSingleton<AudioManager>
         while (src != null && src.isPlaying) yield return null;
         _activeVoices = Mathf.Max(0, _activeVoices - 1);
         if (_activeVoices == 0 && _duckMusicOnVoice)
-            StartCoroutine(SetMixerDbOverTime(_musicParam, 0f, _duckFadeSeconds)); // return to baseline (0 dB offset)
+            StartCoroutine(SetMixerDbOverTime(_musicParam, 0f, _duckFadeSeconds));
     }
-    #endregion
 
-    #region Helpers
-    private AudioSource GetPooledSource(AudioChannel channel)
+    // ---------- Internals ----------
+    private AudioSource CreateSource(AudioChannel channel)
     {
-        if (!_pools.TryGetValue(channel, out var list) || list == null || list.Count == 0)
-        {
-            Debug.LogWarning($"[AudioManager] No pool for channel '{channel}'.");
-            return null;
-        }
-
-        int idx = _poolIndices[channel];
-        _poolIndices[channel] = (idx + 1) % list.Count;
-        var src = list[idx];
+        var go = new GameObject($"Audio_{channel}");
+        go.transform.SetParent(transform);
+        var src = go.AddComponent<AudioSource>();
+        src.playOnAwake = false;
         src.outputAudioMixerGroup = ResolveGroup(channel);
+
+        if (!_active.TryGetValue(channel, out var list))
+        {
+            list = new List<AudioSource>(8);
+            _active[channel] = list;
+        }
+        list.Add(src);
         return src;
+    }
+
+    private void TrackLifetime(AudioChannel channel, AudioSource src)
+    {
+        if (src.loop) return; // caller stops/destroys loops explicitly
+        StartCoroutine(DestroyWhenFinished(channel, src));
+    }
+
+    private IEnumerator DestroyWhenFinished(AudioChannel channel, AudioSource src)
+    {
+        if (src == null) yield break;
+        var clip = src.clip;
+        if (clip == null) { RemoveAndDestroy(channel, src); yield break; }
+
+        // pitch-aware wait
+        float t = clip.length / Mathf.Max(0.01f, src.pitch);
+        yield return new WaitForSecondsRealtime(t + 0.05f);
+        RemoveAndDestroy(channel, src);
+    }
+
+    private void RemoveAndDestroy(AudioChannel channel, AudioSource src)
+    {
+        if (_active.TryGetValue(channel, out var list))
+            list.Remove(src);
+        if (src != null) Destroy(src.gameObject);
     }
 
     private void Configure2D(AudioSource src, AudioClip clip, float volume, float pitch, bool loop)
@@ -312,7 +255,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         src.spatialBlend = 0f;
         src.minDistance = 1f;
         src.maxDistance = 25f;
-        src.transform.SetParent(transform);
         src.transform.localPosition = Vector3.zero;
     }
 
@@ -327,9 +269,23 @@ public class AudioManager : MonoSingleton<AudioManager>
         src.maxDistance = Mathf.Max(src.minDistance + 0.01f, maxDist);
     }
 
-    private AudioClip PickClip(AudioClip[] arr)
+    private AudioClip PickClip(AudioClip[] arr) => (arr != null && arr.Length > 0) ? arr[Random.Range(0, arr.Length)] : null;
+
+    private void EnsureMusicSources()
     {
-        return (arr != null && arr.Length > 0) ? arr[Random.Range(0, arr.Length)] : null;
+        if (_musicSrc != null && _musicSrc.Length == _musicSources) return;
+        _musicSrc = new AudioSource[_musicSources];
+        for (int i = 0; i < _musicSources; i++)
+        {
+            var go = new GameObject($"Music_{i}");
+            go.transform.SetParent(transform);
+            var src = go.AddComponent<AudioSource>();
+            src.loop = true;
+            src.playOnAwake = false;
+            src.outputAudioMixerGroup = _musicGroup;
+            src.spatialBlend = 0f;
+            _musicSrc[i] = src;
+        }
     }
 
     private AudioMixerGroup ResolveGroup(AudioChannel ch)
@@ -342,14 +298,8 @@ public class AudioManager : MonoSingleton<AudioManager>
             AudioChannel.Ambient => _ambientGroup,
             AudioChannel.UI => _uiGroup,
             AudioChannel.Footsteps => _footstepsGroup,
-            _ => LogAndReturnGroup(ch)
+            _ => _sfxGroup
         };
-    }
-
-    private AudioMixerGroup LogAndReturnGroup(AudioChannel ch)
-    {
-        Debug.LogWarning($"[AudioManager] No mixer group mapped for channel '{ch}'.");
-        return _sfxGroup != null ? _sfxGroup : null;
     }
 
     private IEnumerator Crossfade(AudioSource from, AudioSource to, float seconds)
@@ -364,7 +314,7 @@ public class AudioManager : MonoSingleton<AudioManager>
             yield return null;
         }
         if (from != null) { from.Stop(); from.volume = 1f; }
-        if (to != null) { to.volume = 1f; }
+        if (to != null) to.volume = 1f;
         _musicFadeRoutine = null;
     }
 
@@ -422,5 +372,4 @@ public class AudioManager : MonoSingleton<AudioManager>
         }
         _mixer.SetFloat(param, targetDb);
     }
-    #endregion
 }
