@@ -1,29 +1,29 @@
 using UnityEngine;
 
-/// <summary>
-/// Abstract singleton base for MonoBehaviours. Ensures only one instance exists across scenes.
-/// </summary>
 public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
 {
     private static readonly object _lock = new();
     private static T _instance;
+    private static bool _quitting;
 
     public static T Instance
     {
         get
         {
+            if (_quitting) return null; // don’t spawn during shutdown
             lock (_lock)
             {
                 if (_instance != null) return _instance;
 
-                _instance = FindObjectOfType<T>();
-
+                _instance = FindObjectOfType<T>(true);
                 if (_instance != null) return _instance;
 
-                var singletonObj = new GameObject($"{typeof(T)} (Singleton)");
-                _instance = singletonObj.AddComponent<T>();
-                DontDestroyOnLoad(singletonObj);
+                // create only if playing
+                if (!Application.isPlaying) return null;
 
+                var go = new GameObject($"{typeof(T).Name} (Singleton)");
+                _instance = go.AddComponent<T>();
+                DontDestroyOnLoad(go);
                 return _instance;
             }
         }
@@ -31,17 +31,22 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T
 
     protected virtual void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this as T;
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (_instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
-#if UNITY_EDITOR
-            Debug.LogWarning($"Duplicate singleton '{typeof(T)}' destroyed on GameObject '{gameObject.name}'.");
-#endif
+            return;
         }
+        _instance = (T)this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    protected virtual void OnApplicationQuit()
+    {
+        _quitting = true;
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (_instance == this) _instance = null;
     }
 }

@@ -35,6 +35,7 @@ public class GameManager : MonoSingleton<GameManager>
         }
 
         _player = SpawnManager.Instance.Spawn(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
+        FindFirstObjectByType<CameraFollow2D>()?.SetTarget(_player.transform);
     }
 
     private void OnDayStarted()
