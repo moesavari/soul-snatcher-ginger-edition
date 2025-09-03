@@ -5,6 +5,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 {
     [SerializeField] private float _dayDurationSeconds = 90f;
     [SerializeField] private float _nightDurationSeconds = 90f;
+    [SerializeField] private float _nightSpawnDelay = 5f;
     [SerializeField] private bool _startAtNight = false;
 
     private float _timer;
@@ -12,6 +13,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 
     public bool isNight => _isNight;
     public float cycleTimeRemaining => _timer;
+    public float nightSpawnDelay => _nightSpawnDelay;
 
     public static event Action OnDayStarted;
     public static event Action OnNightStarted;

@@ -7,7 +7,6 @@ public class ZombieSpawner : MonoBehaviour
     [SerializeField] private Transform[] _spawnPoints;
     [SerializeField] private float _spawnInterval = 3f;
     [SerializeField] private int _maxAlive = 25;
-    [SerializeField] private float _nightSpawnDelaySeconds = 5f;
     [SerializeField] private AudioCue _spawnCue;
 
     private int _aliveCount;
@@ -23,11 +22,17 @@ public class ZombieSpawner : MonoBehaviour
     {
         TimeCycleManager.OnNightStarted -= OnNightStarted;
         TimeCycleManager.OnDayStarted -= OnDayStarted;
+
+        if (_spawnRoutine != null)
+        {
+            StopCoroutine(_spawnRoutine);
+            _spawnRoutine = null;
+        }
     }
 
     private void OnDayStarted()
     {
-        if(_spawnRoutine != null )
+        if (_spawnRoutine != null)
         {
             StopCoroutine(_spawnRoutine);
             _spawnRoutine = null;
@@ -42,20 +47,23 @@ public class ZombieSpawner : MonoBehaviour
 
     private IEnumerator SpawnLoop()
     {
-        yield return new WaitForSeconds(_nightSpawnDelaySeconds);
+        float delay = TimeCycleManager.Instance != null ? TimeCycleManager.Instance.nightSpawnDelay : 3f;
+        if (delay > 0f) yield return new WaitForSeconds(delay);
 
-        while (TimeCycleManager.Instance.isNight)
+        while (TimeCycleManager.Instance != null && TimeCycleManager.Instance.isNight)
         {
             if (_aliveCount < _maxAlive)
                 SpawnOne();
 
             yield return new WaitForSeconds(_spawnInterval);
         }
+
+        _spawnRoutine = null;
     }
 
     private void SpawnOne()
     {
-        if(_zombiePrefab == null || _spawnPoints == null || _spawnPoints.Length == 0)
+        if (_zombiePrefab == null || _spawnPoints == null || _spawnPoints.Length == 0)
         {
             Debug.LogWarning("[ZombieSpawner] Missing prefab or spawn points.");
             return;
@@ -67,17 +75,13 @@ public class ZombieSpawner : MonoBehaviour
         if (_spawnCue != null)
             AudioManager.Instance.PlayCue(_spawnCue, worldPos: point.position);
 
-        if (zombie.TryGetComponent<Zombie>(out var zombieP))
-            zombieP.RegisterSpawner(this);
+        if (zombie != null && zombie.TryGetComponent<Zombie>(out var z))
+        {
+            z.RegisterSpawner(this);
+            NotifyZombieSpawned();
+        }
     }
 
-    public void NotifyZombieDied()
-    {
-        _aliveCount = Mathf.Max(0, _aliveCount - 1);
-    }
-
-    public void NotifyZombieSpawned()
-    {
-        _aliveCount++;
-    }
+    public void NotifyZombieDied() { _aliveCount = Mathf.Max(0, _aliveCount - 1); }
+    public void NotifyZombieSpawned() { _aliveCount++; }
 }

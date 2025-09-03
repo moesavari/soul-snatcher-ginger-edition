@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 1343710286986184785}
   - component: {fileID: 8303332759107768725}
   - component: {fileID: 8856732122337966844}
+  - component: {fileID: 250172472530318538}
+  - component: {fileID: 1075061953608338402}
   - component: {fileID: 4505606518994790826}
   - component: {fileID: 171722781039522034}
   m_Layer: 3
@@ -90,6 +92,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   _maxHealth: 10
+  _lastHitPoint: {x: 0, y: 0, z: 0}
+  _lastSource: {fileID: 0}
 --- !u!114 &6283793238328229747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,6 +157,39 @@ MonoBehaviour:
   _speed: 10
   _cooldown: 0.8
   _artForwardOffsetDeg: 0
+--- !u!114 &250172472530318538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581893386220379434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60ae7a657eef7a43b257e63ebef0f6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlash2D
+  _targets:
+  - {fileID: 7852376464879923509}
+  _flashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  _flashSeconds: 0.08
+  _flashCount: 2
+--- !u!114 &1075061953608338402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581893386220379434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8398bbfc104559499dc5825bd638115, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeathFeedback
+  _vfxPrefab: {fileID: 1184100955743095969, guid: 2472be9a933ce674bb5436743c1a9ed2, type: 3}
+  _vfxLifetime: 1.5
+  _deathCue: {fileID: 11400000, guid: 8855707a769bb7248b790a809e0316b7, type: 2}
+  _attachToBody: 0
 --- !u!61 &4505606518994790826
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -225,7 +262,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!1 &2964402280632136144
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +475,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 10, y: 15}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0

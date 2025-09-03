@@ -860,6 +860,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _dayDurationSeconds: 5
   _nightDurationSeconds: 90
+  _nightSpawnDelay: 5
   _startAtNight: 0
 --- !u!114 &849581884
 MonoBehaviour:
@@ -964,7 +965,6 @@ MonoBehaviour:
   - {fileID: 117753428}
   _spawnInterval: 3
   _maxAlive: 25
-  _nightSpawnDelaySeconds: 5
   _spawnCue: {fileID: 11400000, guid: c854f87c910698b45b2b665ccae2b36b, type: 2}
 --- !u!1 &1630735393
 GameObject:
