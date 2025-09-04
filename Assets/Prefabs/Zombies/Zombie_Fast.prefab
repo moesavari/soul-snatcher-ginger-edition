@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f02b44ae6e398444dad22d22b16080ed, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7a56de432a308ce45a794809b4cb6cf2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 4511719453047901659}
   - component: {fileID: 691899523572743424}
   m_Layer: 6
-  m_Name: Zombie
+  m_Name: Zombie_Fast
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,12 +267,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cccda9860b9e004bb2bcc625db4efb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Zombie
+  _moveSpeed: 1.85
+  _stopDistance: 0.8
+  _accel: 14
+  _primaryTarget: {fileID: 0}
   _visual: {fileID: 3438515797136419881}
   _biteRig: {fileID: 428933817328916565}
-  _moveSpeed: 1.2
-  _stopDistance: 0.8
-  _accel: 12
-  _primaryTarget: {fileID: 0}
+  _spawnCue: {fileID: 11400000, guid: c854f87c910698b45b2b665ccae2b36b, type: 2}
 --- !u!114 &-7665392243451622586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,9 +286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a506963d8394b2e428f6e0e6ce3c46de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  _maxHealth: 3
-  _lastHitPoint: {x: 0, y: 0, z: 0}
-  _lastSource: {fileID: 0}
+  _maxHealth: 2
+  _isPlayerHealth: 0
 --- !u!114 &9057078888510701665
 MonoBehaviour:
   m_ObjectHideFlags: 0

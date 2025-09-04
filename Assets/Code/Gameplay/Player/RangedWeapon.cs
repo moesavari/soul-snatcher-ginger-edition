@@ -36,13 +36,9 @@ public class RangedWeapon : MonoBehaviour
 
         if (go.TryGetComponent<Rigidbody2D>(out var rb))
         {
-#if UNITY_6000_0_OR_NEWER
             rb.linearVelocity = dir * _speed; rb.WakeUp();
-#else
-            rb.velocity = dir * _speed;
-#endif
         }
 
-        _anim?.SetTrigger("Bow");
+        //_anim?.SetTrigger("Bow");
     }
 }

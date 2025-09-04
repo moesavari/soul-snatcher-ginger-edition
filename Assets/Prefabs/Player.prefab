@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8856732122337966844}
   - component: {fileID: 250172472530318538}
   - component: {fileID: 1075061953608338402}
+  - component: {fileID: 3006884557911862649}
   - component: {fileID: 4505606518994790826}
   - component: {fileID: 171722781039522034}
   m_Layer: 3
@@ -92,8 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   _maxHealth: 10
-  _lastHitPoint: {x: 0, y: 0, z: 0}
-  _lastSource: {fileID: 0}
+  _isPlayerHealth: 1
 --- !u!114 &6283793238328229747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,6 +190,20 @@ MonoBehaviour:
   _vfxLifetime: 1.5
   _deathCue: {fileID: 11400000, guid: 8855707a769bb7248b790a809e0316b7, type: 2}
   _attachToBody: 0
+--- !u!114 &3006884557911862649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581893386220379434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43562320d72a1aa4ebf664df590a2bd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDBridge
+  _soulSystem: {fileID: 0}
+  _hairVisuals: {fileID: 5319856122796637799}
 --- !u!61 &4505606518994790826
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -18,6 +18,9 @@ public class HairVisuals : MonoBehaviour
     private HairProfile _activeProfile;
     private int _lastStage = -1;
 
+    public event System.Action<int> OnHairStageChanged;
+    public int CurrentStage => _lastStage;
+
     private void Awake()
     {
         _sr = this.Require<SpriteRenderer>();
@@ -58,7 +61,7 @@ public class HairVisuals : MonoBehaviour
         SetHairStageBySouls(soulCount);
     }
 
-    private void OnVallidate()
+    private void OnValidate()
     {
         if (_soulThresholds != null && _soulThresholds.Length > 1)
             _soulThresholds = _soulThresholds.Distinct().OrderBy(v => v).ToArray();
@@ -103,6 +106,7 @@ public class HairVisuals : MonoBehaviour
 
         _sr.sprite = sprite;
         _lastStage = clamped;
+        OnHairStageChanged?.Invoke(_lastStage);
     }
 
     private void ResolveActiveProfile()

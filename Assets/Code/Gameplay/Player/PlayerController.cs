@@ -21,9 +21,9 @@ public class PlayerController : MonoBehaviour
     {
         _moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
-        _animator?.SetFloat("MoveX", _moveInput.x);
-        _animator?.SetFloat("MoveY", _moveInput.y);
-        _animator?.SetBool("IsMoving", _moveInput != Vector2.zero);
+        //_animator?.SetFloat("MoveX", _moveInput.x);
+        //_animator?.SetFloat("MoveY", _moveInput.y);
+        //_animator?.SetBool("IsMoving", _moveInput != Vector2.zero);
     }
 
     private void FixedUpdate()

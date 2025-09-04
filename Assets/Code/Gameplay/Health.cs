@@ -4,16 +4,12 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     [SerializeField] private int _maxHealth = 3;
-    [SerializeField] private Vector3 _lastHitPoint;
-    [SerializeField] private GameObject _lastSource;
+    [SerializeField] private bool _isPlayerHealth;
 
     private int _current;
     public int current => _current;
     public int max => _maxHealth;
     public bool isDead => _current <= 0;
-
-    public Vector3 lastHitPoint => _lastHitPoint;
-    public GameObject lastSource => _lastSource;
 
     public event Action<Health> OnDeath;
     public event Action<Health, int> OnDamaged;
@@ -26,9 +22,6 @@ public class Health : MonoBehaviour
     public void TakeDamage(int amount, Vector3 hitPoint, GameObject source)
     {
         if (isDead) return;
-
-        _lastHitPoint = hitPoint;
-        _lastSource = source;
 
         _current = Mathf.Max(0, _current - Mathf.Max(0, amount));
         OnDamaged?.Invoke(this, amount);
@@ -46,6 +39,7 @@ public class Health : MonoBehaviour
     private void Die()
     {
         OnDeath?.Invoke(this);
+        if (_isPlayerHealth) GameEvents.RaisePlayerDied();
         Destroy(gameObject);
     }
 }

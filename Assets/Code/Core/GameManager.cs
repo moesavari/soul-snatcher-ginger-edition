@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoSingleton<GameManager>
 {
     [SerializeField] private Transform _playerSpawnPoint;
     [SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private float _restartDelaySeconds = 10f;
 
     private GameObject _player;
     public GameObject player => _player;
@@ -13,30 +15,38 @@ public class GameManager : MonoSingleton<GameManager>
         base.Awake();
 
         SpawnOrFindPlayer();
-        TimeCycleManager.OnDayStarted += OnDayStarted;
-        TimeCycleManager.OnNightStarted += OnNightStarted;
+        GameEvents.DayStarted += OnDayStarted;
+        GameEvents.NightStarted += OnNightStarted;
+        GameEvents.PlayerDied += OnPlayerDied;
+        GameEvents.AllZombiesCleared += OnAllZombiesCleared;
     }
 
     private void OnDestroy()
     {
-        TimeCycleManager.OnDayStarted -= OnDayStarted;
-        TimeCycleManager.OnNightStarted -= OnNightStarted;
+        GameEvents.DayStarted -= OnDayStarted;
+        GameEvents.NightStarted -= OnNightStarted;
+        GameEvents.PlayerDied -= OnPlayerDied;
+        GameEvents.AllZombiesCleared -= OnAllZombiesCleared;
     }
 
     private void SpawnOrFindPlayer()
     {
         _player = GameObject.FindWithTag("Player");
-        if (_player != null) return;
-
-        if(_playerPrefab == null || _playerSpawnPoint == null)
+        if (_player == null)
         {
-            Debug.LogWarning("[GameManager] Missing Player prefab or spawn point.");
-            return;
+            if (_playerPrefab == null || _playerSpawnPoint == null)
+            {
+                Debug.LogWarning("[GameManager] Missing Player prefab or spawn point.");
+                return;
+            }
+            _player = SpawnManager.Instance.Spawn(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
         }
 
-        _player = SpawnManager.Instance.Spawn(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
         FindFirstObjectByType<CameraFollow2D>()?.SetTarget(_player.transform);
+
+        GameEvents.RaisePlayerSpawned(_player);
     }
+
 
     private void OnDayStarted()
     {
@@ -48,4 +58,22 @@ public class GameManager : MonoSingleton<GameManager>
         Debug.Log("[GameManager] Night started.");
     }
 
+    private void OnPlayerDied()
+    {
+        Debug.Log("[GameManager] Player died. Restarting Scene...");
+        StartCoroutine(RestartAfterDelay());
+    }
+
+    private IEnumerator RestartAfterDelay()
+    {
+        yield return new WaitForSeconds(_restartDelaySeconds);
+        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(scene.buildIndex);
+    }
+
+    private void OnAllZombiesCleared()
+    {
+        Debug.Log("[GameManager] Allzombies cleared. Forcing day.");
+        TimeCycleManager.Instance?.ForceDay();
+    }
 }

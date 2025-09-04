@@ -15,9 +15,6 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
     public float cycleTimeRemaining => _timer;
     public float nightSpawnDelay => _nightSpawnDelay;
 
-    public static event Action OnDayStarted;
-    public static event Action OnNightStarted;
-
     protected override void Awake()
     {
         base.Awake();
@@ -35,9 +32,15 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         else StartNight();
     }
 
-    private void ForceNight()
+    public void ForceNight()
     {
+        _timer = 0;
         StartNight();
+    }
+
+    public void ForceDay()
+    {
+        StartDay();
     }
 
     private void StartDay()
@@ -45,7 +48,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         NightOverlay.Instance.SetNight(false);
         _isNight = false;
         _timer = _dayDurationSeconds;
-        OnDayStarted?.Invoke();
+        GameEvents.RaiseDay();
     }
 
     private void StartNight()
@@ -53,6 +56,6 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         NightOverlay.Instance.SetNight(true);
         _isNight = true;
         _timer = _nightDurationSeconds;
-        OnNightStarted?.Invoke();
+        GameEvents.RaiseNight();
     }
 }

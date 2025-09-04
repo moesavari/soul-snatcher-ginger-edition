@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4879c74764f0e545a9e27c5eaf64201, type: 3}
   m_Name: PlayDeath
   m_EditorClassIdentifier: Assembly-CSharp::AudioCue
-  _clips: []
+  _clips:
+  - {fileID: 8300000, guid: 43bc2527b7986314ca04e479cdc4829b, type: 3}
   _channel: 1
   _volumeRange: {x: 0.9, y: 1}
   _pitchRange: {x: 0.98, y: 1.02}

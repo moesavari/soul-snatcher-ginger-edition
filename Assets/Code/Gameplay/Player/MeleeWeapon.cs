@@ -26,7 +26,7 @@ public class MeleeWeapon : MonoBehaviour
         _timer = _cooldown;
 
         // hitbox already sits in front via FirePoint/AimRig; just enable
-        _anim?.SetTrigger("Melee");
+        //_anim?.SetTrigger("Melee");
         StartCoroutine(Swing());
     }
 

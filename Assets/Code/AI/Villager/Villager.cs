@@ -13,14 +13,14 @@ public class Villager : MonoBehaviour
     {
         _startPos = transform.position;
         PickNewWander();
-        TimeCycleManager.OnDayStarted += OnDay;
-        TimeCycleManager.OnNightStarted += OnNight;
+        GameEvents.DayStarted += OnDay;
+        GameEvents.NightStarted += OnNight;
     }
 
     private void OnDestroy()
     {
-        TimeCycleManager.OnDayStarted -= OnDay;
-        TimeCycleManager.OnNightStarted -= OnNight;
+        GameEvents.DayStarted -= OnDay;
+        GameEvents.NightStarted -= OnNight;
     }
 
     private void Update()
