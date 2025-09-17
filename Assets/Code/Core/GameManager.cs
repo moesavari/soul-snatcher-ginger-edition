@@ -7,6 +7,8 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private float _restartDelaySeconds = 10f;
 
+    [SerializeField] private WaveManager _waveManager;
+
     private GameObject _player;
     public GameObject player => _player;
 
@@ -21,12 +23,20 @@ public class GameManager : MonoSingleton<GameManager>
         GameEvents.AllZombiesCleared += OnAllZombiesCleared;
     }
 
+    private void OnEnable() => GameEvents.RoundLost += OnRoundLost;
+    private void OnDisable() => GameEvents.RoundLost -= OnRoundLost;
+
     private void OnDestroy()
     {
         GameEvents.DayStarted -= OnDayStarted;
         GameEvents.NightStarted -= OnNightStarted;
         GameEvents.PlayerDied -= OnPlayerDied;
         GameEvents.AllZombiesCleared -= OnAllZombiesCleared;
+    }
+
+    private void OnRoundLost()
+    {
+        StartCoroutine(RestartAfterDelay());
     }
 
     private void SpawnOrFindPlayer()
@@ -47,7 +57,6 @@ public class GameManager : MonoSingleton<GameManager>
         GameEvents.RaisePlayerSpawned(_player);
     }
 
-
     private void OnDayStarted()
     {
         Debug.Log("[GameManager] Day started.");
@@ -66,7 +75,12 @@ public class GameManager : MonoSingleton<GameManager>
 
     private IEnumerator RestartAfterDelay()
     {
+        _waveManager?.StopNight();
+        _waveManager?.ClearAllSpawns();
+
         yield return new WaitForSeconds(_restartDelaySeconds);
+        
+        SpawnOrFindPlayer();
         var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
         UnityEngine.SceneManagement.SceneManager.LoadScene(scene.buildIndex);
     }

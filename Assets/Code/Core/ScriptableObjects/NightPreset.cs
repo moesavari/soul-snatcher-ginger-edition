@@ -18,6 +18,7 @@ public class NightPreset : ScriptableObject
         public string name = "Wave";
         public float startDelay = 2.0f;   // pause before this wave starts
         public float endDelay = 3.0f;     // pause after dispatch finishes, before cleanup wait
+        public int maxAliveOverride = 0;
         public List<EnemyEntry> entries = new List<EnemyEntry>();
     }
 

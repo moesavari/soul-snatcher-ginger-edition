@@ -9,7 +9,7 @@ public class CombatInput : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z)) _melee?.Attack();
-        if (Input.GetKeyDown(KeyCode.X)) _ranged.Shoot();
+        if (Input.GetMouseButtonDown(0)) _melee?.Attack();
+        if (Input.GetMouseButtonDown(1)) _ranged.Shoot();
     }
 }

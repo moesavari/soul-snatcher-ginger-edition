@@ -11,6 +11,8 @@ public class ZombieBite : MonoBehaviour
     private bool _isBiting;
     private Coroutine _biteRoutine;
 
+    public bool isBiting => _isBiting;
+
     private void Reset()
     {
         // Ensure trigger

@@ -5,7 +5,7 @@ public class Health : MonoBehaviour
 {
     [SerializeField] private int _maxHealth = 3;
     [SerializeField] private bool _isPlayerHealth;
-
+    
     private int _current;
     public int current => _current;
     public int max => _maxHealth;
@@ -13,6 +13,8 @@ public class Health : MonoBehaviour
 
     public event Action<Health> OnDeath;
     public event Action<Health, int> OnDamaged;
+
+    private GameObject damageSource;
 
     private void Awake()
     {
@@ -22,6 +24,8 @@ public class Health : MonoBehaviour
     public void TakeDamage(int amount, Vector3 hitPoint, GameObject source)
     {
         if (isDead) return;
+
+        damageSource =  source;
 
         _current = Mathf.Max(0, _current - Mathf.Max(0, amount));
         OnDamaged?.Invoke(this, amount);
@@ -36,10 +40,18 @@ public class Health : MonoBehaviour
         _current = Mathf.Clamp(_current + Mathf.Max(0, amount), 0, _maxHealth);
     }
 
-    private void Die()
+    public void Die()
     {
         OnDeath?.Invoke(this);
-        if (_isPlayerHealth) GameEvents.RaisePlayerDied();
+        if (_isPlayerHealth)
+        {
+            GameEvents.RaisePlayerDied();
+            GameEvents.RaiseRoundLost();
+        }
+
+        if (CompareTag("Villager") && damageSource.CompareTag("Player"))
+            GetComponent<Villager>().OnSoulAbsorb();
+
         Destroy(gameObject);
     }
 }

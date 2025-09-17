@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Villager : MonoBehaviour
@@ -6,13 +7,17 @@ public class Villager : MonoBehaviour
     [SerializeField] private float _wanderRadius = 1.5f;
     [SerializeField] private float _moveSpeed = 1.4f;
 
+    [Header("Values Adjustment")]
+    [SerializeField] private int _repAmount = 10;
+    [SerializeField] private int _soulAmount = 1;
+
     private Vector3 _startPos;
     private Vector3 _wanderTarget;
 
     private void Awake()
     {
         _startPos = transform.position;
-        PickNewWander();
+        PickNewWanderTarget();
         GameEvents.DayStarted += OnDay;
         GameEvents.NightStarted += OnNight;
     }
@@ -25,14 +30,20 @@ public class Villager : MonoBehaviour
 
     private void Update()
     {
-        if (TimeCycleManager.Instance.isNight)
-            MoveTo(_hideSpot != null ? _hideSpot.position : _startPos);
-        else Wander();
+        MoveTo(TimeCycleManager.Instance.isNight
+                ? (_hideSpot != null ? _hideSpot.position : _startPos)
+                : _wanderTarget);
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            OnSoulAbsorb();
+            GetComponent<Health>().Die();
+        }
     }
 
     private void OnDay()
     {
-        PickNewWander();
+        PickNewWanderTarget();
     }
 
     private void OnNight()
@@ -43,15 +54,23 @@ public class Villager : MonoBehaviour
     private void Wander()
     {
         if ((transform.position - _wanderTarget).sqrMagnitude < 0.05f)
-            PickNewWander();
+            PickNewWanderTarget();
 
         MoveTo(_wanderTarget);
     }
 
-    private void PickNewWander()
+    private void PickNewWanderTarget()
     {
-        Vector2 r = Random.insideUnitCircle * _wanderRadius;
-        _wanderTarget = _startPos + new Vector3(r.x, r.y, 0f);
+        _wanderTarget = _startPos + new Vector3(
+                        UnityEngine.Random.insideUnitCircle.x * _wanderRadius,
+                        UnityEngine.Random.insideUnitCircle.y * _wanderRadius,
+                        0f);
+    }
+
+    public void OnSoulAbsorb()
+    {
+        SoulSystem.Instance.AddSouls(_soulAmount);
+        ReputationSystem.Instance.AddReputation(-_repAmount);
     }
 
     private void MoveTo(Vector3 dest)

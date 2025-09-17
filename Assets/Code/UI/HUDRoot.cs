@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,10 +19,23 @@ public class HUDRoot : MonoBehaviour
     [SerializeField] private Sprite _hairStageTwo;
     [SerializeField] private Sprite _hairStageThree;
 
+    [Header("Night Banner")]
+    [SerializeField] private CanvasGroup _bannerGroup;
+    [SerializeField] private TMP_Text _bannerTitle;
+    [SerializeField] private TMP_Text _bannerSubtitle;
+
+    [Header("Rewards")]
+    [SerializeField] private GameObject _rewardsRoot;
+    [SerializeField] private TMP_Text _soulsValueText;
+    [SerializeField] private TMP_Text _repValueText;
+    [SerializeField] private TMP_Text _extraText;
+
     private Health _playerHealth;
     private GameObject _player;
     private ISoulReadOnly _soulSource;
     private IHairStageReadOnly _hairSource;
+
+    public CanvasGroup bannerGroup => _bannerGroup;
 
     private void Awake()
     {
@@ -36,6 +50,7 @@ public class HUDRoot : MonoBehaviour
         GameEvents.DayStarted += OnDayStarted;
         GameEvents.NightStarted += OnNightStarted;
         GameEvents.PlayerSpawned += OnPlayerSpawned;
+
         TryBindExistingPlayer();
     }
 
@@ -57,7 +72,7 @@ public class HUDRoot : MonoBehaviour
     private void TryBindExistingPlayer()
     {
         var gm = GameManager.Instance;
-        if(gm != null && gm.player != null)
+        if (gm != null && gm.player != null)
             BindPlayer(gm.player);
     }
 
@@ -169,4 +184,31 @@ public class HUDRoot : MonoBehaviour
     {
         _waveText?.SetText(text);
     }
+
+    public void ShowLoseBanner()
+    {
+        SetActive(_rewardsRoot, false);
+        SetText(_bannerTitle, "You lose!");
+        SetText(_bannerSubtitle, "Village is destroyed kekw");
+
+        if (_bannerGroup != null) _bannerGroup.alpha = 0;
+        _bannerGroup?.gameObject.SetActive(true);
+    }
+
+    public void ShowWinBanner(int souls, int rep, string extra = null)
+    {
+        SetActive(_rewardsRoot, true);
+        SetText(_bannerTitle, "Night Survived!");
+        SetText(_bannerSubtitle, "All threats neutralized");
+
+        SetText(_soulsValueText, $"+{souls} Souls");
+        SetText(_repValueText, $"+{rep} Reputation");
+        SetText(_extraText, string.IsNullOrEmpty(extra) ? "" : extra);
+
+        if (_bannerGroup != null) _bannerGroup.alpha = 0f;
+        _bannerGroup?.gameObject.SetActive(true);
+    }
+
+    private void SetText(TMP_Text t, string s) { if (t) t.text = s; }
+    private void SetActive(GameObject go, bool v) {  if(go && go.activeSelf != v) { go.SetActive(v); } }
 }

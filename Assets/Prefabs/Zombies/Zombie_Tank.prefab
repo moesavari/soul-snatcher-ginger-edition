@@ -274,6 +274,11 @@ MonoBehaviour:
   _visual: {fileID: 3438515797136419881}
   _biteRig: {fileID: 428933817328916565}
   _spawnCue: {fileID: 11400000, guid: c854f87c910698b45b2b665ccae2b36b, type: 2}
+  _zombieMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _separationStrength: 0.5
+  _zombieBite: {fileID: 7794031035916696353}
 --- !u!114 &-7665392243451622586
 MonoBehaviour:
   m_ObjectHideFlags: 0

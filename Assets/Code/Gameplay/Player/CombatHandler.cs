@@ -14,11 +14,9 @@ public class CombatHandler : MonoBehaviour
 
     [Header("Melee")]
     [SerializeField] private float _meleeActiveSeconds = 0.15f;
-    [SerializeField] private float _meleeCooldown = 0.45f;
 
     [Header("Ranged")]
     [SerializeField] private float _arrowSpeed = 10f;
-    [SerializeField] private float _rangedCooldown = 0.8f;
     [SerializeField] private float _projectileForwardOffsetDeg = 0f;  // set to -90 if your arrow art faces +Y
 
     private float _meleeTimer;
@@ -44,18 +42,6 @@ public class CombatHandler : MonoBehaviour
         _rangedTimer -= Time.deltaTime;
 
         UpdateAiming(); // single source of truth for facing
-
-        if (Input.GetKeyDown(KeyCode.Z) && _meleeTimer <= 0f)
-        {
-            DoMeleeAttack();
-            _meleeTimer = _meleeCooldown;
-        }
-
-        if (Input.GetKeyDown(KeyCode.X) && _rangedTimer <= 0f)
-        {
-            DoRangedAttack(_lastAimDir);
-            _rangedTimer = _rangedCooldown;
-        }
     }
 
     // ---------- Aiming ----------

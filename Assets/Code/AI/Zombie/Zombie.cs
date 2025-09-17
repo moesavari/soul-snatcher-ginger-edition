@@ -20,11 +20,20 @@ public class Zombie : MonoBehaviour
     [Header("AudioCues")]
     [SerializeField] private AudioCue _spawnCue;
 
+    [Header("AI Settings")]
+    [SerializeField] private LayerMask _zombieMask;
+    [SerializeField] private bool _includeTriggers = false;
+    [SerializeField] private float _separationStrength = 0.5f;
+    [SerializeField] private float _separationRadius = 0.25f;
+    [SerializeField] private ZombieBite _zombieBite;
+
     private Rigidbody2D _rb;
     private Health _health;
+    private ContactFilter2D _filter;
 
     private Vector2 _vel;
     private bool _deathNotified;
+    private readonly Collider2D[] _overlapBuffer = new Collider2D[16];
 
     private void Awake()
     {
@@ -34,6 +43,14 @@ public class Zombie : MonoBehaviour
 
     private void OnEnable()
     {
+        _filter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            layerMask = _zombieMask,
+            useTriggers = _includeTriggers,   // true if your separation colliders are triggers
+            useDepth = false                  // set true + min/max if you need depth filtering
+        };
+
         _deathNotified = false;
         _health.OnDeath += OnDied;
 
@@ -50,7 +67,13 @@ public class Zombie : MonoBehaviour
     private void FixedUpdate()
     {
         Transform target = ResolveTarget();
-        if (target == null) return;
+
+        if (target == null)
+        {
+            _vel = Vector2.MoveTowards(_vel, Vector2.zero, _accel * Time.fixedDeltaTime);
+            _rb.MovePosition(_rb.position + _vel * Time.fixedDeltaTime);
+            return;
+        }
 
         Vector2 pos = _rb.position;
         Vector2 toTarget = (Vector2)target.position - pos;
@@ -59,18 +82,46 @@ public class Zombie : MonoBehaviour
         // Face + aim bite rig
         if (_visual != null) _visual.flipX = (toTarget.x < 0f);
         if (_biteRig != null && toTarget.sqrMagnitude > 0.0001f)
-            _biteRig.right = toTarget.normalized; // +X is forward
+            _biteRig.right = toTarget.normalized;
 
-        // Stop before overlapping; otherwise move toward target
         Vector2 desired = (dist > _stopDistance) ? toTarget.normalized * _moveSpeed : Vector2.zero;
+
+        // Pause movement if biting
+        if (_zombieBite != null && _zombieBite.isBiting) desired = Vector2.zero;
+
+        // Soft separation (GC-free)
+        ContactFilter2D filter = _filter; // struct copy; _filter set up once
+
+        int count = Physics2D.OverlapCircle(pos, _separationRadius, filter, _overlapBuffer);
+        
+        for (int i = 0; i < count; i++)
+        {
+            var hit = _overlapBuffer[i];
+            if (hit == null) continue;
+            var otherRb = hit.attachedRigidbody;
+            if (otherRb == null || otherRb == _rb) continue;
+
+            Vector2 away = (pos - (Vector2)otherRb.position);
+            float d = away.magnitude;
+            if (d > 0.0001f)
+            {
+                // Taper separation by distance so close overlaps push stronger
+                float falloff = Mathf.Clamp01(1f - (d / _separationRadius));
+                desired += away.normalized * (_separationStrength * falloff);
+            }
+        }
+
+        // Clamp final desired speed so separation can’t exceed _moveSpeed wildly
+        if (desired.sqrMagnitude > (_moveSpeed * _moveSpeed))
+            desired = desired.normalized * _moveSpeed;
+
+        // Smooth toward desired velocity
         _vel = Vector2.MoveTowards(_vel, desired, _accel * Time.fixedDeltaTime);
 
-#if UNITY_6000_0_OR_NEWER
-        _rb.linearVelocity = _vel;
-#else
-        _rb.velocity = _vel;
-#endif
+        // Move via Rigidbody for solid collisions
+        _rb.MovePosition(_rb.position + _vel * Time.fixedDeltaTime);
     }
+
 
     private Transform ResolveTarget()
     {
@@ -89,4 +140,22 @@ public class Zombie : MonoBehaviour
     {
         _moveSpeed = Mathf.Max(0f, speed);
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        // Visualize separation radius
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(transform.position, _separationRadius);
+        Gizmos.color = Color.clear;
+    }
+
+    private void OnValidate()
+    {
+        // Keep filter in sync when you tweak values in the Inspector
+        _filter.useLayerMask = true;
+        _filter.layerMask = _zombieMask;
+        _filter.useTriggers = _includeTriggers;
+    }
+#endif
 }
