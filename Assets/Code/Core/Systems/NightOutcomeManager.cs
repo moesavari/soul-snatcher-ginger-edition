@@ -1,9 +1,13 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 // using UnityEngine.SceneManagement; // keep commented until you wire main menu
 
 public class NightOutcomeManager : MonoBehaviour
 {
+    [SerializeField] private string _menuSceneName = "MainMenu";
+    [SerializeField] private bool _reloadIfMenuMissing = true;
+
     [Header("UI")]
     [SerializeField] private HUDRoot _hud;
 
@@ -62,7 +66,7 @@ public class NightOutcomeManager : MonoBehaviour
         yield return new WaitForSeconds(_hold);
         yield return CanvasGroupFader.Fade(_hud.bannerGroup, 1f, 0f, _fadeOut);
 
-        // Apply rewards (stub � replace with your wallet/rep systems)
+        // Apply rewards (stub – replace with your wallet/rep systems)
         if (_logDebug) DebugManager.Log($"[Outcome] Rewards: +{rewards.souls} souls, +{rewards.reputation} rep ({rewards.extra})");
         // Wallet.AddSouls(rewards.souls);
         // Reputation.Add(rewards.reputation);
@@ -81,16 +85,48 @@ public class NightOutcomeManager : MonoBehaviour
 
         yield return CanvasGroupFader.Fade(_hud.bannerGroup, 0f, 1f, _fadeIn);
         yield return new WaitForSeconds(_hold);
-        // Keep the lose banner up until menu, or fade out if you prefer:
-        // yield return CanvasGroupFader.Fade(_hud.bannerGroup, 1f, 0f, _fadeOut);
+       
+        if(DebugManager.Instance != null && DebugManager.Instance.useSoftResetOnLose)
+        {
+            if (_logDebug) DebugManager.Log("[Outcome] Debug override active → soft reset instead of menu.");
+            yield return new WaitForSeconds(_postLoseDelayToMenu);
+            DebugManager.Instance.TriggerSoftReset();
+            _sequence = null;
+            yield break;
+        }
 
         yield return new WaitForSeconds(_postLoseDelayToMenu);
-
-        // TODO: implement later
-        // SceneManager.LoadScene("MainMenu");
-        if (_logDebug) DebugManager.Log("[Outcome] Would return to Main Menu here.");
+        ReturnToMenuOrReload();
 
         _sequence = null;
+    }
+
+    private void ReturnToMenuOrReload()
+    {
+        if (!string.IsNullOrEmpty(_menuSceneName) && Application.CanStreamedLevelBeLoaded(_menuSceneName))
+        {
+            if(_logDebug) DebugManager.Log($"[Outcome] Loading menu scene '{_menuSceneName}'.");
+            SceneManager.LoadScene(_menuSceneName);
+            return;
+        }
+
+        if (Application.CanStreamedLevelBeLoaded(0))
+        {
+            if (_logDebug) DebugManager.Log("[Outcome] Loading build index 0 (fallback).");
+            SceneManager.LoadScene(0);
+            return;
+        }
+
+        if (_reloadIfMenuMissing)
+        {
+            var scene = SceneManager.GetActiveScene();
+            if (_logDebug) DebugManager.Log($"[Outcome] Reloading active scene '{scene.name}'.");
+            SceneManager.LoadScene(scene.name);
+        }
+        else
+        {
+            DebugManager.LogWarning("[Outcome] No menu scene found and reload disabled. Staying on Lose Banner.");
+        }
     }
 
     private int CountVillagersAlive()

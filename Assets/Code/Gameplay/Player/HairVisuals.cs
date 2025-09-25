@@ -119,7 +119,7 @@ public class HairVisuals : MonoBehaviour
         };
 
         if (_activeProfile == null)
-            Debug.LogWarning($"[HairVisuals] No profile assigned for {_gender}. Assign in inspector");
+            DebugManager.LogWarning($"[HairVisuals] No profile assigned for {_gender}. Assign in inspector");
     }
 
     private void ForceRefreshStage(int stage)

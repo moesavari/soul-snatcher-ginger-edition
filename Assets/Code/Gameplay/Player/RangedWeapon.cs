@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(MouseFacing2D))]
 public class RangedWeapon : MonoBehaviour
 {
     [SerializeField] private Transform _firePoint;
@@ -9,15 +8,13 @@ public class RangedWeapon : MonoBehaviour
     [SerializeField] private float _cooldown = 0.8f;
     [SerializeField] private float _artForwardOffsetDeg = 0f; // -90 if art faces +Y
 
-    private float _timer;
-    private MouseFacing2D _facing;
-    private Animator _anim;
+    [SerializeField] private MouseFacing2D _facing;
+    [SerializeField] private Animator _anim;
 
-    private void Awake()
-    {
-        _facing = GetComponent<MouseFacing2D>();
-        _anim = GetComponent<Animator>();
-    }
+    private float _timer;
+
+    private void OnEnable() { InputManager.RangedPressed += Shoot; }
+    private void OnDisable() { InputManager.RangedPressed -= Shoot; }
 
     private void Update() => _timer -= Time.deltaTime;
 

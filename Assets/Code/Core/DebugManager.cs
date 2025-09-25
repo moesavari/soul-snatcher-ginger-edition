@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -14,10 +15,18 @@ public class DebugManager : MonoSingleton<DebugManager>
     [SerializeField] private bool _startHidden = true;
     [SerializeField] private bool _captureUnityDebug = true;
 
+    [Header("Scene Reload settings")]
+    [SerializeField] private bool _enableSoftResetHotkey = true;
+    [SerializeField] private KeyCode _softResetKey = KeyCode.F9;
+    [SerializeField] private float _softResetDayPause = 1.2f;
+    [SerializeField] private bool _overrideLoseToSoftReset = false;
+
     private readonly List<(LogLevel level, string message)> _entries = new List<(LogLevel, string)>();
     private Vector2 _scroll;
     private bool _visible;
     private LogLevel _filter = LogLevel.Info;
+
+    public bool useSoftResetOnLose => _overrideLoseToSoftReset;
 
     public static void Log(string msg) => Instance?.Add(LogLevel.Info, msg);
     public static void LogWarning(string msg) => Instance?.Add(LogLevel.Warning, msg);
@@ -48,6 +57,11 @@ public class DebugManager : MonoSingleton<DebugManager>
         if (Input.GetKeyDown(_toggleKey)) _visible = !_visible;
         if (Input.GetKeyDown(_clearKey)) _entries.Clear();
         if (Input.GetKeyDown(_copyKey)) GUIUtility.systemCopyBuffer = BuildAllText();
+
+        if (_enableSoftResetHotkey && Input.GetKeyDown(_softResetKey))
+        {
+            TriggerSoftReset();
+        }
     }
 
     private void OnGUI()
@@ -84,6 +98,29 @@ public class DebugManager : MonoSingleton<DebugManager>
         GUILayout.EndScrollView();
 
         GUILayout.EndArea();
+    }
+
+    public void TriggerSoftReset()
+    {
+        StartCoroutine(SoftResetRoutine());
+    }
+
+    private IEnumerator SoftResetRoutine()
+    {
+        Log("[DebugManager] Soft reset starting...");
+
+        GameEvents.RaiseDay();
+
+        var wm = FindAnyObjectByType<WaveManager>(FindObjectsInactive.Exclude);
+        if (wm != null) wm.ClearAllSpawns();
+
+        var playerGO = GameManager.Instance ? GameManager.Instance.player?.gameObject : null;
+        GameEvents.RaisePlayerSpawned(playerGO);
+
+        yield return new WaitForSeconds(Mathf.Max(0f, _softResetDayPause));
+
+        Log("[DebugManager] Raising NightStarted after soft reset.");
+        GameEvents.RaiseNight();
     }
 
     private void Add(LogLevel level, string msg)
