@@ -100,6 +100,21 @@ namespace Game.Core.Inventory
             return have >= amount;
         }
 
+        public void Clear()
+        {
+            for (int i = 0; i < _contents.Count; i++)
+            {
+                var s = _contents[i];
+                if (s.IsEmpty) continue;
+
+                // Fire removed for the amount being cleared
+                FireRemoved(new ItemStack { def = s.def, amount = s.amount });
+
+                _contents[i] = new ItemStack();
+            }
+        }
+
+
         private void FireAdded(ItemStack s) { OnItemAdded?.Invoke(this, s); GameEvents.RaiseItemAdded(this, s); }
 
         private void FireRemoved(ItemStack s) { OnItemRemoved?.Invoke(this, s); GameEvents.RaiseItemRemoved(this, s); }

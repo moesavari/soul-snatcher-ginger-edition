@@ -51,7 +51,7 @@ public class QuickbarUI : MonoBehaviour
     private void TryAssignFromSelection(int index)
     {
         var sheet = GetComponentInParent<CharacterSheetUI>(true);
-        if (!sheet) sheet = FindObjectOfType<CharacterSheetUI>(true);
+        if (!sheet) sheet = FindFirstObjectByType<CharacterSheetUI>(FindObjectsInactive.Include);
         if (!sheet) return;
         var def = sheet.selectedItem;
         if (def == null) { Debug.LogWarning("Select a consumable from the bag first."); return; }

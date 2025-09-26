@@ -122,4 +122,13 @@ public class CharacterSheetUI : MonoBehaviour
         if (_attackText) _attackText.text = _stats != null ? _stats.attack.ToString() : "0";
         if (_armorText) _armorText.text = _stats != null ? _stats.armor.ToString() : "0";
     }
+
+    public void TryEquipDirect(ItemDef def)
+    {
+        if (!def) return;
+        if (_equipment && def.equipSlot != EquipmentSlotType.None)
+        {
+            _equipment.Equip(def);
+        }
+    }
 }
