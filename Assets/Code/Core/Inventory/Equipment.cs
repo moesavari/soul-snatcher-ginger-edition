@@ -1,5 +1,6 @@
 using Game.Core.Inventory;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -26,9 +27,9 @@ public class Equipment : MonoBehaviour
     public int quickSlots => _quickSlots;
     public ItemDef[] quickItems => _quickItems;
 
-    public event Action<EquipmentSlotType, ItemDef, ItemDef> OnSlotChanged; // (slot, old, @new)
-    public event Action<int, ItemDef> OnQuickSet; // (index, item)
-    public event Action OnEquipmentChanged; // aggregate change signal
+    public event Action<EquipmentSlotType, ItemDef, ItemDef> OnSlotChanged; 
+    public event Action<int, ItemDef> OnQuickSet; 
+    public event Action OnEquipmentChanged;
 
     private void OnValidate()
     {
@@ -56,7 +57,7 @@ public class Equipment : MonoBehaviour
 
         if (_inventory != null && !_inventory.TryRemove(def, 1))
         {
-            Debug.LogWarning($"[Equipment] Inventory does not contain: {def?.displayName}");
+            DebugManager.LogWarning($"[Equipment] Inventory does not contain: {def?.displayName}");
             return false;
         }
 
@@ -71,7 +72,7 @@ public class Equipment : MonoBehaviour
         // Offhand blocked if main is two-handed
         if (slot == EquipmentSlotType.Offhand && (_mainHand?.twoHanded ?? false))
         {
-            Debug.LogWarning("[Equipment] Cannot equip offhand with a two-handed main weapon equipped.");
+            DebugManager.LogWarning("[Equipment] Cannot equip offhand with a two-handed main weapon equipped.");
             if (_inventory != null) _inventory.TryAdd(def, 1, out _);
             return false;
         }
@@ -91,7 +92,7 @@ public class Equipment : MonoBehaviour
 
         if (_inventory != null && !_inventory.TryAdd(current, 1, out int leftover))
         {
-            Debug.LogWarning("[Equipment] Inventory full – cannot unequip.");
+            DebugManager.LogWarning("[Equipment] Inventory full – cannot unequip.");
             return false;
         }
 
@@ -113,7 +114,7 @@ public class Equipment : MonoBehaviour
         if (index < 0 || index >= _quickItems.Length) return false;
         if (def != null && def.kind != ItemKind.Consumable)
         {
-            Debug.LogWarning("[Equipment] Only consumables can be assigned to quick slots.");
+            DebugManager.LogWarning("[Equipment] Only consumables can be assigned to quick slots.");
             return false;
         }
 
@@ -142,7 +143,7 @@ public class Equipment : MonoBehaviour
             case EquipmentSlotType.Boots: old = _boots; _boots = def; break;
             case EquipmentSlotType.Amulet: old = _amulet; _amulet = def; break;
             case EquipmentSlotType.Relic: old = _relic; _relic = def; break;
-            default: Debug.LogWarning("[Equipment] Unknown slot."); break;
+            default: DebugManager.LogWarning("[Equipment] Unknown slot."); break;
         }
         OnSlotChanged?.Invoke(slot, old, def);
         return old;
@@ -152,12 +153,36 @@ public class Equipment : MonoBehaviour
     {
         if (item == null || _inventory == null) return;
         if (!_inventory.TryAdd(item, 1, out int leftover) || leftover > 0)
-            Debug.LogWarning("[Equipment] Inventory overflow while returning an item.");
+            DebugManager.LogWarning("[Equipment] Inventory overflow while returning an item.");
     }
 
     private static ItemDef WarnAndNull()
     {
-        Debug.LogWarning("[Equipment] Unknown equipment slot.");
+        DebugManager.LogWarning("[Equipment] Unknown equipment slot.");
         return null;
+    }
+
+    [Serializable]
+    public struct EquippedEntry
+    {
+        public EquipmentSlotType slot;
+        public ItemDef item;
+        public Sprite icon;
+    }
+
+    public List<EquippedEntry> SnapshotEquipped()
+    {
+        var list = new List<EquippedEntry>();
+        foreach (EquipmentSlotType slot in Enum.GetValues(typeof(EquipmentSlotType)))
+        {
+            var def = GetEquipped(slot);
+            list.Add(new EquippedEntry
+            {
+                slot = slot,
+                item = def,
+                icon = def ? def.icon : null
+            });
+        }
+        return list;
     }
 }

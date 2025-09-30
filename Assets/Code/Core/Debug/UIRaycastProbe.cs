@@ -27,7 +27,7 @@ public class UIRaycastProbe : MonoBehaviour
 
         if (raycasters.Count == 0)
         {
-            foreach (var canvas in FindObjectsOfType<Canvas>(true))
+            foreach (var canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
                 var gr = canvas.GetComponent<GraphicRaycaster>();
                 if (gr) raycasters.Add(gr);
@@ -79,7 +79,7 @@ public class UIRaycastProbe : MonoBehaviour
         if (_results[0].gameObject != _lastTop)
         {
             _lastTop = _results[0].gameObject;
-            Debug.Log($"[UIRaycastProbe] Top UI under mouse: {_lastTop.name} (RaycastTarget={(_lastTop.GetComponent<MaskableGraphic>()?.raycastTarget ?? false)})");
+            DebugManager.Log($"[UIRaycastProbe] Top UI under mouse: {_lastTop.name} (RaycastTarget={(_lastTop.GetComponent<MaskableGraphic>()?.raycastTarget ?? false)})");
         }
     }
 

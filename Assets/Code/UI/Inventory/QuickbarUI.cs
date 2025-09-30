@@ -54,7 +54,7 @@ public class QuickbarUI : MonoBehaviour
         if (!sheet) sheet = FindFirstObjectByType<CharacterSheetUI>(FindObjectsInactive.Include);
         if (!sheet) return;
         var def = sheet.selectedItem;
-        if (def == null) { Debug.LogWarning("Select a consumable from the bag first."); return; }
+        if (def == null) { DebugManager.LogWarning("Select a consumable from the bag first."); return; }
         if (_equipment != null && _equipment.SetQuickItem(index, def))
         {
             sheet.SetSelectedItem(null);

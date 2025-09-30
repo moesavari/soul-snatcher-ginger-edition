@@ -13,36 +13,36 @@ public class UIRaycastAudit : MonoBehaviour
         if (!root) root = gameObject;
 
         var canvas = root.GetComponentInParent<Canvas>(true);
-        if (!canvas) { Debug.LogError("[UIRaycastAudit] No Canvas found in parents."); return; }
+        if (!canvas) { DebugManager.LogError("[UIRaycastAudit] No Canvas found in parents."); return; }
 
         var gr = canvas.GetComponent<GraphicRaycaster>();
-        Debug.Log($"[UIRaycastAudit] Canvas: {canvas.name}  mode={canvas.renderMode}  hasGraphicRaycaster={(gr != null && gr.isActiveAndEnabled)}");
+        DebugManager.Log($"[UIRaycastAudit] Canvas: {canvas.name}  mode={canvas.renderMode}  hasGraphicRaycaster={(gr != null && gr.isActiveAndEnabled)}");
 
         if (!gr || !gr.isActiveAndEnabled)
-            Debug.LogError("[UIRaycastAudit] Missing or disabled GraphicRaycaster on this Canvas.");
+            DebugManager.LogError("[UIRaycastAudit] Missing or disabled GraphicRaycaster on this Canvas.");
 
         if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && !canvas.worldCamera)
-            Debug.LogWarning("[UIRaycastAudit] Canvas needs an Event Camera (ScreenSpace-Camera/WorldSpace). Assign Main Camera.");
+            DebugManager.LogWarning("[UIRaycastAudit] Canvas needs an Event Camera (ScreenSpace-Camera/WorldSpace). Assign Main Camera.");
 
         // Check CanvasGroups that kill raycasts
         foreach (var cg in canvas.GetComponentsInChildren<CanvasGroup>(true))
         {
             if (!cg.blocksRaycasts)
-                Debug.LogWarning($"[UIRaycastAudit] CanvasGroup blocksRaycasts=FALSE at {cg.name} (children won't receive pointer).");
+                DebugManager.LogWarning($"[UIRaycastAudit] CanvasGroup blocksRaycasts=FALSE at {cg.name} (children won't receive pointer).");
         }
 
         // Check typical slot images/buttons
         var images = canvas.GetComponentsInChildren<Image>(true);
         int off = images.Count(i => i.raycastTarget == false);
         int on = images.Length - off;
-        Debug.Log($"[UIRaycastAudit] Images: {images.Length} total | raycastTarget ON={on}, OFF={off}");
+        DebugManager.Log($"[UIRaycastAudit] Images: {images.Length} total | raycastTarget ON={on}, OFF={off}");
 
         // Print first few likely slot buttons with raycastTarget state
         var buttons = canvas.GetComponentsInChildren<Button>(true);
         foreach (var b in buttons.Take(10))
         {
             var img = b.GetComponent<Image>();
-            Debug.Log($"[UIRaycastAudit] Button '{b.name}' raycastTarget={(img ? img.raycastTarget : false)} interactable={b.interactable}");
+            DebugManager.Log($"[UIRaycastAudit] Button '{b.name}' raycastTarget={(img ? img.raycastTarget : false)} interactable={b.interactable}");
         }
     }
 

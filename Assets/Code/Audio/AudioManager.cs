@@ -71,14 +71,14 @@ public class AudioManager : MonoSingleton<AudioManager>
     public float GetMixerVolumeDb(string param)
     {
         if (_mixer != null && _mixer.GetFloat(param, out float v)) return v;
-        Debug.LogWarning($"[AudioManager] Mixer param '{param}' not found");
+        DebugManager.LogWarning($"[AudioManager] Mixer param '{param}' not found");
         return 0f;
     }
 
     // ---------- Music ----------
     public void PlayMusic(AudioClip clip, float fadeSeconds = -1f)
     {
-        if (clip == null) { Debug.LogWarning("[AudioManager] PlayMusic null."); return; }
+        if (clip == null) { DebugManager.LogWarning("[AudioManager] PlayMusic null."); return; }
         EnsureMusicSources();
 
         float dur = fadeSeconds >= 0f ? fadeSeconds : _defaultMusicFade;
@@ -113,7 +113,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     // ---------- One‑shot & looped playback (spawn → play → destroy) ----------
     public AudioSource Play(AudioClip clip, AudioChannel channel, float volume = 1f, float pitch = 1f, bool loop = false)
     {
-        if (clip == null) { Debug.LogWarning("[AudioManager] Play null clip."); return null; }
+        if (clip == null) { DebugManager.LogWarning("[AudioManager] Play null clip."); return null; }
         var src = CreateSource(channel);
         Configure2D(src, clip, volume, pitch, loop);
         src.Play();
@@ -123,7 +123,7 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public AudioSource PlayAtPoint(AudioClip clip, AudioChannel channel, Vector3 position, float spatialBlend = 1f, float minDist = 1f, float maxDist = 25f, float volume = 1f, float pitch = 1f, bool loop = false)
     {
-        if (clip == null) { Debug.LogWarning("[AudioManager] PlayAtPoint null clip."); return null; }
+        if (clip == null) { DebugManager.LogWarning("[AudioManager] PlayAtPoint null clip."); return null; }
         var src = CreateSource(channel);
         Configure3D(src, clip, volume, pitch, loop, spatialBlend, minDist, maxDist);
         src.transform.position = position;
@@ -134,7 +134,7 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public AudioSource PlayAttached(AudioClip clip, AudioChannel channel, Transform target, float spatialBlend = 1f, float minDist = 1f, float maxDist = 25f, float volume = 1f, float pitch = 1f, bool loop = false)
     {
-        if (clip == null || target == null) { Debug.LogWarning("[AudioManager] PlayAttached null."); return null; }
+        if (clip == null || target == null) { DebugManager.LogWarning("[AudioManager] PlayAttached null."); return null; }
         var src = CreateSource(channel);
         Configure3D(src, clip, volume, pitch, loop, spatialBlend, minDist, maxDist);
         src.transform.SetParent(target);
@@ -146,9 +146,9 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     public AudioSource PlayCue(AudioCue cue, Vector3? worldPos = null, Transform attachTo = null)
     {
-        if (cue == null) { Debug.LogWarning("[AudioManager] PlayCue null."); return null; }
+        if (cue == null) { DebugManager.LogWarning("[AudioManager] PlayCue null."); return null; }
         var clip = PickClip(cue.clips);
-        if (clip == null) { Debug.LogWarning("[AudioManager] AudioCue has no clips."); return null; }
+        if (clip == null) { DebugManager.LogWarning("[AudioManager] AudioCue has no clips."); return null; }
 
         // cooldown per cue (by name or you can expose a key on the SO)
         string key = cue.name;

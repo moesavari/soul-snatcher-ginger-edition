@@ -9,7 +9,7 @@ public class AudioEmitter : MonoBehaviour
     {
         if(_cue == null)
         {
-            Debug.LogWarning("[AudioEmitter] No AudioCue set.");
+            DebugManager.LogWarning("[AudioEmitter] No AudioCue set.");
             return;
         }
 

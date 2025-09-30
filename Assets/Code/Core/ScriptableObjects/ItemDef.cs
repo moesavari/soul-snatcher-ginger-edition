@@ -6,10 +6,11 @@ public class ItemDef : ScriptableObject
     [Header("Display")]
     public string displayName;
     public Sprite icon;
+    public string description;
 
     [Header("Inventory")]
-    public bool stackable = false;   // <-- required by Inventory/ItemStack
-    public int maxStack = 1;         // <-- required by Inventory/ItemStack
+    public bool stackable = false;
+    public int maxStack = 1;
 
     [Header("Classification")]
     public ItemKind kind = ItemKind.Other;

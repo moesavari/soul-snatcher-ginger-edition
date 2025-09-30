@@ -26,7 +26,7 @@ public class SpawnManager : MonoSingleton<SpawnManager>
     {
         if (prefab == null)
         {
-            Debug.LogWarning("[SpawnManager] Tried to spawn a null prefab.");
+            DebugManager.LogWarning("[SpawnManager] Tried to spawn a null prefab.");
             return null;
         }
 
@@ -49,7 +49,7 @@ public class SpawnManager : MonoSingleton<SpawnManager>
             if (!Mathf.Approximately(p.z, _targetZ))
             {
                 t.position = new Vector3(p.x, p.y, _targetZ);
-                if(_logAdjustments) Debug.Log($"[SpawnManager] Adjusted Z for '{t.name}' to {_targetZ}.");
+                if(_logAdjustments) DebugManager.Log($"[SpawnManager] Adjusted Z for '{t.name}' to {_targetZ}.");
             }
         }
 
@@ -62,7 +62,7 @@ public class SpawnManager : MonoSingleton<SpawnManager>
                 if (!Mathf.Approximately(cp.z, _targetZ))
                 {
                     c.position = new Vector3(cp.x, cp.y, _targetZ);
-                    if (_logAdjustments) Debug.Log($"[SpawnManager] Adjusted Z for '{c.name}' to {_targetZ}.");
+                    if (_logAdjustments) DebugManager.Log($"[SpawnManager] Adjusted Z for '{c.name}' to {_targetZ}.");
                 }
             }
         }

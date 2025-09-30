@@ -1,33 +1,42 @@
-using Game.Core.Inventory;
-using TMPro;
 using UnityEngine;
+using TMPro;
+using Game.Core.Inventory;
 
-public class CharacterSheetUI : MonoBehaviour
+public sealed class CharacterSheetUI : MonoBehaviour
 {
-    [Header("Refs (optional; auto via PlayerContext)")]
+    [Header("Refs (auto via PlayerContext if left empty)")]
     [SerializeField] private Equipment _equipment;
-    [SerializeField] private Inventory _inventory;
     [SerializeField] private CharacterStats _stats;
+    [SerializeField] private Inventory _inventory;
+    
+    [Space(8)]
+    [SerializeField] private ItemDef _selectedItem;
+    [SerializeField] private ItemTooltipUI _tooltip;
+    [SerializeField] private ItemContextMenuUI _context;
 
     [Header("Slots")]
-    [SerializeField] private EquipmentSlotUI[] _slots;
+    [SerializeField] private EquipmentSlotWidget[] _slots;
 
-    [Header("Quickbar Dock")]
+    [Header("Quickbar")]
     [SerializeField] private QuickbarUI _quickbar;
 
-    [Header("Stats Panel")]
+    [Header("Stats Text")]
     [SerializeField] private TMP_Text _attackText;
     [SerializeField] private TMP_Text _armorText;
 
-    [Header("Selection")]
-    [SerializeField] private ItemDef _selectedItem;
+
+    private bool _subscribed;
     public ItemDef selectedItem => _selectedItem;
 
     private void Awake()
     {
-        if (_slots == null || _slots.Length == 0) _slots = GetComponentsInChildren<EquipmentSlotUI>(true);
+        if (_slots == null || _slots.Length == 0)
+            _slots = GetComponentsInChildren<EquipmentSlotWidget>(true);
+
         TryBindFromContext();
-        for (int i = 0; i < _slots.Length; i++) _slots[i]?.Bind(_equipment, this);
+        BindSlots();
+        SubscribeModel();
+        RefreshAll();
     }
 
     private void OnEnable()
@@ -37,98 +46,137 @@ public class CharacterSheetUI : MonoBehaviour
             PlayerContext.Instance.OnPlayerReady += HandlePlayerReady;
             PlayerContext.Instance.OnPlayerCleared += HandlePlayerCleared;
         }
-        Subscribe();
+
+        SubscribeModel();
         RefreshAll();
         _quickbar?.SetDockVisible(true);
     }
 
     private void OnDisable()
     {
-        Unsubscribe();
         if (PlayerContext.Instance != null)
         {
             PlayerContext.Instance.OnPlayerReady -= HandlePlayerReady;
             PlayerContext.Instance.OnPlayerCleared -= HandlePlayerCleared;
         }
+
+        UnsubscribeModel();
         _quickbar?.SetDockVisible(false);
     }
 
     private void HandlePlayerReady()
     {
-        TryBindFromContext();
-        for (int i = 0; i < _slots.Length; i++) _slots[i]?.Bind(_equipment, this);
-        Subscribe();
+        TryBindFromContext();  
+        BindSlots();           
+        SubscribeModel();      
         RefreshAll();
     }
 
     private void HandlePlayerCleared()
     {
-        Unsubscribe();
+        UnsubscribeModel();
         _equipment = null; _inventory = null; _stats = null;
+        BindSlots();           
         RefreshAll();
     }
 
     private void TryBindFromContext()
     {
-        if (PlayerContext.Instance?.facade == null) return;
-        var f = PlayerContext.Instance.facade;
-        if (_equipment == null) _equipment = f.equipment;
-        if (_inventory == null) _inventory = f.inventory;
-        if (_stats == null) _stats = f.stats;
-        if (_quickbar != null && _quickbar.equipment == null) _quickbar.BindEquipment(f.equipment);
+        var f = PlayerContext.Instance ? PlayerContext.Instance.facade : null;
+
+        if (!f) return;
+
+        _equipment  = f.equipment;
+        _inventory  = f.inventory;
+        _stats      = f.stats;
+
+        BindSlots();
+        SubscribeModel();
+        RefreshAll();
     }
 
-    private void Subscribe()
+    private void BindSlots()
     {
-        if (_equipment != null)
+        if (_slots == null || _slots.Length == 0)
+            _slots = GetComponentsInChildren<EquipmentSlotWidget>(true);
+
+        for (int i = 0; i < _slots.Length; i++)
+            _slots[i]?.Bind(_equipment, this, _inventory, _tooltip, _context);
+    }
+
+    private void SubscribeModel()
+    {
+        if (_subscribed || !_equipment) return;
+
+        // prefer method-group handlers so unsubscribe is correct
+        _equipment.OnEquipmentChanged += OnEquipmentChanged;
+        _equipment.OnSlotChanged += OnSlotChanged;
+        _equipment.OnQuickSet += OnQuickSet;
+
+        if (_stats) _stats.OnStatsChanged += OnStatsChanged;
+
+        _subscribed = true;
+    }
+
+    private void UnsubscribeModel()
+    {
+        if (!_subscribed) return;
+
+        if (_equipment)
         {
-            _equipment.OnEquipmentChanged += RefreshAll;
-            _equipment.OnSlotChanged += (_, __, ___) => RefreshAll();
-            _equipment.OnQuickSet += (_, __) => _quickbar?.RefreshIcons();
+            _equipment.OnEquipmentChanged -= OnEquipmentChanged;
+            _equipment.OnSlotChanged -= OnSlotChanged;
+            _equipment.OnQuickSet -= OnQuickSet;
         }
-        if (_stats != null) _stats.OnStatsChanged += _ => RefreshStats();
+        if (_stats) _stats.OnStatsChanged -= OnStatsChanged;
+
+        _subscribed = false;
     }
 
-    private void Unsubscribe()
+    private void OnEquipmentChanged() => RefreshAll();
+    private void OnSlotChanged(EquipmentSlotType _, ItemDef __, ItemDef ___) => RefreshAll();
+    private void OnQuickSet(int __, ItemDef ___) => _quickbar?.RefreshIcons();
+    private void OnStatsChanged(CharacterStats __) => RefreshStats();
+
+    public bool TryEquip(ItemDef def)
     {
-        if (_equipment != null)
+        if (!_equipment || !def) return false;
+        var ok = _equipment.Equip(def);
+        if (ok)
         {
-            _equipment.OnEquipmentChanged -= RefreshAll;
-            _equipment.OnSlotChanged -= (_, __, ___) => RefreshAll();
-            _equipment.OnQuickSet -= (_, __) => _quickbar?.RefreshIcons();
+            _inventory?.TryRemove(def, 1); // if model doesn't consume, do it here
+            RefreshAll();
         }
-        if (_stats != null) _stats.OnStatsChanged -= _ => RefreshStats();
+        return ok;
     }
 
-    public void SetSelectedItem(ItemDef def) { _selectedItem = def; }
-    public void TryEquipTo(EquipmentSlotType slot)
+    public void TryUnequip(EquipmentSlotType slot)
     {
-        if (_equipment == null) return;
-        if (_selectedItem == null) { Debug.LogWarning("Select an item from the bag first."); return; }
-        if (_selectedItem.equipSlot != slot) { Debug.LogWarning("Item doesn't fit that slot."); return; }
-        if (_equipment.Equip(_selectedItem)) _selectedItem = null;
+        if (!_equipment) return;
+        var def = _equipment.GetEquipped(slot);
+        _equipment.Unequip(slot);
+        if (def) _inventory?.TryAdd(def, 1, out int leftover); // match your Inventory API
+        RefreshAll();
     }
-    public void TryUnequip(EquipmentSlotType slot) { _equipment?.Unequip(slot); }
 
-    private void RefreshAll()
+    public void RefreshAll()
     {
-        for (int i = 0; i < _slots.Length; i++) _slots[i]?.Refresh();
+        if (_slots != null)
+            for (int i = 0; i < _slots.Length; i++)
+                _slots[i]?.Refresh();
+
         _quickbar?.RefreshIcons();
         RefreshStats();
     }
 
     private void RefreshStats()
     {
-        if (_attackText) _attackText.text = _stats != null ? _stats.attack.ToString() : "0";
-        if (_armorText) _armorText.text = _stats != null ? _stats.armor.ToString() : "0";
+        if (_attackText) _attackText.text = _stats ? _stats.attack.ToString() : "0";
+        if (_armorText) _armorText.text = _stats ? _stats.armor.ToString() : "0";
     }
 
-    public void TryEquipDirect(ItemDef def)
+    public void SetSelectedItem(ItemDef def)
     {
-        if (!def) return;
-        if (_equipment && def.equipSlot != EquipmentSlotType.None)
-        {
-            _equipment.Equip(def);
-        }
+        _selectedItem = def;
     }
 }

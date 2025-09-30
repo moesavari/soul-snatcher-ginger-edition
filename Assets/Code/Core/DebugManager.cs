@@ -28,9 +28,29 @@ public class DebugManager : MonoSingleton<DebugManager>
 
     public bool useSoftResetOnLose => _overrideLoseToSoftReset;
 
-    public static void Log(string msg) => Instance?.Add(LogLevel.Info, msg);
-    public static void LogWarning(string msg) => Instance?.Add(LogLevel.Warning, msg);
-    public static void LogError(string msg) => Instance?.Add(LogLevel.Error, msg);
+    public static void Log(string message, Object context = null)
+    {
+        var prefix = GetPrefix(context);
+        Debug.Log($"{prefix} {message}", context);
+    }
+
+    public static void LogWarning(string message, Object context = null)
+    {
+        var prefix = GetPrefix(context);
+        Debug.LogWarning($"{prefix} {message}", context);
+    }
+
+    public static void LogError(string message, Object context = null)
+    {
+        var prefix = GetPrefix(context);
+        Debug.LogError($"{prefix} {message}", context);
+    }
+
+    private static string GetPrefix(Object context)
+    {
+        if (context == null) return "[DebugManager]";
+        return $"[{context.GetType().Name}]";
+    }
 
     protected override void Awake()
     {

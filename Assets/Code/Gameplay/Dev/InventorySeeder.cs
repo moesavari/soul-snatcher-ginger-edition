@@ -10,13 +10,13 @@ public class InventorySeeder : MonoBehaviour
     private void Start()
     {
         var inv = PlayerContext.Instance?.facade?.inventory;
-        if (inv == null) { Debug.LogWarning("[InventorySeeder] No inventory found"); return; }
+        if (inv == null) { DebugManager.LogWarning("[InventorySeeder] No inventory found"); return; }
 
         foreach (var e in _items)
         {
             if (!e.item) continue;
             inv.TryAdd(e.item, Mathf.Max(1, e.count), out _);
         }
-        Debug.Log($"[InventorySeeder] Seeded {_items.Length} entries.");
+        DebugManager.Log($"[InventorySeeder] Seeded {_items.Length} entries.");
     }
 }

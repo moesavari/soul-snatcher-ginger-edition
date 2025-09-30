@@ -4,12 +4,20 @@ using UnityEngine.UI;
 
 public class ItemTooltipUI : MonoBehaviour
 {
-    [Header("Refs")]
-    [SerializeField] private Canvas _canvas;        // Screen Space - Overlay
-    [SerializeField] private RectTransform _root;   // Panel
+    [Header("Scene refs")]
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private RectTransform _root;
+
+    [Header("UI")]
+    [SerializeField] private Image _icon;
     [SerializeField] private TMP_Text _title;
     [SerializeField] private TMP_Text _desc;
-    [SerializeField] private Image _icon;
+
+    [Header("Behavior")]
+    [SerializeField] private Vector2 _mouseOffset = new(18f, -18f);
+    [SerializeField] private bool _followMouse = true;
+
+    private bool _visible;
 
     private void Awake()
     {
@@ -19,28 +27,59 @@ public class ItemTooltipUI : MonoBehaviour
 
     public void Show(ItemDef def, Vector2 screenPos)
     {
-        if (!def) { Hide(); return; }
+        if (!def || !_root || !_canvas) { Hide(); return; }
         _title.text = def.displayName;
         _desc.text = BuildDesc(def);
-        _icon.enabled = def.icon; _icon.sprite = def.icon;
+        _icon.enabled = def.icon;
+        _icon.sprite = def.icon;
 
+        _visible = true;
         _root.gameObject.SetActive(true);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _canvas.transform as RectTransform, screenPos, _canvas.worldCamera, out var local);
-        _root.anchoredPosition = local + new Vector2(16, -16);
+        Position(screenPos);
     }
 
-    public void Hide() => _root.gameObject.SetActive(false);
-
-    private string BuildDesc(ItemDef d)
+    public void Move(Vector2 screenPos)
     {
-        // quick, readable stat line
-        string s = "";
-        if (d.kind == ItemKind.Weapon) s += $"ATK +{Mathf.Max(0, d.baseAttack)}";
-        if (d.kind == ItemKind.Armor) s += $"ARM +{Mathf.Max(0, d.baseArmor)}";
-        if (d.kind == ItemKind.Consumable) s += d.stackable ? $"Stack x{Mathf.Max(1, d.maxStack)}" : "Consumable";
-        if (d.twoHanded) s += (s == "" ? "" : " • ") + "Two-Handed";
-        if (d.equipSlot != EquipmentSlotType.None) s += (s == "" ? "" : " • ") + d.equipSlot;
-        return s == "" ? "Misc item" : s;
+        if (_visible) Position(screenPos);
+    }
+
+    public void Hide()
+    {
+        _visible = false;
+        if (_root) _root.gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (_followMouse && _visible) Position(Input.mousePosition);
+    }
+
+    private void Position(Vector2 screenPos)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            (RectTransform)_canvas.transform, screenPos, _canvas.worldCamera, out var local);
+
+        local += _mouseOffset;
+
+        var canvasRect = (RectTransform)_canvas.transform;
+        var r = _root.rect;
+        var bounds = canvasRect.rect;
+
+        float halfW = r.width * 0.5f, halfH = r.height * 0.5f;
+        local.x = Mathf.Clamp(local.x, bounds.xMin + halfW, bounds.xMax - halfW);
+        local.y = Mathf.Clamp(local.y, bounds.yMin + halfH, bounds.yMax - halfH);
+
+        _root.anchoredPosition = local;
+    }
+
+    private string BuildDesc(ItemDef def)
+    {
+        return def.description;
+    }
+
+    private void OnValidate()
+    {
+        if (_root && _canvas && _root == _canvas.transform as RectTransform)
+            DebugManager.LogError("[ItemTooltipUI] Root must be the tooltip panel, not the Canvas.");
     }
 }

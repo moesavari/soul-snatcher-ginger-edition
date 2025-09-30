@@ -249,7 +249,7 @@ public class InputManager : MonoSingleton<InputManager>
     // --- DIAGNOSTICS ---
     public static void LogBindings(string label = "Bindings")
     {
-        if (Instance == null) { Debug.LogWarning("[InputManager] Instance is null"); return; }
+        if (Instance == null) { DebugManager.LogWarning("[InputManager] Instance is null"); return; }
         var im = Instance;
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
         sb.AppendLine($"[InputManager] {label}:");
@@ -260,7 +260,7 @@ public class InputManager : MonoSingleton<InputManager>
             else
                 sb.AppendLine($" - {def.action}: primary={b.primary}, secondary={b.secondary}");
         }
-        Debug.Log(sb.ToString());
+        DebugManager.Log(sb.ToString());
     }
 
     // Backfill any missing keys (e.g. new actions added after the blob was saved)

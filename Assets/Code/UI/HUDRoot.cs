@@ -39,10 +39,10 @@ public class HUDRoot : MonoBehaviour
 
     private void Awake()
     {
-        if (_healthFill == null) Debug.LogWarning("[HUD] _healthFill not set.");
-        if (_soulsText == null) Debug.LogWarning("[HUD] _soulsText not set.");
-        if (_dayNightText == null) Debug.LogWarning("[HUD] _dayNightText not set.");
-        if (_hairPortrait == null) Debug.LogWarning("[HUD] _hairPortrait not set.");
+        if (_healthFill == null) DebugManager.LogWarning("[HUD] _healthFill not set.");
+        if (_soulsText == null) DebugManager.LogWarning("[HUD] _soulsText not set.");
+        if (_dayNightText == null) DebugManager.LogWarning("[HUD] _dayNightText not set.");
+        if (_hairPortrait == null) DebugManager.LogWarning("[HUD] _hairPortrait not set.");
     }
 
     private void OnEnable()
@@ -87,7 +87,7 @@ public class HUDRoot : MonoBehaviour
 
         if (_playerHealth == null)
         {
-            Debug.LogWarning("[HUDRoot] Player has no Health component.");
+            DebugManager.LogWarning("[HUDRoot] Player has no Health component.");
             return;
         }
 

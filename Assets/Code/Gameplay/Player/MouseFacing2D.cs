@@ -75,7 +75,7 @@ public class MouseFacing2D : MonoBehaviour
             Vector3 s = p.localScale;
             if (s.x < 0f || s.y < 0f || s.z < 0f)
             {
-                Debug.LogWarning($"[MouseFacing2D] Negative scale on '{p.name}'. " +
+                DebugManager.LogWarning($"[MouseFacing2D] Negative scale on '{p.name}'. " +
                                  "This mirrors child space and causes hitbox side swaps.");
                 break;
             }

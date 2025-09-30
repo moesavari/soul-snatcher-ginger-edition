@@ -63,7 +63,7 @@ public class InventoryBagUI : MonoBehaviour
         _inv = ResolveInventory();
         if (_inv == null)
         {
-            Debug.LogWarning("[InventoryBagUI] No inventory found.");
+            DebugManager.LogWarning("[InventoryBagUI] No inventory found.");
             return;
         }
         _inv.OnItemAdded += OnInvChanged;
@@ -128,7 +128,7 @@ public class InventoryBagUI : MonoBehaviour
         if (_buttons.Count == 0) CacheStaticButtons();
         if (_inv == null) return;
 
-        var slots = _inv.contents; // padded to capacity in your Inventory
+        var slots = _inv.contents;
         int count = Mathf.Min(_buttons.Count, slots.Count);
 
         for (int i = 0; i < count; i++)
@@ -141,9 +141,8 @@ public class InventoryBagUI : MonoBehaviour
 
             if (cell != null)
             {
-                cell.item = s.def;              // <- now BagCellView has the item
-                cell.count = s.amount;
-                cell.Refresh();                 // <- uses your keep-frame logic
+                cell.Bind(s.def, s.amount);
+                cell.Refresh();
             }
 
             var img = b.GetComponent<Image>();
@@ -182,7 +181,7 @@ public class InventoryBagUI : MonoBehaviour
     {
         if (_buttonPrefab == null)
         {
-            Debug.LogWarning("[InventoryBagUI] Button Prefab is null (DynamicList mode). Assign a prefab asset.");
+            DebugManager.LogWarning("[InventoryBagUI] Button Prefab is null (DynamicList mode). Assign a prefab asset.");
             return;
         }
 

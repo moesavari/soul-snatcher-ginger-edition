@@ -90,7 +90,7 @@ public class HairVisuals : MonoBehaviour
     {
         if (_activeProfile == null || _activeProfile.stageCount == 0)
         {
-            Debug.LogWarning("[HairVisuals] Active profile missing or empty.");
+            DebugManager.LogWarning("[HairVisuals] Active profile missing or empty.");
             return;
         }
 
@@ -100,7 +100,7 @@ public class HairVisuals : MonoBehaviour
         Sprite sprite = _activeProfile.GetStageSprite(clamped);
         if (sprite == null)
         {
-            Debug.LogWarning($"[HairVisuals] No sprite for stage {clamped} on profile {_activeProfile.name}.");
+            DebugManager.LogWarning($"[HairVisuals] No sprite for stage {clamped} on profile {_activeProfile.name}.");
             return;
         }
 
