@@ -12,6 +12,10 @@ A 2D top-down soul-harvesting action-defense game where a cursed ginger defends 
 * **Nighttime zombie sieges** with escalating waves
 * **Dynamic AudioCue system**: event-driven stingers, music, spawn/death sounds
 * Choose your victims, grow your power, embrace the curse
+* **Inventory ↔ Equipment System**:
+  - Drag/drop or right-click to equip/unequip
+  - Equipment Sheet mirrors inventory stats
+  - Tooltips + context menus on both bag and equipped slots
 
 ---
 
@@ -27,6 +31,14 @@ A 2D top-down soul-harvesting action-defense game where a cursed ginger defends 
 * HUD binds dynamically to player (health, souls, hair stage, wave text)
 * **DeathRelay** system for alive count tracking (pool-safe)
 * Projectiles fire toward mouse with corrected art + alignment
+* **Inventory & Equipment integrated**:
+  - Items equip from bag → slots update
+  - Slots interactive (hover tooltip, context menu, right-click unequip)
+  - No duplication on unequip
+* **Debug improvements**:
+  - Context-rich DebugManager logging
+  - Equipment debug inspector & runtime overlay
+
 * Git repo structured for Unity 6000+ workflow
 
 ---
