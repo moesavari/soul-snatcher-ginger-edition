@@ -147,6 +147,6 @@ public class ItemContextMenuUI : MonoBehaviour
     private void OnValidate()
     {
         if (_root && _canvas && _root == _canvas.transform as RectTransform)
-            DebugManager.LogError("[ItemContextMenuUI] Root must be the menu panel, not the Canvas.", this);
+            DebugManager.LogError("Root must be the menu panel, not the Canvas.", this);
     }
 }

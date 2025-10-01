@@ -10,7 +10,7 @@ public class PlayerRoot : MonoBehaviour
         if (!_facade) _facade = GetComponent<PlayerFacade>();
         if (_facade == null)
         {
-            DebugManager.LogWarning("[PlayerRoot] Missing PlayerFacade.");
+            DebugManager.LogWarning("Missing PlayerFacade.", this);
             return;
         }
 

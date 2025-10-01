@@ -79,7 +79,7 @@ public class UIRaycastProbe : MonoBehaviour
         if (_results[0].gameObject != _lastTop)
         {
             _lastTop = _results[0].gameObject;
-            DebugManager.Log($"[UIRaycastProbe] Top UI under mouse: {_lastTop.name} (RaycastTarget={(_lastTop.GetComponent<MaskableGraphic>()?.raycastTarget ?? false)})");
+            DebugManager.Log($"Top UI under mouse: {_lastTop.name} (RaycastTarget={(_lastTop.GetComponent<MaskableGraphic>()?.raycastTarget ?? false)})", this);
         }
     }
 

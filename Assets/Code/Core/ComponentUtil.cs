@@ -10,13 +10,13 @@ public static class ComponentUtil
     {
         if (c == null)
         {
-            DebugManager.LogWarning($"[Require<{typeof(T).Name}>] Caller component is null.");
+            DebugManager.LogWarning($"Caller component is null.");
             return null;
         }
 
         var t = c.GetComponent<T>();
         if (t == null)
-            DebugManager.LogWarning($"[{c.GetType().Name}] Missing required {typeof(T).Name} on '{c.gameObject.name}'.");
+            DebugManager.LogWarning($"Missing required {typeof(T).Name} on '{c.gameObject.name}'.");
         return t;
     }
 
@@ -27,7 +27,7 @@ public static class ComponentUtil
     {
         var t = c.GetComponentInChildren<T>(includeInactive);
         if (t == null)
-            DebugManager.LogWarning($"[{c.GetType().Name}] Missing child {typeof(T).Name} under '{c.gameObject.name}'.");
+            DebugManager.LogWarning($"Missing child {typeof(T).Name} under '{c.gameObject.name}'.");
         return t;
     }
 
@@ -38,7 +38,7 @@ public static class ComponentUtil
     {
         var t = c.GetComponentInParent<T>();
         if (t == null)
-            DebugManager.LogWarning($"[{c.GetType().Name}] Missing parent {typeof(T).Name} for '{c.gameObject.name}'.");
+            DebugManager.LogWarning($"Missing parent {typeof(T).Name} for '{c.gameObject.name}'.");
         return t;
     }
 }

@@ -1,166 +1,95 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
-[DefaultExecutionOrder(-10000)]
-public class DebugManager : MonoSingleton<DebugManager>
+/// <summary>
+/// Centralized logging with context prefixes, duplicate protection,
+/// and a small in-memory ring buffer of recent logs.
+/// </summary>
+public static class DebugManager
 {
-    private enum LogLevel { Info, Warning, Error }
+    public static bool useSoftResetOnLose = false;
 
-    [SerializeField] private int _maxEntries = 200;
-    [SerializeField] private KeyCode _toggleKey = KeyCode.F1;
-    [SerializeField] private KeyCode _clearKey = KeyCode.F2;
-    [SerializeField] private KeyCode _copyKey = KeyCode.F3;
-    [SerializeField] private bool _startHidden = true;
-    [SerializeField] private bool _captureUnityDebug = true;
+    // ---------- Public API ----------
+    public enum LogLevel { Info, Warning, Error }
 
-    [Header("Scene Reload settings")]
-    [SerializeField] private bool _enableSoftResetHotkey = true;
-    [SerializeField] private KeyCode _softResetKey = KeyCode.F9;
-    [SerializeField] private float _softResetDayPause = 1.2f;
-    [SerializeField] private bool _overrideLoseToSoftReset = false;
+    public static IReadOnlyList<LogEntry> recent => _buffer;
 
-    private readonly List<(LogLevel level, string message)> _entries = new List<(LogLevel, string)>();
-    private Vector2 _scroll;
-    private bool _visible;
-    private LogLevel _filter = LogLevel.Info;
-
-    public bool useSoftResetOnLose => _overrideLoseToSoftReset;
-
-    public static void Log(string message, Object context = null)
+    public struct LogEntry
     {
-        var prefix = GetPrefix(context);
-        Debug.Log($"{prefix} {message}", context);
+        public LogLevel level;
+        public string message;
+        public string contextName;
+        public int contextId;
+        public int frame;
+        public DateTime time;
+        public string stack;
     }
 
-    public static void LogWarning(string message, Object context = null)
+    public static void Log(string message, UnityEngine.Object context = null)
     {
-        var prefix = GetPrefix(context);
-        Debug.LogWarning($"{prefix} {message}", context);
+        if (string.IsNullOrEmpty(message)) return;
+        if (IsDuplicate(message, context)) return;
+
+        _isOurLog = true;
+        Debug.Log(Prefix(context) + " " + message, context);
+        _isOurLog = false;
+
+        AddToBuffer(LogLevel.Info, message, context, null);
     }
 
-    public static void LogError(string message, Object context = null)
+    public static void LogWarning(string message, UnityEngine.Object context = null)
     {
-        var prefix = GetPrefix(context);
-        Debug.LogError($"{prefix} {message}", context);
+        if (string.IsNullOrEmpty(message)) return;
+        if (IsDuplicate(message, context)) return;
+
+        _isOurLog = true;
+        Debug.LogWarning(Prefix(context) + " " + message, context);
+        _isOurLog = false;
+
+        AddToBuffer(LogLevel.Warning, message, context, null);
     }
 
-    private static string GetPrefix(Object context)
+    public static void LogError(string message, UnityEngine.Object context = null)
     {
-        if (context == null) return "[DebugManager]";
-        return $"[{context.GetType().Name}]";
+        if (string.IsNullOrEmpty(message)) return;
+        if (IsDuplicate(message, context)) return;
+
+        _isOurLog = true;
+        Debug.LogError(Prefix(context) + " " + message, context);
+        _isOurLog = false;
+
+        AddToBuffer(LogLevel.Error, message, context, null);
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-        _visible = !_startHidden;
-
-        if (_captureUnityDebug)
+    public static void LogLevelled(LogLevel level, string message, UnityEngine.Object context = null)
+        => (level switch
         {
-            Application.logMessageReceived -= OnUnityLog; // avoid double
-            Application.logMessageReceived += OnUnityLog;
-        }
+            LogLevel.Info => (Action<string, UnityEngine.Object>)Log,
+            LogLevel.Warning => LogWarning,
+            LogLevel.Error => LogError,
+            _ => Log
+        }).Invoke(message, context);
+
+    public static void Clear() { _buffer.Clear(); }
+
+    // ---------- Internals ----------
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    private static void Init()
+    {
+        if (_subscribed) return;
+        Application.logMessageReceived += OnUnityLog;
+        _subscribed = true;
+        _lastFrame = -1; _lastHash = 0;
     }
 
-    private void OnDestroy()
+    private static string Prefix(UnityEngine.Object context)
+        => context ? $"[{context.GetType().Name}]" : "[DebugManager]";
+
+    private static void OnUnityLog(string condition, string stackTrace, LogType type)
     {
-        if (_captureUnityDebug)
-        {
-            Application.logMessageReceived -= OnUnityLog;
-        }
-    }
+        if (_isOurLog) return;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(_toggleKey)) _visible = !_visible;
-        if (Input.GetKeyDown(_clearKey)) _entries.Clear();
-        if (Input.GetKeyDown(_copyKey)) GUIUtility.systemCopyBuffer = BuildAllText();
-
-        if (_enableSoftResetHotkey && Input.GetKeyDown(_softResetKey))
-        {
-            TriggerSoftReset();
-        }
-    }
-
-    private void OnGUI()
-    {
-        if (!_visible) return;
-
-        const int margin = 10;
-        var w = Mathf.Min(Screen.width - margin * 2, 720);
-        var h = Mathf.Min(Screen.height - margin * 2, 380);
-        var rect = new Rect(margin, margin, w, h);
-
-        GUILayout.BeginArea(rect, GUI.skin.box);
-        GUILayout.Label($"<b>Debug Manager</b>  [ {_entries.Count} entries ]  (Toggle:{_toggleKey}, Clear:{_clearKey}, Copy:{_copyKey})");
-
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Toggle(_filter == LogLevel.Info, "Info", GUI.skin.button)) _filter = LogLevel.Info;
-        if (GUILayout.Toggle(_filter == LogLevel.Warning, "Warning", GUI.skin.button)) _filter = LogLevel.Warning;
-        if (GUILayout.Toggle(_filter == LogLevel.Error, "Error", GUI.skin.button)) _filter = LogLevel.Error;
-        GUILayout.EndHorizontal();
-
-        _scroll = GUILayout.BeginScrollView(_scroll);
-        foreach (var (level, message) in _entries)
-        {
-            if (!Passes(level)) continue;
-            var label = level switch
-            {
-                LogLevel.Info => $"[INFO] {message}",
-                LogLevel.Warning => $"[WARN] {message}",
-                LogLevel.Error => $"[ERR ] {message}",
-                _ => WarnFallback($"[??? ] {message}")
-            };
-            GUILayout.Label(label);
-        }
-        GUILayout.EndScrollView();
-
-        GUILayout.EndArea();
-    }
-
-    public void TriggerSoftReset()
-    {
-        StartCoroutine(SoftResetRoutine());
-    }
-
-    private IEnumerator SoftResetRoutine()
-    {
-        Log("[DebugManager] Soft reset starting...");
-
-        GameEvents.RaiseDay();
-
-        var wm = FindAnyObjectByType<WaveManager>(FindObjectsInactive.Exclude);
-        if (wm != null) wm.ClearAllSpawns();
-
-        var playerGO = GameManager.Instance ? GameManager.Instance.player?.gameObject : null;
-        GameEvents.RaisePlayerSpawned(playerGO);
-
-        yield return new WaitForSeconds(Mathf.Max(0f, _softResetDayPause));
-
-        Log("[DebugManager] Raising NightStarted after soft reset.");
-        GameEvents.RaiseNight();
-    }
-
-    private void Add(LogLevel level, string msg)
-    {
-        if (string.IsNullOrEmpty(msg)) return;
-        if (_entries.Count >= _maxEntries) _entries.RemoveAt(0);
-        _entries.Add((level, msg));
-
-        // Still output to Unity Console for dev convenience
-        switch (level)
-        {
-            case LogLevel.Info: Debug.Log(msg); break;
-            case LogLevel.Warning: Debug.LogWarning(msg); break;
-            case LogLevel.Error: Debug.LogError(msg); break;
-            default: Debug.LogWarning($"[DebugManager] Unknown level logged: {msg}"); break;
-        }
-    }
-
-    private void OnUnityLog(string condition, string stackTrace, LogType type)
-    {
         var level = type switch
         {
             LogType.Log => LogLevel.Info,
@@ -168,37 +97,51 @@ public class DebugManager : MonoSingleton<DebugManager>
             LogType.Assert => LogLevel.Warning,
             LogType.Error => LogLevel.Error,
             LogType.Exception => LogLevel.Error,
-            _ => WarnLevelFallback()
+            _ => LogLevel.Warning
         };
-        Add(level, $"{condition}");
+
+        AddToBuffer(level, condition, null, stackTrace);
+    }
+    public static void TriggerSoftReset()
+    {
+        // TODO: implement your reset-to-day/start logic here
+        Debug.Log("TriggerSoftReset called");
     }
 
-    private bool Passes(LogLevel level)
+    // ---- Ring buffer (lightweight) ----
+    private static void AddToBuffer(LogLevel level, string message, UnityEngine.Object context, string stack)
     {
-        // Simple filter: show only selected level
-        return level == _filter;
-    }
-
-    private string BuildAllText()
-    {
-        var sb = new StringBuilder(_entries.Count * 64);
-        foreach (var (level, message) in _entries)
+        var entry = new LogEntry
         {
-            sb.AppendLine($"{level}: {message}");
-        }
-        return sb.ToString();
+            level = level,
+            message = message,
+            contextName = context ? context.GetType().Name : string.Empty,
+            contextId = context ? context.GetInstanceID() : 0,
+            frame = Time.frameCount,
+            time = DateTime.Now,
+            stack = stack
+        };
+
+        if (_buffer.Count >= _maxEntries) _buffer.RemoveAt(0);
+        _buffer.Add(entry);
     }
 
-    // Required by your rule #54: use modern switch with '_' fallback + warning.
-    private string WarnFallback(string msg)
+    // ---- One-frame duplicate guard (cheap & cheerful) ----
+    private static bool IsDuplicate(string msg, UnityEngine.Object ctx)
     {
-        Debug.LogWarning("[DebugManager] Fallback label branch triggered.");
-        return msg;
+        int h = (msg?.GetHashCode() ?? 0) ^ (ctx ? ctx.GetInstanceID() : 0);
+        if (Time.frameCount == _lastFrame && h == _lastHash) return true;
+        _lastFrame = Time.frameCount;
+        _lastHash = h;
+        return false;
     }
 
-    private LogLevel WarnLevelFallback()
-    {
-        Debug.LogWarning("[DebugManager] Fallback log level triggered.");
-        return LogLevel.Info;
-    }
+    // ---------- State ----------
+    private static bool _subscribed;
+    private static readonly List<LogEntry> _buffer = new List<LogEntry>(128);
+    private const int _maxEntries = 256;
+
+    [ThreadStatic] private static bool _isOurLog;
+    private static int _lastFrame;
+    private static int _lastHash;
 }

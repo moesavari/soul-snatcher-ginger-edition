@@ -127,16 +127,16 @@ public class BagCellView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private void Use(ItemDef def)
     {
-        DebugManager.Log("[BagCellView] Use not setup yet.");
+        DebugManager.Log("Use not setup yet.", this);
     }
 
     private void Destroy()
     {
-        DebugManager.Log("[BagCellView] Destroy not setup yet.");
+        DebugManager.Log("Destroy not setup yet.", this);
     }
 
     private void Split(ItemDef def)
     {
-        DebugManager.Log("[BagCellView] Split not setup yet.");
+        DebugManager.Log("Split not setup yet.", this);
     }
 }

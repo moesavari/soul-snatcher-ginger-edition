@@ -59,12 +59,12 @@ public class DebugOverlay : MonoBehaviour
         if (GUILayout.Button("Reset to Defaults"))
         {
             InputManager.ResetToDefaults();
-            DebugManager.Log("[DebugOverlay] Input bindings reset to defaults.");
+            DebugManager.Log("Input bindings reset to defaults.", this);
         }
         if (GUILayout.Button("Wipe Saved Bindings"))
         {
             InputManager.WipeSavedBindings();
-            DebugManager.Log("[DebugOverlay] Saved bindings wiped (now using defaults).");
+            DebugManager.Log("Saved bindings wiped (now using defaults.", this);
         }
         GUILayout.EndHorizontal();
 
@@ -74,7 +74,7 @@ public class DebugOverlay : MonoBehaviour
         {
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
-            DebugManager.LogWarning("[DebugOverlay] All PlayerPrefs deleted.");
+            DebugManager.LogWarning("All PlayerPrefs deleted.", this);
         }
 
         GUILayout.Space(6);

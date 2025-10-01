@@ -63,7 +63,7 @@ public class InventoryBagUI : MonoBehaviour
         _inv = ResolveInventory();
         if (_inv == null)
         {
-            DebugManager.LogWarning("[InventoryBagUI] No inventory found.");
+            DebugManager.LogWarning("No inventory found.", this);
             return;
         }
         _inv.OnItemAdded += OnInvChanged;
@@ -181,7 +181,7 @@ public class InventoryBagUI : MonoBehaviour
     {
         if (_buttonPrefab == null)
         {
-            DebugManager.LogWarning("[InventoryBagUI] Button Prefab is null (DynamicList mode). Assign a prefab asset.");
+            DebugManager.LogWarning("Button Prefab is null (DynamicList mode). Assign a prefab asset.", this);
             return;
         }
 

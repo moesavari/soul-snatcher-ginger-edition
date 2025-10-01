@@ -89,8 +89,8 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         if (!_icon)
         {
-            DebugManager.LogWarning($"[EquipmentSlotWidget:{name}] No Image found for slot {_slot}. " +
-                             $"Assign _icon or add an Image as a child.");
+            DebugManager.LogWarning($"No Image found for slot {_slot}. " +
+                             $"Assign _icon or add an Image as a child.", this);
             return;
         }
 
@@ -106,12 +106,12 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
 
         // Extra visibility diagnostics
         if (!gameObject.activeInHierarchy)
-            DebugManager.LogWarning($"[EquipmentSlotWidget:{name}] GameObject inactive; icon won’t render.");
+            DebugManager.LogWarning($"GameObject inactive; icon won’t render.", this);
         var cg = GetComponentInParent<CanvasGroup>();
         if (cg && cg.alpha < 0.99f)
-            DebugManager.LogWarning($"[EquipmentSlotWidget:{name}] CanvasGroup alpha={cg.alpha} (may hide icon).");
+            DebugManager.LogWarning($"CanvasGroup alpha={cg.alpha} (may hide icon).", this);
         if (!_icon.enabled)
-            DebugManager.LogWarning($"[EquipmentSlotWidget:{name}] Image.enabled is false (forcing true).");
+            DebugManager.LogWarning($"Image.enabled is false (forcing true).", this);
     }
 
     private void SetSprite(Sprite sprite, string label)
@@ -122,7 +122,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         var c = _icon.color; c.a = 1f; _icon.color = c;
         _icon.sprite = sprite;
 
-        DebugManager.Log($"[EquipmentSlotWidget:{name}] Slot {_slot} -> {label} | sprite={(sprite ? sprite.name : "null")}");
+        DebugManager.Log($"Slot {_slot} -> {label} | sprite={(sprite ? sprite.name : "null")}", this);
     }
 
     // ---------- UI Events ----------
@@ -141,7 +141,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     public void OnPointerClick(PointerEventData e)
     {
         var def = _equipment ? _equipment.GetEquipped(_slot) : null;
-        if (!def) { DebugManager.Log("[EquipSlot] Click on empty slot", this); return; }
+        if (!def) { DebugManager.Log("Click on empty slot", this); return; }
 
         switch (e.button)
         {

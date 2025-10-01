@@ -249,10 +249,10 @@ public class InputManager : MonoSingleton<InputManager>
     // --- DIAGNOSTICS ---
     public static void LogBindings(string label = "Bindings")
     {
-        if (Instance == null) { DebugManager.LogWarning("[InputManager] Instance is null"); return; }
+        if (Instance == null) { DebugManager.LogWarning("Instance is null"); return; }
         var im = Instance;
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.AppendLine($"[InputManager] {label}:");
+        sb.AppendLine($"{label}:");
         foreach (var def in im._defaults)
         {
             if (!im._bindings.TryGetValue(def.action, out var b))

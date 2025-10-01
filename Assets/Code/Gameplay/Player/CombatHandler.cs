@@ -101,7 +101,7 @@ public class CombatHandler : MonoBehaviour
     {
         if (_meleeHitBox == null)
         {
-            DebugManager.LogWarning("[CombatHandler] Missing Melee hitbox.");
+            DebugManager.LogWarning("Missing Melee hitbox.", this);
             return;
         }
 
@@ -116,7 +116,7 @@ public class CombatHandler : MonoBehaviour
     {
         if (_arrowPrefab == null || _firePoint == null)
         {
-            DebugManager.LogWarning("[CombatHandler] Missing arrowPrefab or firePoint.");
+            DebugManager.LogWarning("Missing arrowPrefab or firePoint.", this);
             return;
         }
 
@@ -139,7 +139,7 @@ public class CombatHandler : MonoBehaviour
         }
         else
         {
-            DebugManager.LogWarning("[CombatHandler] Arrow has no Rigidbody2D.");
+            DebugManager.LogWarning("Arrow has no Rigidbody2D.", this);
         }
 
         _animator?.SetTrigger("Bow");
@@ -177,8 +177,8 @@ public class CombatHandler : MonoBehaviour
         {
             if (p.localScale.x < 0f || p.localScale.y < 0f || p.localScale.z < 0f)
             {
-                DebugManager.LogWarning($"[Facing] Negative scale detected on '{p.name}'. " +
-                                 "This mirrors child local space and can flip hitbox sides.");
+                DebugManager.LogWarning($"Negative scale detected on '{p.name}'. " +
+                              "This mirrors child local space and can flip hitbox sides.", this);
                 break;
             }
         }

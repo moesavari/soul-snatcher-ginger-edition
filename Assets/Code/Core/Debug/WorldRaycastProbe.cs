@@ -18,7 +18,7 @@ public class WorldRaycastProbe : MonoBehaviour
         if (Physics.Raycast(ray, out var hit3D, maxDistance, layers))
         {
             Debug.DrawRay(ray.origin, ray.direction * hit3D.distance, Color.green);
-            DebugManager.Log($"[WorldRaycastProbe] 3D hit: {hit3D.collider.name}  layer={hit3D.collider.gameObject.layer}");
+            DebugManager.Log($"3D hit: {hit3D.collider.name}  layer={hit3D.collider.gameObject.layer}", this);
         }
 
         // 2D
@@ -26,7 +26,7 @@ public class WorldRaycastProbe : MonoBehaviour
         if (hit2D.collider)
         {
             Debug.DrawLine(ray.origin, hit2D.point, Color.cyan);
-            DebugManager.Log($"[WorldRaycastProbe] 2D hit: {hit2D.collider.name}  layer={hit2D.collider.gameObject.layer}");
+            DebugManager.Log($"2D hit: {hit2D.collider.name}  layer={hit2D.collider.gameObject.layer}", this);
         }
     }
 }

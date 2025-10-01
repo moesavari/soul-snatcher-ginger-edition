@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6504e3d50b01a194d8a1b6284263c173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieBite
-  _damagePerTick: 1
+  _damagePerTick: 2
   _tickInterval: 0.6
   _targetTag: Player
 --- !u!61 &2847548604894195604
@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: -7665392243451622586}
   - component: {fileID: 9057078888510701665}
   - component: {fileID: 9072986726533419925}
+  - component: {fileID: 1580046437775821396}
   - component: {fileID: 4511719453047901659}
   - component: {fileID: 691899523572743424}
   m_Layer: 6
@@ -277,7 +278,9 @@ MonoBehaviour:
   _zombieMask:
     serializedVersion: 2
     m_Bits: 0
+  _includeTriggers: 0
   _separationStrength: 0.5
+  _separationRadius: 0.25
   _zombieBite: {fileID: 7794031035916696353}
 --- !u!114 &-7665392243451622586
 MonoBehaviour:
@@ -326,6 +329,20 @@ MonoBehaviour:
   _vfxLifetime: 1.5
   _deathCue: {fileID: 11400000, guid: 2775f9212717ae643abc32d86c7639f8, type: 2}
   _attachToBody: 0
+--- !u!114 &1580046437775821396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5734115558638814024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7861cf0840563c84ab5dbd26e42292f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KnockbackReceiver
+  _rb: {fileID: 691899523572743424}
+  _drag: 10
 --- !u!61 &4511719453047901659
 BoxCollider2D:
   m_ObjectHideFlags: 0

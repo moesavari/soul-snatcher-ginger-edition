@@ -29,7 +29,7 @@ public class StarterLoadoutApplier : MonoBehaviour
         var inv = PlayerContext.Instance.facade.inventory;
         if (inv == null)
         {
-            DebugManager.LogWarning("[StarterLoadoutApplier] Inventory is null on player's facade.");
+            DebugManager.LogWarning("Inventory is null on player's facade.", this);
             yield break;
         }
 
@@ -54,14 +54,14 @@ public class StarterLoadoutApplier : MonoBehaviour
                 if (!ok || left > 0)
                 {
                     totalLeftover += left;
-                    DebugManager.LogWarning($"[StarterLoadout] Could not fully add {e.count}x {e.item.name}. Leftover={left}");
+                    DebugManager.LogWarning($"Could not fully add {e.count}x {e.item.name}. Leftover={left}", this);
                 }
                 if (ok) addedStacks++;
             }
         }
 
         _applied = true;
-        DebugManager.Log($"[StarterLoadout] Applied. Stacks added: {addedStacks}, leftover total: {totalLeftover}");
+        DebugManager.Log($"Applied. Stacks added: {addedStacks}, leftover total: {totalLeftover}", this);
         // No UI poke needed: Inventory events should already refresh the grid.
     }
 

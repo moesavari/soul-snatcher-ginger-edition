@@ -5723,9 +5723,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _persistAcrossScenes: 1
-  _dayDurationSeconds: 30000
+  _dayDurationSeconds: 15
   _nightDurationSeconds: 90
   _nightSpawnDelay: 5
+  _nightStartAudioCue: {fileID: 11400000, guid: 343bcb4159bcbce468c094570e0f4e04, type: 2}
   _startAtNight: 0
 --- !u!114 &849581884
 MonoBehaviour:
@@ -9798,7 +9799,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1478592719}
-  - component: {fileID: 1478592720}
   - component: {fileID: 1478592721}
   - component: {fileID: 1478592722}
   - component: {fileID: 1478592723}
@@ -9824,29 +9824,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1245675266}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1478592720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1478592718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efc409a9240ae0a49833238dd5084a47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DebugManager
-  _persistAcrossScenes: 1
-  _maxEntries: 200
-  _toggleKey: 282
-  _clearKey: 283
-  _copyKey: 284
-  _startHidden: 1
-  _captureUnityDebug: 1
-  _enableSoftResetHotkey: 1
-  _softResetKey: 290
-  _softResetDayPause: 1.2
-  _overrideLoseToSoftReset: 0
 --- !u!114 &1478592721
 MonoBehaviour:
   m_ObjectHideFlags: 0

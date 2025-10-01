@@ -74,7 +74,7 @@ public class CharacterStats : MonoBehaviour
 
         float WarnAndReturn(float v)
         {
-            DebugManager.LogWarning("[CharacterStats] Very low reputation; applying penalty.");
+            DebugManager.LogWarning("Very low reputation; applying penalty.", this);
             return v;
         }
     }

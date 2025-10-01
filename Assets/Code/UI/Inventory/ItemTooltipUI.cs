@@ -80,6 +80,6 @@ public class ItemTooltipUI : MonoBehaviour
     private void OnValidate()
     {
         if (_root && _canvas && _root == _canvas.transform as RectTransform)
-            DebugManager.LogError("[ItemTooltipUI] Root must be the tooltip panel, not the Canvas.");
+            DebugManager.LogError("Root must be the tooltip panel, not the Canvas.", this);
     }
 }

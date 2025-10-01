@@ -57,7 +57,7 @@ public class Equipment : MonoBehaviour
 
         if (_inventory != null && !_inventory.TryRemove(def, 1))
         {
-            DebugManager.LogWarning($"[Equipment] Inventory does not contain: {def?.displayName}");
+            DebugManager.LogWarning($"Inventory does not contain: {def?.displayName}", this);
             return false;
         }
 
@@ -72,7 +72,7 @@ public class Equipment : MonoBehaviour
         // Offhand blocked if main is two-handed
         if (slot == EquipmentSlotType.Offhand && (_mainHand?.twoHanded ?? false))
         {
-            DebugManager.LogWarning("[Equipment] Cannot equip offhand with a two-handed main weapon equipped.");
+            DebugManager.LogWarning("Cannot equip offhand with a two-handed main weapon equipped.", this);
             if (_inventory != null) _inventory.TryAdd(def, 1, out _);
             return false;
         }
@@ -92,7 +92,7 @@ public class Equipment : MonoBehaviour
 
         if (_inventory != null && !_inventory.TryAdd(current, 1, out int leftover))
         {
-            DebugManager.LogWarning("[Equipment] Inventory full – cannot unequip.");
+            DebugManager.LogWarning("Inventory full – cannot unequip.", this);
             return false;
         }
 
@@ -114,7 +114,7 @@ public class Equipment : MonoBehaviour
         if (index < 0 || index >= _quickItems.Length) return false;
         if (def != null && def.kind != ItemKind.Consumable)
         {
-            DebugManager.LogWarning("[Equipment] Only consumables can be assigned to quick slots.");
+            DebugManager.LogWarning("Only consumables can be assigned to quick slots.", this);
             return false;
         }
 
@@ -143,7 +143,7 @@ public class Equipment : MonoBehaviour
             case EquipmentSlotType.Boots: old = _boots; _boots = def; break;
             case EquipmentSlotType.Amulet: old = _amulet; _amulet = def; break;
             case EquipmentSlotType.Relic: old = _relic; _relic = def; break;
-            default: DebugManager.LogWarning("[Equipment] Unknown slot."); break;
+            default: DebugManager.LogWarning("Unknown slot.", this); break;
         }
         OnSlotChanged?.Invoke(slot, old, def);
         return old;
@@ -153,12 +153,12 @@ public class Equipment : MonoBehaviour
     {
         if (item == null || _inventory == null) return;
         if (!_inventory.TryAdd(item, 1, out int leftover) || leftover > 0)
-            DebugManager.LogWarning("[Equipment] Inventory overflow while returning an item.");
+            DebugManager.LogWarning("Inventory overflow while returning an item.", this);
     }
 
     private static ItemDef WarnAndNull()
     {
-        DebugManager.LogWarning("[Equipment] Unknown equipment slot.");
+        DebugManager.LogWarning("Unknown equipment slot.");
         return null;
     }
 

@@ -32,17 +32,17 @@ public class WaveManager : MonoBehaviour
     {
         if (_nightPreset == null)
         {
-            DebugManager.LogError("[WaveManager] NightPreset is missing.");
+            DebugManager.LogError("NightPreset is missing.", this);
             enabled = false; return;
         }
         if (_nightPreset.waves == null || _nightPreset.waves.Count == 0)
         {
-            DebugManager.LogError("[WaveManager] NightPreset has no waves.");
+            DebugManager.LogError("NightPreset has no waves.", this);
             enabled = false; return;
         }
         if (_spawnPoints == null || _spawnPoints.Length == 0)
         {
-            DebugManager.LogError("[WaveManager] No spawn points assigned.");
+            DebugManager.LogError("No spawn points assigned.", this);
             enabled = false; return;
         }
 
@@ -84,7 +84,7 @@ public class WaveManager : MonoBehaviour
         _nightActive = true;
         _runner = StartCoroutine(RunNight());
         
-        if (_logDebug) DebugManager.Log("[WaveManager] Night started.");
+        if (_logDebug) DebugManager.Log("Night started.", this);
     }
 
     public void StopNight()
@@ -95,7 +95,7 @@ public class WaveManager : MonoBehaviour
             StopCoroutine(_runner);
             _runner = null;
         }
-        if (_logDebug) DebugManager.Log("[WaveManager] Night stopped.");
+        if (_logDebug) DebugManager.Log("Night stopped.", this);
     }
 
     private IEnumerator RunNight()
@@ -106,7 +106,7 @@ public class WaveManager : MonoBehaviour
             if (!_nightActive) yield break;
 
             var wave = waves[w];
-            if (_logDebug) DebugManager.Log($"[WaveManager] Starting wave {w + 1}/{waves.Count}: {wave.name}");
+            if (_logDebug) DebugManager.Log($"Starting wave {w + 1}/{waves.Count}: {wave.name}", this);
 
             if (wave.startDelay > 0f) yield return new WaitForSeconds(wave.startDelay);
 
@@ -121,7 +121,7 @@ public class WaveManager : MonoBehaviour
                 yield return null;
         }
 
-        if (_logDebug) DebugManager.Log("[WaveManager] All waves dispatched. Waiting for last enemies to die...");
+        if (_logDebug) DebugManager.Log("All waves dispatched. Waiting for last enemies to die...", this);
         // If you want to require a full clear before declaring success, uncomment:
         while (_alive > 0) yield return null;
 
@@ -130,7 +130,7 @@ public class WaveManager : MonoBehaviour
         if (!_successRaised)
         {
             _successRaised = true;
-            if (_logDebug) DebugManager.Log("[WaveManager] All waves cleared. Raising AllZombiesCleared.");
+            if (_logDebug) DebugManager.Log("All waves cleared. Raising AllZombiesCleared.", this);
             GameEvents.RaiseAllZombiesCleared();
         }
     }
@@ -207,7 +207,7 @@ public class WaveManager : MonoBehaviour
                 _tracked.Add(relay);
 
                 _alive++;
-                if (_logDebug) DebugManager.Log($"[WaveManager] Alive -> {_alive}");
+                if (_logDebug) DebugManager.Log($"Alive -> {_alive}", this);
             }
 
             spawnedPerEntry[pick]++;
@@ -236,7 +236,7 @@ public class WaveManager : MonoBehaviour
         _tracked.Remove(relay);
         _alive = Mathf.Max(0, _alive - 1);
 
-        if (_logDebug) DebugManager.Log($"[WaveManager] Alive -> {_alive}");
+        if (_logDebug) DebugManager.Log($"Alive -> {_alive}", this);
     }
 
     private void OnDrawGizmosSelected()
@@ -267,12 +267,12 @@ public class DeathRelay : MonoBehaviour
     private void OnDisable()
     {
         _manager?.NotifyRelayDisabled(this);
-        if (_logDebug) DebugManager.Log("[DeathRelay] OnDisable -> notified manager");
+        if (_logDebug) DebugManager.Log("OnDisable -> notified manager", this);
     }
 
     private void OnDestroy()
     {
         _manager?.NotifyRelayDisabled(this);
-        if (_logDebug) DebugManager.Log("[DeathRelay] OnDestroy -> notified manager");
+        if (_logDebug) DebugManager.Log("OnDestroy -> notified manager", this);
     }
 }

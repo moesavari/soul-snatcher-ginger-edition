@@ -68,6 +68,9 @@ public class Zombie : MonoBehaviour
     {
         Transform target = ResolveTarget();
 
+        var kb = GetComponent<KnockbackReceiver>();
+        if (kb != null && kb.isStunned) return;
+
         if (target == null)
         {
             _vel = Vector2.MoveTowards(_vel, Vector2.zero, _accel * Time.fixedDeltaTime);

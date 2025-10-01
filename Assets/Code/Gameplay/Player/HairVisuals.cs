@@ -90,7 +90,7 @@ public class HairVisuals : MonoBehaviour
     {
         if (_activeProfile == null || _activeProfile.stageCount == 0)
         {
-            DebugManager.LogWarning("[HairVisuals] Active profile missing or empty.");
+            DebugManager.LogWarning("Active profile missing or empty.", this);
             return;
         }
 
@@ -100,7 +100,7 @@ public class HairVisuals : MonoBehaviour
         Sprite sprite = _activeProfile.GetStageSprite(clamped);
         if (sprite == null)
         {
-            DebugManager.LogWarning($"[HairVisuals] No sprite for stage {clamped} on profile {_activeProfile.name}.");
+            DebugManager.LogWarning($"No sprite for stage {clamped} on profile {_activeProfile.name}.", this);
             return;
         }
 
@@ -119,7 +119,7 @@ public class HairVisuals : MonoBehaviour
         };
 
         if (_activeProfile == null)
-            DebugManager.LogWarning($"[HairVisuals] No profile assigned for {_gender}. Assign in inspector");
+            DebugManager.LogWarning($"No profile assigned for {_gender}. Assign in inspector", this);
     }
 
     private void ForceRefreshStage(int stage)

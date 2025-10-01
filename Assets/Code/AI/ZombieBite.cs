@@ -65,7 +65,7 @@ public class ZombieBite : MonoBehaviour
             }
             else
             {
-                DebugManager.LogWarning("[ZombieBite] Target has no Health component on root.");
+                DebugManager.LogWarning("Target has no Health component on root.", this);
                 _isBiting = false;
                 break;
             }

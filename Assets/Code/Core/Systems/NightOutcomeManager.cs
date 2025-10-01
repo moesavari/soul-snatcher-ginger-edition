@@ -67,7 +67,7 @@ public class NightOutcomeManager : MonoBehaviour
         yield return CanvasGroupFader.Fade(_hud.bannerGroup, 1f, 0f, _fadeOut);
 
         // Apply rewards (stub – replace with your wallet/rep systems)
-        if (_logDebug) DebugManager.Log($"[Outcome] Rewards: +{rewards.souls} souls, +{rewards.reputation} rep ({rewards.extra})");
+        if (_logDebug) DebugManager.Log($"Rewards: +{rewards.souls} souls, +{rewards.reputation} rep ({rewards.extra})", this);
         // Wallet.AddSouls(rewards.souls);
         // Reputation.Add(rewards.reputation);
 
@@ -85,12 +85,12 @@ public class NightOutcomeManager : MonoBehaviour
 
         yield return CanvasGroupFader.Fade(_hud.bannerGroup, 0f, 1f, _fadeIn);
         yield return new WaitForSeconds(_hold);
-       
-        if(DebugManager.Instance != null && DebugManager.Instance.useSoftResetOnLose)
+
+        if (DebugManager.useSoftResetOnLose)
         {
-            if (_logDebug) DebugManager.Log("[Outcome] Debug override active → soft reset instead of menu.");
+            if (_logDebug) DebugManager.Log("Debug override active → soft reset instead of menu.", this);
             yield return new WaitForSeconds(_postLoseDelayToMenu);
-            DebugManager.Instance.TriggerSoftReset();
+            DebugManager.TriggerSoftReset();
             _sequence = null;
             yield break;
         }
@@ -105,14 +105,14 @@ public class NightOutcomeManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(_menuSceneName) && Application.CanStreamedLevelBeLoaded(_menuSceneName))
         {
-            if(_logDebug) DebugManager.Log($"[Outcome] Loading menu scene '{_menuSceneName}'.");
+            if(_logDebug) DebugManager.Log($"Loading menu scene '{_menuSceneName}'.", this);
             SceneManager.LoadScene(_menuSceneName);
             return;
         }
 
         if (Application.CanStreamedLevelBeLoaded(0))
         {
-            if (_logDebug) DebugManager.Log("[Outcome] Loading build index 0 (fallback).");
+            if (_logDebug) DebugManager.Log("Loading build index 0 (fallback, this).");
             SceneManager.LoadScene(0);
             return;
         }
@@ -120,12 +120,12 @@ public class NightOutcomeManager : MonoBehaviour
         if (_reloadIfMenuMissing)
         {
             var scene = SceneManager.GetActiveScene();
-            if (_logDebug) DebugManager.Log($"[Outcome] Reloading active scene '{scene.name}'.");
+            if (_logDebug) DebugManager.Log($"Reloading active scene '{scene.name}'.", this);
             SceneManager.LoadScene(scene.name);
         }
         else
         {
-            DebugManager.LogWarning("[Outcome] No menu scene found and reload disabled. Staying on Lose Banner.");
+            DebugManager.LogWarning("No menu scene found and reload disabled. Staying on Lose Banner.", this);
         }
     }
 

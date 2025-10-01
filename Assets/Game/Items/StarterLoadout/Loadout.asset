@@ -13,13 +13,17 @@ MonoBehaviour:
   m_Name: Loadout
   m_EditorClassIdentifier: Assembly-CSharp::StarterLoadout
   items:
-  - item: {fileID: 11400000, guid: 0331c5858f9834c428176e064565d1f6, type: 2}
-    count: 1
-  - item: {fileID: 11400000, guid: 16b6f9ca1cb08fd4c9783cf030dfe326, type: 2}
-    count: 1
   - item: {fileID: 11400000, guid: eff7bde959183c44dbfaf6e593e4d215, type: 2}
     count: 1
   - item: {fileID: 11400000, guid: 3cd37fea076c35a44b501f3ca609eea8, type: 2}
     count: 1
-  - item: {fileID: 11400000, guid: 0331c5858f9834c428176e064565d1f6, type: 2}
-    count: 99
+  - item: {fileID: 11400000, guid: 1d425a3554b614d4896e232ee471113c, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: 59d96babdbde6ce44ac24ded9a22add4, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: e1937d54fed3c2845978aa0967859eb1, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: 7e91538d2b5eb264ba1483999840b049, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: 97f905e5d750b1d41ad098f726162d2f, type: 2}
+    count: 1

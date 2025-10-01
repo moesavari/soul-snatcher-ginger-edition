@@ -13,6 +13,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        var kb = GetComponent<KnockbackReceiver>();
+        if (kb != null && kb.isStunned) return;
+
         _rb.MovePosition(_rb.position + _moveInput * _moveSpeed * Time.fixedDeltaTime);
     }
 

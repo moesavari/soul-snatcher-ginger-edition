@@ -46,7 +46,7 @@ public class GameManager : MonoSingleton<GameManager>
         {
             if (_playerPrefab == null || _playerSpawnPoint == null)
             {
-                DebugManager.LogWarning("[GameManager] Missing Player prefab or spawn point.");
+                DebugManager.LogWarning("Missing Player prefab or spawn point.", this);
                 return;
             }
             _player = SpawnManager.Instance.Spawn(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
@@ -59,17 +59,17 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void OnDayStarted()
     {
-        DebugManager.Log("[GameManager] Day started.");
+        DebugManager.Log("Day started.", this);
     }
 
     private void OnNightStarted()
     {
-        DebugManager.Log("[GameManager] Night started.");
+        DebugManager.Log("Night started.", this);
     }
 
     private void OnPlayerDied()
     {
-        DebugManager.Log("[GameManager] Player died. Restarting Scene...");
+        DebugManager.Log("Player died. Restarting Scene...", this);
         StartCoroutine(RestartAfterDelay());
     }
 
@@ -87,7 +87,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void OnAllZombiesCleared()
     {
-        DebugManager.Log("[GameManager] Allzombies cleared. Forcing day.");
+        DebugManager.Log("Allzombies cleared. Forcing day.", this);
         TimeCycleManager.Instance?.ForceDay();
     }
 }

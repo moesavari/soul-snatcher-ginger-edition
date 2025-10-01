@@ -9,6 +9,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 
     [Header("Night Prep")]
     [SerializeField] private float _nightSpawnDelay = 5f; // countdown/fade before waves begin
+    [SerializeField] private AudioCue _nightStartAudioCue;
 
     [Header("Start State")]
     [SerializeField] private bool _startAtNight = false;
@@ -57,6 +58,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
             {
                 // NIGHT STATE ------------------------------------------
                 NightOverlay.Instance?.SetNight(true); // visual first
+                AudioManager.Instance.PlayCue(_nightStartAudioCue, worldPos: transform.position);
                 _timer = Mathf.Max(0f, _nightDurationSeconds);
 
                 // Kick off night after prep (spawns listen to RaiseNight)

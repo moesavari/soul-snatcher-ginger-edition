@@ -59,7 +59,7 @@ public static class CreateItemDefsFromSprites
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log($"[CreateItemDefs] Created {created} ItemDefs. Skipped {skipped} (already existed). Output: {OUTPUT_DIR}");
+        Debug.Log($"Created {created} ItemDefs. Skipped {skipped} (already existed). Output: {OUTPUT_DIR}");
     }
 
     private static string Clean(string n) => n.Replace(' ', '_').Replace("__", "_");

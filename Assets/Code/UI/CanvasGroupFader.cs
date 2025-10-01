@@ -70,7 +70,7 @@ public class CanvasGroupFader : MonoBehaviour
         {
             if (!_runner)
             {
-                var go = new GameObject("[UIFadeRunner]");
+                var go = new GameObject("");
                 Object.DontDestroyOnLoad(go);
                 _runner = go.AddComponent<CanvasGroupFaderRunner>();
             }
