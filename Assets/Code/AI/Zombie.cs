@@ -27,6 +27,12 @@ public class Zombie : MonoBehaviour
     [SerializeField] private float _separationRadius = 0.25f;
     [SerializeField] private ZombieBite _zombieBite;
 
+    [Header("Sunrise Enraged-Burning")]
+    [SerializeField] private float _burnDuration = 7f;
+    [SerializeField] private float _burnDPS = 0.5f;
+    [SerializeField] private float _enrageSpeedMult = 1.35f;
+    [SerializeField] private GameObject _burnFxPrefab;
+
     private Rigidbody2D _rb;
     private Health _health;
     private ContactFilter2D _filter;
@@ -35,10 +41,20 @@ public class Zombie : MonoBehaviour
     private bool _deathNotified;
     private readonly Collider2D[] _overlapBuffer = new Collider2D[16];
 
+    private bool _isEnragedBurning;
+    private bool _morgensternToten;
+    private float _burnTimer;
+    private float _baseMoveSpeed;
+
     private void Awake()
     {
         _rb = this.Require<Rigidbody2D>();
         _health = this.Require<Health>();
+
+        _baseMoveSpeed = _moveSpeed;
+
+        if(_zombieBite == null) _zombieBite = GetComponentInChildren<ZombieBite>();
+        if(_zombieBite != null) _zombieBite.InitBaseValues();
     }
 
     private void OnEnable()
@@ -55,13 +71,24 @@ public class Zombie : MonoBehaviour
         _health.OnDeath += OnDied;
 
         if(_spawnCue != null) AudioManager.Instance.PlayCue(_spawnCue, worldPos: transform.position);
+
+        if (!TimeCycleManager.Instance.isNight)
+        {
+            EnterEnragedForm();
+        }
+
+        GameEvents.DayStarted += OnDayStarted;
     }
 
     private void OnDisable()
     {
         _health.OnDeath -= OnDied;
-        // Do NOT notify spawner here; death uses Health.OnDeath.
-        // If you later pool zombies (disable without death), decide explicitly how to handle alive counts.
+        GameEvents.DayStarted -= OnDayStarted;
+    }
+
+    private void Update()
+    {
+        if (_isEnragedBurning) DoBurnTick();
     }
 
     private void FixedUpdate()
@@ -125,7 +152,6 @@ public class Zombie : MonoBehaviour
         _rb.MovePosition(_rb.position + _vel * Time.fixedDeltaTime);
     }
 
-
     private Transform ResolveTarget()
     {
         if (_primaryTarget != null) return _primaryTarget;
@@ -136,12 +162,60 @@ public class Zombie : MonoBehaviour
     private void OnDied(Health _)
     {
         if (_deathNotified) return;
+
+        if(_zombieBite != null) _zombieBite.SetEnraged(false);
+        _moveSpeed = _baseMoveSpeed;
+        _isEnragedBurning = false;
+
+        if (_morgensternToten) DebugManager.Log("Skipping Loot", this);
+
         _deathNotified = true;
     }
 
     public void SetMoveSpeed(float speed)
     {
         _moveSpeed = Mathf.Max(0f, speed);
+    }
+
+    private void OnDayStarted()
+    {
+        if(!isActiveAndEnabled) return;
+
+        if(_health != null && _health.isDead) return;
+
+        if (_isEnragedBurning) return;
+
+        EnterEnragedForm();
+    }
+
+    private void EnterEnragedForm()
+    {
+        _isEnragedBurning = true;
+
+        _burnTimer = _burnDuration;
+        _moveSpeed = _baseMoveSpeed * _enrageSpeedMult;
+
+        if (_zombieBite != null) _zombieBite.SetEnraged(true);
+
+        if (_burnFxPrefab != null)
+            Instantiate(_burnFxPrefab, transform.position, Quaternion.identity, transform);
+    }
+
+    private void DoBurnTick()
+    {
+        _burnTimer -= Time.deltaTime;
+
+        if (_health != null && !_health.isDead)
+        {
+            int burnDamage = Mathf.CeilToInt(_burnDPS * Time.deltaTime);
+            if (burnDamage > 0) _health.TakeDamage(burnDamage, transform.position, gameObject);
+        }
+
+        if (_burnTimer <= 0f && _health != null && !_health.isDead)
+        {
+            _morgensternToten = true;
+            _health.Die();
+        }
     }
 
 #if UNITY_EDITOR

@@ -138,6 +138,8 @@ MonoBehaviour:
   _damagePerTick: 1
   _tickInterval: 0.3
   _targetTag: Player
+  _enrageDamageMult: 1.25
+  _enrageRateMult: 1.2
 --- !u!61 &2847548604894195604
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -282,6 +284,10 @@ MonoBehaviour:
   _separationStrength: 0.5
   _separationRadius: 0.25
   _zombieBite: {fileID: 7794031035916696353}
+  _burnDuration: 8
+  _burnDPS: 0.5
+  _enrageSpeedMult: 1.35
+  _burnFxPrefab: {fileID: 0}
 --- !u!114 &-7665392243451622586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,7 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a506963d8394b2e428f6e0e6ce3c46de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  _maxHealth: 2
+  _maxHealth: 80
   _isPlayerHealth: 0
 --- !u!114 &9057078888510701665
 MonoBehaviour:

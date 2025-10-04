@@ -25,6 +25,10 @@ public class ItemContextMenuUI : MonoBehaviour
     // state for button callbacks
     [SerializeField] private ItemDef _item;
 
+    private UIPanelID _ownerPanel = UIPanelID.None;
+    private Component _ownerWidget;
+    private bool _isOpen = false;
+
     private void Awake()
     {
         if (!_canvas) _canvas = GetComponentInParent<Canvas>(true);
@@ -32,7 +36,42 @@ public class ItemContextMenuUI : MonoBehaviour
         WireDefaultListeners();
     }
 
-    // Re-wire buttons to call the Init(..) callbacks (used by Show)
+    private void OnEnable()
+    {
+        InventoryBagUI.OnVisibilityChanged += OnInventoryVisibility;
+        CharacterSheetUI.OnVisibilityChanged += OnEquipmentVisibility;
+    }
+
+    private void OnDisable()
+    {
+        InventoryBagUI.OnVisibilityChanged -= OnInventoryVisibility;
+        CharacterSheetUI.OnVisibilityChanged -= OnEquipmentVisibility;
+    }
+
+    private void LateUpdate()
+    {
+        if (_isOpen && _ownerWidget && !_ownerWidget.gameObject.activeInHierarchy)
+            Hide();
+    }
+
+    private void OnValidate()
+    {
+        if (_root && _canvas && _root == _canvas.transform as RectTransform)
+            DebugManager.LogError("Root must be the menu panel, not the Canvas.", this);
+    }
+
+    private void OnInventoryVisibility(bool visible)
+    {
+        if (!visible && _isOpen && _ownerPanel == UIPanelID.Inventory)
+            Hide();
+    }
+
+    private void OnEquipmentVisibility(bool visible)
+    {
+        if (!visible && _isOpen && _ownerPanel == UIPanelID.Equipment)
+            Hide();
+    }
+
     private void WireDefaultListeners()
     {
         _equipBtn.onClick.RemoveAllListeners();
@@ -61,9 +100,20 @@ public class ItemContextMenuUI : MonoBehaviour
         _onSplit = onSplit;
     }
 
-    // Inventory-style usage (callbacks come from Init)
+    public void ShowFrom(UIPanelID ownerPanel, Component ownerWidget, ItemDef def, bool isEquipped, Vector2 screenPos)
+    {
+        _ownerPanel = ownerPanel;
+        _ownerWidget = ownerWidget;
+        _isOpen = true;
+
+        Show(def, isEquipped, screenPos);
+    }
+
     public void Show(ItemDef def, bool isEquipped, Vector2 screenPos)
     {
+        _isOpen = true;
+        if (_ownerPanel == UIPanelID.None) _ownerPanel = UIPanelID.Inventory;
+
         _item = def;
         _title.text = def ? def.displayName : string.Empty;
 
@@ -73,14 +123,21 @@ public class ItemContextMenuUI : MonoBehaviour
         _splitBtn.gameObject.SetActive(def && def.stackable);
         _destroyBtn.gameObject.SetActive(def);
 
-        WireDefaultListeners(); // ensure we’re using the Init(..) callbacks
+        WireDefaultListeners();
 
         _root.gameObject.SetActive(true);
         Position(screenPos + _spawnOffset);
         _root.SetAsLastSibling();
     }
 
-    public void Hide() => _root.gameObject.SetActive(false);
+    public void Hide()
+    {
+        _isOpen = false;
+        _ownerPanel = UIPanelID.None;
+        _ownerWidget = null;
+
+        _root.gameObject.SetActive(false);
+    }
 
     private void Position(Vector2 screenPos)
     {
@@ -100,21 +157,21 @@ public class ItemContextMenuUI : MonoBehaviour
         _root.anchoredPosition = local;
     }
 
-    // Equipment-sheet usage (per-call forwarding to the slot’s handler)
     public void ShowForEquipped(EquipmentSlotType slot, ItemDef def, Vector2 screenPos,
                                 System.Action<string, EquipmentSlotType, ItemDef> onAction)
     {
+        _isOpen = true;
+        if (_ownerPanel == UIPanelID.None) _ownerPanel = UIPanelID.Equipment;
+
         _item = def;
         _title.text = def ? def.displayName : string.Empty;
 
-        // In equipment context, we don’t need Equip/Split; show Unequip (+Use/Destroy if appropriate)
         _equipBtn.gameObject.SetActive(false);
         _splitBtn.gameObject.SetActive(false);
         _unequipBtn.gameObject.SetActive(def);
         _useBtn.gameObject.SetActive(def && def.kind == ItemKind.Consumable);
         _destroyBtn.gameObject.SetActive(def);
 
-        // Rebind listeners to forward to the provided onAction
         _equipBtn.onClick.RemoveAllListeners();
         _unequipBtn.onClick.RemoveAllListeners();
         _useBtn.onClick.RemoveAllListeners();
@@ -142,11 +199,5 @@ public class ItemContextMenuUI : MonoBehaviour
         _root.gameObject.SetActive(true);
         Position(screenPos + _spawnOffset);
         _root.SetAsLastSibling();
-    }
-
-    private void OnValidate()
-    {
-        if (_root && _canvas && _root == _canvas.transform as RectTransform)
-            DebugManager.LogError("Root must be the menu panel, not the Canvas.", this);
     }
 }

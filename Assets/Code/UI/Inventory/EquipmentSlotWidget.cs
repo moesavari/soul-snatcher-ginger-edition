@@ -130,7 +130,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         var def = _equipment ? _equipment.GetEquipped(_slot) : null;
         if (!def) return;
-        _tooltip?.Show(def, e.position); // adapt to your tooltip API
+        _tooltip?.ShowFrom(UIPanelID.Equipment, this, def, e.position); // adapt to your tooltip API
     }
 
     public void OnPointerExit(PointerEventData e)

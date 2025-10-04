@@ -2,6 +2,7 @@ using Game.Core.Inventory;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 #if TMP_PRESENT || TEXTMESHPRO_PRESENT
 using TMPro;
 #endif
@@ -22,12 +23,14 @@ public class InventoryBagUI : MonoBehaviour
     [SerializeField] private Transform _gridRoot;
 
     [Header("DynamicList mode only")]
-    [SerializeField] private GameObject _buttonPrefab; // prefab asset, not a scene object
+    [SerializeField] private GameObject _buttonPrefab; 
 
-    private Inventory _inv;                                   // bound inventory
-    private readonly List<Button> _buttons = new();           // static grid buttons
-    private readonly List<Sprite> _baseSprites = new();       // cached frame sprites
+    private Inventory _inv;                                   
+    private readonly List<Button> _buttons = new();           
+    private readonly List<Sprite> _baseSprites = new();       
     private readonly List<BagCellView> _cells = new();
+
+    public static event Action<bool> OnVisibilityChanged;
 
     private void Awake()
     {
@@ -39,6 +42,7 @@ public class InventoryBagUI : MonoBehaviour
     {
         BindInventory();
         Redraw();
+        OnVisibilityChanged?.Invoke(true);
     }
 
     private void OnDisable()
@@ -46,6 +50,7 @@ public class InventoryBagUI : MonoBehaviour
         UnbindInventory();
         if (_mode == RenderMode.DynamicList)
             ClearDynamicChildren();
+        OnVisibilityChanged?.Invoke(false);
     }
 
     // ---------- binding ----------

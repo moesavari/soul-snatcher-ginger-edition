@@ -19,14 +19,69 @@ public class ItemTooltipUI : MonoBehaviour
 
     private bool _visible;
 
+    private UIPanelID _ownerPanel = UIPanelID.None;
+    private Component _ownerWidget;
+
     private void Awake()
     {
         if (!_canvas) _canvas = GetComponentInParent<Canvas>(true);
         Hide();
     }
 
+    private void OnEnable()
+    {
+        InventoryBagUI.OnVisibilityChanged += OnInventoryVisibility;
+        CharacterSheetUI.OnVisibilityChanged += OnEquipmentVisibility;
+    }
+
+    private void OnDisable()
+    {
+        InventoryBagUI.OnVisibilityChanged -= OnInventoryVisibility;
+        CharacterSheetUI.OnVisibilityChanged -= OnEquipmentVisibility;
+    }
+
+    private void OnValidate()
+    {
+        if (_root && _canvas && _root == _canvas.transform as RectTransform)
+            DebugManager.LogError("Root must be the tooltip panel, not the Canvas.", this);
+    }
+
+    private void Update()
+    {
+        if (_followMouse && _visible) Position(Input.mousePosition);
+    }
+
+
+    private void LateUpdate()
+    {
+        if (_visible && _ownerWidget & !_ownerWidget.gameObject.activeInHierarchy)
+            Hide();
+    }
+
+    private void OnInventoryVisibility(bool visible)
+    {
+        if (!visible && _visible && _ownerPanel == UIPanelID.Inventory)
+            Hide();
+    }
+
+    private void OnEquipmentVisibility(bool visible)
+    {
+        if (!visible && _visible && _ownerPanel == UIPanelID.Equipment)
+            Hide();
+    }
+
+    public void ShowFrom(UIPanelID ownerPanel, Component ownerWidget, ItemDef def, Vector2 screenPos)
+    {
+        _ownerPanel = ownerPanel;
+        _ownerWidget = ownerWidget;
+
+        Show(def, screenPos);
+    }
+
     public void Show(ItemDef def, Vector2 screenPos)
     {
+        if (_ownerPanel == UIPanelID.None) _ownerPanel = UIPanelID.Inventory;
+
         if (!def || !_root || !_canvas) { Hide(); return; }
         _title.text = def.displayName;
         _desc.text = BuildDesc(def);
@@ -46,12 +101,11 @@ public class ItemTooltipUI : MonoBehaviour
     public void Hide()
     {
         _visible = false;
-        if (_root) _root.gameObject.SetActive(false);
-    }
 
-    private void Update()
-    {
-        if (_followMouse && _visible) Position(Input.mousePosition);
+        _ownerPanel = UIPanelID.None;
+        _ownerWidget = null;
+
+        if (_root) _root.gameObject.SetActive(false);
     }
 
     private void Position(Vector2 screenPos)
@@ -75,11 +129,5 @@ public class ItemTooltipUI : MonoBehaviour
     private string BuildDesc(ItemDef def)
     {
         return def.description;
-    }
-
-    private void OnValidate()
-    {
-        if (_root && _canvas && _root == _canvas.transform as RectTransform)
-            DebugManager.LogError("Root must be the tooltip panel, not the Canvas.", this);
     }
 }

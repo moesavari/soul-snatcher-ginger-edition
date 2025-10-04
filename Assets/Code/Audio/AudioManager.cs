@@ -42,6 +42,8 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     private int _activeVoices;
     private readonly Dictionary<string, float> _cooldownUntilTime = new();
+    private readonly Dictionary<AudioCue, float> _cueUntil = new();       
+    private readonly Dictionary<AudioCue, List<AudioSource>> _cueSources = new();
 
     // PlayerPrefs keys (volumes)
     private const string _ppMaster = "vol_master";
@@ -147,6 +149,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     public AudioSource PlayCue(AudioCue cue, Vector3? worldPos = null, Transform attachTo = null)
     {
         if (cue == null) { DebugManager.LogWarning("PlayCue null.", this); return null; }
+        
+        if (IsCuePlaying(cue)) return null;
+
         var clip = PickClip(cue.clips);
         if (clip == null) { DebugManager.LogWarning("AudioCue has no clips.", this); return null; }
 
@@ -162,13 +167,17 @@ public class AudioManager : MonoSingleton<AudioManager>
         float vol = Random.Range(cue.volumeRange.x, cue.volumeRange.y);
         float pit = Random.Range(cue.pitchRange.x, cue.pitchRange.y);
 
+        AudioSource src;
         if (attachTo != null)
-            return PlayAttached(clip, cue.channel, attachTo, cue.spatialBlend, cue.minDistance, cue.maxDistance, vol, pit, cue.loop);
+            src = PlayAttached(clip, cue.channel, attachTo, cue.spatialBlend, cue.minDistance, cue.maxDistance, vol, pit, cue.loop);
+        else if (worldPos.HasValue)
+            src = PlayAtPoint(clip, cue.channel, worldPos.Value, cue.spatialBlend, cue.minDistance, cue.maxDistance, vol, pit, cue.loop);
+        else
+            src = Play(clip, cue.channel, vol, pit, cue.loop);
 
-        if (worldPos.HasValue)
-            return PlayAtPoint(clip, cue.channel, worldPos.Value, cue.spatialBlend, cue.minDistance, cue.maxDistance, vol, pit, cue.loop);
+        if (src != null) RegisterCuePlay(cue, src, clip, pit);
 
-        return Play(clip, cue.channel, vol, pit, cue.loop);
+        return src;
     }
 
     public void StopChannel(AudioChannel channel)
@@ -371,5 +380,86 @@ public class AudioManager : MonoSingleton<AudioManager>
             yield return null;
         }
         _mixer.SetFloat(param, targetDb);
+    }
+
+    public bool IsCuePlaying(AudioCue cue)
+    {
+        if (!cue) return false;
+        // If we have an active source, or the time-gate hasn't expired yet, treat as 'playing'
+        if (_cueUntil.TryGetValue(cue, out var until) && until > Time.unscaledTime) return true;
+
+        // Also check if any tracked source is still alive & playing
+        if (_cueSources.TryGetValue(cue, out var list))
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                var s = list[i];
+                if (!s) { list.RemoveAt(i); continue; }
+                if (s.isPlaying) return true;
+                // not playing anymore → cleanup
+                list.RemoveAt(i);
+                Destroy(s.gameObject);
+            }
+        }
+        return false;
+    }
+
+    private void RegisterCuePlay(AudioCue cue, AudioSource src, AudioClip clip, float pitch)
+    {
+        if (!cue || !clip || !src) return;
+
+        // Track active source
+        if (!_cueSources.TryGetValue(cue, out var list))
+        {
+            list = new List<AudioSource>(2);
+            _cueSources[cue] = list;
+        }
+        list.Add(src);
+
+        // Time-gate estimate (pitch aware). Loops are “locked” until stopped.
+        if (!cue.loop)
+        {
+            var dur = clip.length / Mathf.Max(0.01f, pitch);
+            _cueUntil[cue] = Time.unscaledTime + dur;
+            StartCoroutine(ClearCueWhenAudioStops(cue, src));
+        }
+        else
+        {
+            // looped → remain locked until explicitly stopped
+            _cueUntil[cue] = float.PositiveInfinity;
+            StartCoroutine(ClearCueWhenAudioStops(cue, src)); // clears when you stop the source
+        }
+    }
+
+    private IEnumerator ClearCueWhenAudioStops(AudioCue cue, AudioSource src)
+    {
+        // Wait while that source is alive & playing
+        while (src && src.isPlaying) yield return null;
+
+        // Remove this source from the cue list
+        if (_cueSources.TryGetValue(cue, out var list))
+        {
+            list.Remove(src);
+            if (list.Count == 0) _cueSources.Remove(cue);
+        }
+
+        // If no other sources for this cue remain, clear the lock
+        if (!_cueSources.ContainsKey(cue))
+            _cueUntil.Remove(cue);
+    }
+
+    public void StopCue(AudioCue cue)
+    {
+        if (!cue) return;
+        if (_cueSources.TryGetValue(cue, out var list))
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                var s = list[i];
+                if (s) Destroy(s.gameObject);
+            }
+            _cueSources.Remove(cue);
+        }
+        _cueUntil.Remove(cue);
     }
 }

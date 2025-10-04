@@ -4,20 +4,32 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class ZombieBite : MonoBehaviour
 {
+    [Header("Base values")]
     [SerializeField] private int _damagePerTick = 1;
     [SerializeField] private float _tickInterval = 0.6f;
     [SerializeField] private string _targetTag = "Player"; // who we can bite
 
+    [Header("Sunrise Enraged-Burning")]
+    [SerializeField] private float _enrageDamageMult = 1.25f;
+    [SerializeField] private float _enrageRateMult = 1.20f;
+
     private bool _isBiting;
     private Coroutine _biteRoutine;
 
+    private bool _isEnraged;
+    private int _baseDamagePerTick;
+    private float _baseTickInterval;
+
     public bool isBiting => _isBiting;
+    public bool isEnraged => _isEnraged;
 
     private void Reset()
     {
         // Ensure trigger
         var col = GetComponent<Collider2D>();
         if (col) col.isTrigger = true;
+
+        InitBaseValues();
     }
 
     private void OnTriggerEnter2D(Collider2D col)
@@ -46,6 +58,28 @@ public class ZombieBite : MonoBehaviour
         {
             StopCoroutine(_biteRoutine);
             _biteRoutine = null;
+        }
+    }
+
+    public void InitBaseValues()
+    {
+        _baseDamagePerTick = _damagePerTick;
+        _baseTickInterval = _tickInterval;
+    }
+
+    public void SetEnraged(bool value)
+    {
+        _isEnraged = value;
+
+        if (_isEnraged)
+        {
+            _damagePerTick = Mathf.Max(1, Mathf.RoundToInt(_baseDamagePerTick * _enrageDamageMult));
+            _tickInterval = Mathf.Max(0.05f, _baseTickInterval / _enrageRateMult);
+        }
+        else
+        {
+            _damagePerTick = _baseDamagePerTick;
+            _tickInterval = _baseTickInterval;
         }
     }
 

@@ -71,7 +71,6 @@ public class WaveManager : MonoBehaviour
     private void OnDayStarted()
     {
         StopNight();
-        ClearAllSpawns();
     }
 
     public void StartNight()
@@ -218,6 +217,9 @@ public class WaveManager : MonoBehaviour
 
     public void ClearAllSpawns()
     {
+        DebugManager.LogWarning("ClearAllSpawns is reserved for game over or resets. " +
+                                "Sunrise should NOT clear enemies.", this);
+
         StopAllCoroutines();
         var snapshot = new List<DeathRelay>(_tracked);
         foreach (var r in snapshot)

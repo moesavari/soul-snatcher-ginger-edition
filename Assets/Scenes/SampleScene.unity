@@ -921,7 +921,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _persistAcrossScenes: 1
   _playerSpawnPoint: {fileID: 294409942}
-  _playerPrefab: {fileID: 1581893386220379434, guid: ca1350276e2777c41a9825e880ba50ae, type: 3}
+  _playerPrefab: {fileID: 1581893386220379434, guid: ca1350276e2777c41a9825e880ba50ae,
+    type: 3}
   _restartDelaySeconds: 10
   _waveManager: {fileID: 1802099483}
 --- !u!114 &55914782
@@ -4709,12 +4710,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _persistAcrossScenes: 1
   _mixer: {fileID: 24100000, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
-  _musicGroup: {fileID: -2883141574003326328, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
-  _sfxGroup: {fileID: 1788209968822303608, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
-  _voiceGroup: {fileID: 2025087888395499169, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
-  _ambientGroup: {fileID: 3323398925204144267, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
-  _uiGroup: {fileID: 3923535151217965364, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
-  _footstepsGroup: {fileID: 1950921805973148106, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
+  _musicGroup: {fileID: -2883141574003326328, guid: 0dd70f07b6591a74589c9e33f710485c,
+    type: 2}
+  _sfxGroup: {fileID: 1788209968822303608, guid: 0dd70f07b6591a74589c9e33f710485c,
+    type: 2}
+  _voiceGroup: {fileID: 2025087888395499169, guid: 0dd70f07b6591a74589c9e33f710485c,
+    type: 2}
+  _ambientGroup: {fileID: 3323398925204144267, guid: 0dd70f07b6591a74589c9e33f710485c,
+    type: 2}
+  _uiGroup: {fileID: 3923535151217965364, guid: 0dd70f07b6591a74589c9e33f710485c,
+    type: 2}
+  _footstepsGroup: {fileID: 1950921805973148106, guid: 0dd70f07b6591a74589c9e33f710485c,
+    type: 2}
   _masterParam: MasterVol
   _musicParam: MusicVol
   _sfxParam: SFXVol
@@ -5724,9 +5731,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _persistAcrossScenes: 1
   _dayDurationSeconds: 15
-  _nightDurationSeconds: 90
+  _nightDurationSeconds: 5
   _nightSpawnDelay: 5
-  _nightStartAudioCue: {fileID: 11400000, guid: 343bcb4159bcbce468c094570e0f4e04, type: 2}
+  _nightStartAudioCue: {fileID: 11400000, guid: 343bcb4159bcbce468c094570e0f4e04,
+    type: 2}
   _startAtNight: 0
 --- !u!114 &849581884
 MonoBehaviour:

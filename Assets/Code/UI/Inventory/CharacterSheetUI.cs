@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using Game.Core.Inventory;
+using System;
 
 public sealed class CharacterSheetUI : MonoBehaviour
 {
@@ -24,9 +25,10 @@ public sealed class CharacterSheetUI : MonoBehaviour
     [SerializeField] private TMP_Text _attackText;
     [SerializeField] private TMP_Text _armorText;
 
-
     private bool _subscribed;
     public ItemDef selectedItem => _selectedItem;
+
+    public static event Action<bool> OnVisibilityChanged;
 
     private void Awake()
     {
@@ -50,6 +52,8 @@ public sealed class CharacterSheetUI : MonoBehaviour
         SubscribeModel();
         RefreshAll();
         _quickbar?.SetDockVisible(true);
+
+        OnVisibilityChanged?.Invoke(true);
     }
 
     private void OnDisable()
@@ -62,6 +66,8 @@ public sealed class CharacterSheetUI : MonoBehaviour
 
         UnsubscribeModel();
         _quickbar?.SetDockVisible(false);
+
+        OnVisibilityChanged?.Invoke(false);
     }
 
     private void HandlePlayerReady()

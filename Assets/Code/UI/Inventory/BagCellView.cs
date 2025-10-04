@@ -59,7 +59,7 @@ public class BagCellView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         TryResolve();
         if (item != null && _tooltip != null)
-            _tooltip.Show(item, e.position);
+            _tooltip.ShowFrom(UIPanelID.Inventory, this ,item, e.position);
     }
 
     public void OnPointerMove(PointerEventData e)
@@ -77,7 +77,7 @@ public class BagCellView : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         if (e.button == PointerEventData.InputButton.Left)
         {
             bool equipped = IsEquipped(item);
-            _menu?.Show(item, equipped, e.position);
+            _menu?.ShowFrom(UIPanelID.Inventory, this, item, equipped, e.position);
         }
         else if (e.button == PointerEventData.InputButton.Right)
         {
