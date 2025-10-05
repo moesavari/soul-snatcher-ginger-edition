@@ -122,7 +122,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         var c = _icon.color; c.a = 1f; _icon.color = c;
         _icon.sprite = sprite;
 
-        DebugManager.Log($"Slot {_slot} -> {label} | sprite={(sprite ? sprite.name : "null")}", this);
+        //DebugManager.Log($"Slot {_slot} -> {label} | sprite={(sprite ? sprite.name : "null")}", this);
     }
 
     // ---------- UI Events ----------

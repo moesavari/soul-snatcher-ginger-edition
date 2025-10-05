@@ -6,30 +6,43 @@ public class RangedWeapon : MonoBehaviour
     [SerializeField] private GameObject _arrowPrefab;
     [SerializeField] private float _speed = 10f;
     [SerializeField] private float _cooldown = 0.8f;
-    [SerializeField] private float _artForwardOffsetDeg = 0f; // -90 if art faces +Y
+    [SerializeField] private float _artForwardOffsetDeg = 0f;
 
     [SerializeField] private MouseFacing2D _facing;
     [SerializeField] private Animator _anim;
+
+    [SerializeField] private float _shootRootSeconds = 0.18f;
+    private float _shootRootTimer;
+    public bool isShooting => _shootRootTimer > 0f;
 
     private float _timer;
 
     private void OnEnable() { InputManager.RangedPressed += Shoot; }
     private void OnDisable() { InputManager.RangedPressed -= Shoot; }
 
-    private void Update() => _timer -= Time.deltaTime;
+    private void Update()
+    {
+        if (_timer > 0f) _timer -= Time.deltaTime;
+        if (_shootRootTimer > 0f) _shootRootTimer -= Time.deltaTime;
+    }
 
     public void Shoot()
     {
-        if (_timer > 0f || _arrowPrefab == null || _firePoint == null) return;
+        if (_timer > 0f) return;
         _timer = _cooldown;
 
-        Vector2 dir = _facing.AimDir;
+        // NEW: brief lock + root window
+        _shootRootTimer = _shootRootSeconds;
+        if (_facing != null) _facing.SetAimLocked(true);
+        if (_shootRootSeconds > 0f) Invoke(nameof(ReleaseAimLock), _shootRootSeconds);
+
+        Vector2 dir = (_firePoint.right).normalized;
         float ang = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + _artForwardOffsetDeg;
         var rot = Quaternion.Euler(0, 0, ang);
 
         var go = (SpawnManager.Instance != null)
             ? SpawnManager.Instance.Spawn(_arrowPrefab, _firePoint.position, rot)
-            : Object.Instantiate(_arrowPrefab, _firePoint.position, rot);
+            : Instantiate(_arrowPrefab, _firePoint.position, rot);
 
         if (go.TryGetComponent<Rigidbody2D>(out var rb))
         {
@@ -37,5 +50,10 @@ public class RangedWeapon : MonoBehaviour
         }
 
         //_anim?.SetTrigger("Bow");
+    }
+
+    private void ReleaseAimLock()
+    {
+        if (_facing != null) _facing.SetAimLocked(false);
     }
 }

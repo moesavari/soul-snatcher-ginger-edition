@@ -6,11 +6,11 @@ public class ReputationMeterController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Slider _slider;
-    [SerializeField] private Image _background;          // optional, not modified
-    [SerializeField] private Image _leftOverlay;         // NOT modified anymore
-    [SerializeField] private Image _rightOverlay;        // NOT modified anymore
-    [SerializeField] private RectTransform _handle;      // optional pulse
-    [SerializeField] private Image _centerIcon;          // swaps by tier
+    [SerializeField] private Image _background;          
+    [SerializeField] private Image _leftOverlay;         
+    [SerializeField] private Image _rightOverlay;        
+    [SerializeField] private RectTransform _handle;      
+    [SerializeField] private Image _centerIcon;          
 
     [Header("Tier Sprites (order matches tiers)")]
     [SerializeField] private Sprite[] _tierSprites;
@@ -30,12 +30,28 @@ public class ReputationMeterController : MonoBehaviour
     [SerializeField] private float _edgePulseStart = 0.9f;
     [SerializeField] private float _edgePulseScale = 0.08f;
 
+    [Header("Slider Disabled Colors (by tier)")]
+    [Tooltip("Inspector-friendly palette applied to Slider.colors.disabledColor based on the current tier.")]
+    [SerializeField]
+    private Color[] _tierDisabledColors = new Color[]
+    {
+        new Color(0.45f,0.10f,0.10f,1f), // Very Bad
+        new Color(0.55f,0.20f,0.15f,1f), // Bad
+        new Color(0.60f,0.45f,0.25f,1f), // Slight Bad
+        new Color(0.35f,0.35f,0.35f,1f), // Neutral
+        new Color(0.45f,0.65f,0.35f,1f), // Slight Good
+        new Color(0.35f,0.75f,0.50f,1f), // Good
+        new Color(0.30f,0.85f,0.60f,1f)  // Very Good
+    };
+
     public float value { get; private set; }
     public float normalized { get; private set; }
     public int tier { get; private set; } = -1;
 
     private float _targetValue;
     private int _lastTier = int.MinValue;
+    private int _lastAppliedDisabledColorTier = int.MinValue;
+    private bool _warnedColorCount;
 
     private void Reset()
     {
@@ -47,7 +63,7 @@ public class ReputationMeterController : MonoBehaviour
         if (_slider == null) _slider = GetComponent<Slider>();
         _slider.minValue = _min;
         _slider.maxValue = _max;
-        _slider.wholeNumbers = false;
+        _slider.wholeNumbers = false; 
         SetImmediate(0f);
     }
 
@@ -87,7 +103,6 @@ public class ReputationMeterController : MonoBehaviour
     {
         normalized = Mathf.InverseLerp(_min, _max, v);
 
-        // Handle pulse near extremes (visual only)
         if (_handle)
         {
             float edge = Mathf.InverseLerp(_edgePulseStart, 1f, Mathf.Abs(normalized - 0.5f) * 2f);
@@ -95,14 +110,17 @@ public class ReputationMeterController : MonoBehaviour
             _handle.localScale = new Vector3(scale, scale, 1f);
         }
 
-        // Center icon tier selection
+        // Tier logic
         int t = GetTierIndexWithHysteresis(v);
+
         if (t != _lastTier)
         {
             SwapTierIcon(t);
             _lastTier = t;
             tier = t;
         }
+
+        ApplyDisabledColorByTier(t);
     }
 
     private int GetTierIndexWithHysteresis(float v)
@@ -110,7 +128,6 @@ public class ReputationMeterController : MonoBehaviour
         int n = (_tierEdges != null) ? _tierEdges.Length : 0;
         if (n == 0) return 0;
 
-        // keep in current tier unless we move past widened bounds
         if (_lastTier >= 0 && _lastTier <= n)
         {
             float leftBound = _lastTier == 0 ? float.NegativeInfinity : _tierEdges[_lastTier - 1];
@@ -138,9 +155,44 @@ public class ReputationMeterController : MonoBehaviour
 
         if (sprite == null)
         {
-            Debug.LogWarning($"ReputationMeterController: Missing sprite for tier {t}. " +
-                             $"Provided sprites = {(_tierSprites == null ? 0 : _tierSprites.Length)}");
+            Debug.LogWarning($"Missing sprite for tier {t}. " +
+                             $"Provided sprites = {(_tierSprites == null ? 0 : _tierSprites.Length)}", this);
         }
+    }
+
+    private void ApplyDisabledColorByTier(int t)
+    {
+        if (_slider == null) return;
+        if (t == _lastAppliedDisabledColorTier) return;
+
+        // Clamp tier index to available colors
+        int colorIndex = t;
+        if (_tierDisabledColors == null || _tierDisabledColors.Length == 0)
+        {
+            if (!_warnedColorCount)
+            {
+                Debug.LogWarning("No _tierDisabledColors set; disabled color will not change.", this);
+                _warnedColorCount = true;
+            }
+            return;
+        }
+        if (colorIndex < 0) colorIndex = 0;
+        if (colorIndex >= _tierDisabledColors.Length)
+        {
+            if (!_warnedColorCount)
+            {
+                Debug.LogWarning($"Tier {t} exceeds color array length {_tierDisabledColors.Length}. " +
+                                 $"Clamping to last color.", this);
+                _warnedColorCount = true;
+            }
+            colorIndex = _tierDisabledColors.Length - 1;
+        }
+
+        var cb = _slider.colors;               
+        cb.disabledColor = _tierDisabledColors[colorIndex];
+        _slider.colors = cb;                   
+
+        _lastAppliedDisabledColorTier = t;
     }
 
     private void OnValidate()

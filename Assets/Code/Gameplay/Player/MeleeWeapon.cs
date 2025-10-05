@@ -44,6 +44,8 @@ public class MeleeWeapon : MonoBehaviour
 
     private Transform pivot => _pivot ? _pivot : transform;
 
+    public bool isAttacking => _attacking;
+
     private void Awake()
     {
         if (!_pivot) _pivot = transform;
@@ -67,8 +69,7 @@ public class MeleeWeapon : MonoBehaviour
         if (_attacking || _cooldownTimer > 0f) return;
         _cooldownTimer = _cooldown + _recoverTime;
 
-        if (_anim) _anim.SetTrigger("Melee"); 
-        if (_hideWhenIdle) SetVisual(true);
+        //if (_anim) _anim.SetTrigger("Melee"); 
 
         StartCoroutine(SwingRoutine());
     }
@@ -93,6 +94,11 @@ public class MeleeWeapon : MonoBehaviour
         _attacking = true;
         _alreadyHit.Clear();
 
+        if (_hideWhenIdle) SetVisual(true);
+
+        bool hadFacing = _facing != null;
+        if (hadFacing) _facing.SetAimLocked(true);
+
         float half = _swingAngle * 0.5f;
         float start = +half; 
         float end = -half; 
@@ -116,6 +122,8 @@ public class MeleeWeapon : MonoBehaviour
             if (i < _samples - 1)
                 yield return new WaitForSeconds(stepTime);
         }
+
+        if (hadFacing) _facing.SetAimLocked(false);
 
         _attacking = false;
         if (_hideWhenIdle) SetVisual(false);

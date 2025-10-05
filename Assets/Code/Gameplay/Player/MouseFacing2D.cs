@@ -9,6 +9,7 @@ public class MouseFacing2D : MonoBehaviour
     [SerializeField] private Transform _firePoint;     // child of AimRig, forward = +X
     [SerializeField] private SpriteRenderer _visual;   // Visual's SpriteRenderer (sibling)
     [SerializeField] private Transform _fallback;      // optional; defaults to transform
+    [SerializeField] private bool _isLocked;
 
     [Header("Debug")]
     [SerializeField] private bool _warnOnMirror = true;
@@ -17,6 +18,9 @@ public class MouseFacing2D : MonoBehaviour
     private Vector2 _aimDir = Vector2.right;
 
     public Vector2 AimDir => _aimDir;
+    public bool isAimLocked => _isLocked;
+
+    public void SetAimLocked(bool v) { _isLocked = v; }
 
     private void Awake()
     {
@@ -30,6 +34,8 @@ public class MouseFacing2D : MonoBehaviour
 
     private void Update()
     {
+        if(_isLocked) return;
+
         if (_cam == null) { _cam = Camera.main; if (_cam == null) return; }
 
         // 1) compute aim strictly from mouse

@@ -11,6 +11,8 @@ public class CombatHandler : MonoBehaviour
     [SerializeField] private GameObject _meleeHitBox;                 // child with trigger collider on Hitbox layer
     [SerializeField] private Transform _firePoint;                    // +X (right) is forward
     [SerializeField] private GameObject _arrowPrefab;
+    [SerializeField] private MeleeWeapon _melee;        
+    [SerializeField] private RangedWeapon _ranged;
 
     [Header("Melee")]
     [SerializeField] private float _meleeActiveSeconds = 0.15f;
@@ -48,7 +50,11 @@ public class CombatHandler : MonoBehaviour
 
     private void UpdateAiming()
     {
-        Vector2 aim = GetAimDirToMouse();
+        if ((_melee != null && _melee.isAttacking) ||
+           (_ranged != null && _ranged.isShooting))
+            return;
+
+            Vector2 aim = GetAimDirToMouse();
         if (aim.sqrMagnitude <= _aimEpsilon)
             aim = GetMoveOrVelocityDir();
 
@@ -85,11 +91,8 @@ public class CombatHandler : MonoBehaviour
     {
         if (TryGetComponent<Rigidbody2D>(out var rb))
         {
-#if UNITY_6000_0_OR_NEWER
             Vector2 v = rb.linearVelocity;
-#else
-            Vector2 v = rb.velocity;
-#endif
+
             if (v.sqrMagnitude > 0.0001f) return v.normalized;
         }
         return _lastAimDir;
@@ -130,12 +133,8 @@ public class CombatHandler : MonoBehaviour
 
         if (arrow.TryGetComponent<Rigidbody2D>(out var rb))
         {
-#if UNITY_6000_0_OR_NEWER
             rb.linearVelocity = aimDir * _arrowSpeed;
             rb.WakeUp();
-#else
-            rb.velocity = aimDir * _arrowSpeed;
-#endif
         }
         else
         {
