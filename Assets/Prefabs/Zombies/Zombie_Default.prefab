@@ -228,12 +228,12 @@ GameObject:
   m_Component:
   - component: {fileID: 7677935743033425271}
   - component: {fileID: 1235400316535108934}
-  - component: {fileID: -7665392243451622586}
   - component: {fileID: 9057078888510701665}
   - component: {fileID: 9072986726533419925}
   - component: {fileID: 1580046437775821396}
   - component: {fileID: 4511719453047901659}
   - component: {fileID: 691899523572743424}
+  - component: {fileID: -6759322080404960701}
   m_Layer: 6
   m_Name: Zombie_Default
   m_TagString: Enemy
@@ -270,13 +270,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cccda9860b9e004bb2bcc625db4efb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Zombie
-  _moveSpeed: 1.2
   _stopDistance: 0.8
   _accel: 12
   _primaryTarget: {fileID: 0}
   _visual: {fileID: 3438515797136419881}
   _biteRig: {fileID: 428933817328916565}
   _spawnCue: {fileID: 11400000, guid: c854f87c910698b45b2b665ccae2b36b, type: 2}
+  _stats: {fileID: -6759322080404960701}
   _zombieMask:
     serializedVersion: 2
     m_Bits: 0
@@ -284,24 +284,10 @@ MonoBehaviour:
   _separationStrength: 0.5
   _separationRadius: 0.25
   _zombieBite: {fileID: 7794031035916696353}
-  _burnDuration: 8
+  _burnDuration: 7
   _burnDPS: 0.5
   _enrageSpeedMult: 1.35
   _burnFxPrefab: {fileID: 0}
---- !u!114 &-7665392243451622586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5734115558638814024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a506963d8394b2e428f6e0e6ce3c46de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  _maxHealth: 100
-  _isPlayerHealth: 0
 --- !u!114 &9057078888510701665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,3 +408,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &-6759322080404960701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5734115558638814024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75df1aa7b9d2fc49b7ab26a48cbe501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCStats
+  _baseHealth: 50
+  _baseArmor: 5
+  _baseAttackPower: 8
+  _baseSpellPower: 0
+  _baseAttackSpeed: 1
+  _baseCritChance: 0.05
+  _baseMoveSpeed: 3.5

@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    [SerializeField] private int _damage = 1;
     [SerializeField] private float _lifeSeconds = 4f;
     [SerializeField] private string _ownerTag = "Player";
+
+    private Stats _attacker;
+    private int _power;
 
     private Rigidbody2D _rb;
 
@@ -17,11 +19,9 @@ public class Arrow : MonoBehaviour
     private void LateUpdate()
     {
         if (_rb != null) return;
-#if UNITY_6000_0_OR_NEWER
+
         Vector2 v = _rb.linearVelocity;
-#else
-        Vector2 v = _rb.velocity;
-#endif
+
         if (v.sqrMagnitude > 0.0001f)
             transform.right = v.normalized;
     }
@@ -30,9 +30,21 @@ public class Arrow : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(_ownerTag) && collision.CompareTag(_ownerTag)) return;
 
-        if (collision.TryGetComponent<Health>(out var hp))
-            hp.TakeDamage(_damage, transform.position, gameObject);
-        
+        var target = collision.GetComponentInParent<Stats>();
+        if (target != null && target != _attacker)
+        {
+            int damage = DamageCalculator.CalculateDamage(
+                _attacker.Level, _power, _attacker.AttackPower,
+                target.Armor, _attacker.CritChance
+            );
+            target.TakeDamage(damage);
+        }
         Destroy(gameObject);
+    }
+
+    public void SetAttacker(Stats attacker, int power)
+    {
+        _attacker = attacker;
+        _power = power;
     }
 }

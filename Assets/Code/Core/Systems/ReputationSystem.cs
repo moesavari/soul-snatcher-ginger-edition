@@ -3,20 +3,12 @@ using UnityEngine;
 
 namespace Game.Systems
 {
-    public class ReputationSystem : MonoBehaviour
+    public class ReputationSystem : MonoSingleton<ReputationSystem>
     {
-        public static ReputationSystem Instance { get; private set; }
-
         [SerializeField] private int _reputation;
         public int reputation => _reputation;
 
         public event Action<int> OnReputationChanged;
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-            Instance = this;
-        }
 
         public void SetReputation(int value)
         {

@@ -31,7 +31,8 @@ public class HUDRoot : MonoBehaviour
     [SerializeField] private TMP_Text _repValueText;
     [SerializeField] private TMP_Text _extraText;
 
-    private Health _playerHealth;
+    private PlayerController _playerHealth;
+    private CharacterStats _stats;
     private GameObject _player;
     private ISoulReadOnly _soulSource;
     private IHairStageReadOnly _hairSource;
@@ -84,13 +85,17 @@ public class HUDRoot : MonoBehaviour
         UnbindPlayer();
 
         _player = go;
-        _playerHealth = _player != null ? _player.GetComponent<Health>() : null;
+        _playerHealth = _player != null ? _player.GetComponent<PlayerController>() : null;
+        _stats = _player != null ? _player.GetComponent<CharacterStats>() : null;
 
         if (_playerHealth == null)
         {
             DebugManager.LogWarning("Player has no Health component.", this);
             return;
         }
+
+        if (_stats != null)
+            _stats.OnStatsChanged += OnStatsChanged;
 
         _playerHealth.OnDamaged += OnPlayerDamaged;
         _playerHealth.OnDeath += OnPlayerDeath;
@@ -122,8 +127,12 @@ public class HUDRoot : MonoBehaviour
             _playerHealth.OnDeath -= OnPlayerDeath;
         }
 
+        if (_stats != null)
+            _stats.OnStatsChanged -= OnStatsChanged;
+
         _playerHealth = null;
         _player = null;
+        _stats = null;
     }
 
     private void OnDayStarted()
@@ -136,12 +145,12 @@ public class HUDRoot : MonoBehaviour
         _dayNightText?.SetText("NIGHT");
     }
 
-    private void OnPlayerDamaged(Health h, int amount)
+    private void OnPlayerDamaged(int amount)
     {
         UpdateHealthBar();
     }
 
-    private void OnPlayerDeath(Health h)
+    private void OnPlayerDeath()
     {
         UpdateHealthBar();
     }
@@ -156,12 +165,19 @@ public class HUDRoot : MonoBehaviour
         ApplyHairStage(stage);
     }
 
+    private void OnStatsChanged(CharacterStats stats)
+    {
+        UpdateHealthBar();
+    }
+
     private void UpdateHealthBar()
     {
-        if (_playerHealth == null || _healthFill == null) return;
-        float pct = (_playerHealth.max <= 0) ? 0f : Mathf.Clamp01((float)_playerHealth.current / _playerHealth.max);
+        if (_playerHealth == null || _healthFill == null || _stats == null) return;
+
+        float pct = (_stats.Health <= 0) ? 0f : Mathf.Clamp01((float)_playerHealth.currentHealth / _stats.Health);
         _healthFill.fillAmount = pct;
     }
+
 
     private void UpdateSouls(int souls)
     {

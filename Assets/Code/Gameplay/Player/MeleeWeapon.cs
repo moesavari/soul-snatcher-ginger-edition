@@ -20,7 +20,11 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private int _damage = 2;
     [SerializeField] private float _knockback = 6f;        
     [SerializeField] private float _stunTime = 0.08f;      
-    [SerializeField] private string _ownerTag = "Player";  
+    [SerializeField] private string _ownerTag = "Player";
+
+    [Header("Stat References")]
+    [SerializeField] private Stats _owner; // Set on equip or spawn
+    [SerializeField] private int _power = 10;
 
     [Header("Optional")]
     [SerializeField] private MouseFacing2D _facing;        
@@ -29,6 +33,8 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private Transform _weaponVisual;
     [SerializeField] private bool _hideWhenIdle = true;
     [SerializeField] private Transform _pivot;
+
+    private CharacterStats _stats;
 
     private float _cooldownTimer;
     private bool _attacking;
@@ -48,6 +54,8 @@ public class MeleeWeapon : MonoBehaviour
 
     private void Awake()
     {
+        _stats = GetComponent<CharacterStats>();
+
         if (!_pivot) _pivot = transform;
         if (!_weaponVisual) _weaponVisual = transform;
 
@@ -62,6 +70,11 @@ public class MeleeWeapon : MonoBehaviour
     private void Update()
     {
         if (_cooldownTimer > 0f) _cooldownTimer -= Time.deltaTime;
+    }
+
+    public void SetOwner(Stats owner)
+    {
+        _owner = owner;
     }
 
     public void Attack()
@@ -158,12 +171,17 @@ public class MeleeWeapon : MonoBehaviour
 
             _alreadyHit.Add(c);
 
-            // Damage (your Health API)
-            var health = c.GetComponentInParent<Health>();
-            if (health)
+            var target = c.GetComponentInParent<Stats>();
+            if (target)
             {
-                Vector3 hitPoint = c.ClosestPoint(pivot.position);
-                health.TakeDamage(_damage, hitPoint, gameObject);
+                int damage = DamageCalculator.CalculateDamage(
+                    attackerLevel: _owner.Level,
+                    power: _power,
+                    attackStat: _owner.AttackPower,
+                    defenderArmor: target.Armor,
+                    critChance: _owner.CritChance
+                );
+                target.TakeDamage(damage);
             }
 
             // Knockback

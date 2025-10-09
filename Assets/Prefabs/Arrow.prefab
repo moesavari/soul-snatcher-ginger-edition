@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95bd1035f0a1dd94eb372a1fbca6f77f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 1
   _lifeSeconds: 4
   _ownerTag: Player
+  _rb: {fileID: 2890953751059670840}
 --- !u!212 &4845380298260975008
 SpriteRenderer:
   m_ObjectHideFlags: 0

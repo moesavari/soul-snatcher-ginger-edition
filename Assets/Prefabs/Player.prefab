@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2102012598609098767}
   - component: {fileID: 5887548895762428287}
-  - component: {fileID: 6608051794333399117}
   - component: {fileID: 6283793238328229747}
   - component: {fileID: 250172472530318538}
   - component: {fileID: 1075061953608338402}
@@ -59,25 +58,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cccd80b514cc6eb47a2c9a1585d6c24b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 4
+  _stats: {fileID: 6431218430879947762}
+  _baseMoveSpeed: 4
   _animator: {fileID: 8414242338154478687}
-  _rb: {fileID: 171722781039522034}
+  _rigidbody: {fileID: 171722781039522034}
+  _knockback: {fileID: 3510817545347683597}
   _melee: {fileID: 1149582906338251518}
   _ranged: {fileID: 4039748005341639780}
---- !u!114 &6608051794333399117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1581893386220379434}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a506963d8394b2e428f6e0e6ce3c46de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  _maxHealth: 10
-  _isPlayerHealth: 1
 --- !u!114 &6283793238328229747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,9 +256,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stats.CharacterStats
   _equipment: {fileID: 1548919638647246636}
-  _reputationSystem: {fileID: 0}
-  _attack: 0
-  _armor: 0
+  _pc: {fileID: 5887548895762428287}
+  _baseHealth: 100
+  _baseArmor: 0
+  _baseAttackPower: 10
+  _baseSpellPower: 0
+  _baseAttackSpeed: 1
+  _baseCritChance: 0
+  _baseMoveSpeed: 4
+  _baseCooldownReduction: 0
 --- !u!114 &5643870500965291013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,7 +279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFacade
   _controller: {fileID: 5887548895762428287}
   _combat: {fileID: 0}
-  _health: {fileID: 6608051794333399117}
+  _health: {fileID: 0}
   _inventory: {fileID: 1418639616888690901}
   _equipment: {fileID: 1548919638647246636}
   _stats: {fileID: 6431218430879947762}
@@ -316,11 +309,13 @@ MonoBehaviour:
   _samples: 5
   _hitMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   _damage: 2
   _knockback: 6
   _stunTime: 0.08
   _ownerTag: Player
+  _owner: {fileID: 6431218430879947762}
+  _power: 10
   _facing: {fileID: 6283793238328229747}
   _anim: {fileID: 8414242338154478687}
   _weaponVisual: {fileID: 6660562981451816059}
@@ -394,6 +389,8 @@ MonoBehaviour:
   _facing: {fileID: 6283793238328229747}
   _anim: {fileID: 8414242338154478687}
   _shootRootSeconds: 0.18
+  _owner: {fileID: 6431218430879947762}
+  _power: 8
 --- !u!1 &4307409999456894553
 GameObject:
   m_ObjectHideFlags: 0

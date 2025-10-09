@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Game.Systems;
+using UnityEngine;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
@@ -65,6 +66,8 @@ public class ReputationMeterController : MonoBehaviour
         _slider.maxValue = _max;
         _slider.wholeNumbers = false; 
         SetImmediate(0f);
+
+        ReputationSystem.Instance.OnReputationChanged += HandleReputationChanged;
     }
 
     private void Update()
@@ -75,6 +78,14 @@ public class ReputationMeterController : MonoBehaviour
             if (_snapWholeNumbers) value = Mathf.Round(value);
             _slider.SetValueWithoutNotify(value);
             ApplyVisuals(value);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (ReputationSystem.Instance != null)
+        {
+            ReputationSystem.Instance.OnReputationChanged -= HandleReputationChanged;
         }
     }
 
@@ -99,6 +110,12 @@ public class ReputationMeterController : MonoBehaviour
     }
 
     // --- Internals -----------------------------------------------------------
+
+    private void HandleReputationChanged(int newRep)
+    {
+        AnimateTo(newRep);
+    }
+
     private void ApplyVisuals(float v)
     {
         normalized = Mathf.InverseLerp(_min, _max, v);

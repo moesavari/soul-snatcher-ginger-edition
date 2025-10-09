@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
-using Game.Core.Inventory;
 using System;
+using Game.Core.Inventory;
 
 public sealed class CharacterSheetUI : MonoBehaviour
 {
@@ -9,8 +9,6 @@ public sealed class CharacterSheetUI : MonoBehaviour
     [SerializeField] private Equipment _equipment;
     [SerializeField] private CharacterStats _stats;
     [SerializeField] private Inventory _inventory;
-    
-    [Space(8)]
     [SerializeField] private ItemDef _selectedItem;
     [SerializeField] private ItemTooltipUI _tooltip;
     [SerializeField] private ItemContextMenuUI _context;
@@ -21,13 +19,18 @@ public sealed class CharacterSheetUI : MonoBehaviour
     [Header("Quickbar")]
     [SerializeField] private QuickbarUI _quickbar;
 
-    [Header("Stats Text")]
-    [SerializeField] private TMP_Text _attackText;
-    [SerializeField] private TMP_Text _armorText;
+    [Header("Stats Value Text")]
+    [SerializeField] private TMP_Text _healthValueText;
+    [SerializeField] private TMP_Text _armorValueText;
+    [SerializeField] private TMP_Text _attackPowerValueText;
+    [SerializeField] private TMP_Text _spellPowerValueText;
+    [SerializeField] private TMP_Text _attackSpeedValueText;
+    [SerializeField] private TMP_Text _critChanceValueText;
+    [SerializeField] private TMP_Text _moveSpeedValueText;
+    [SerializeField] private TMP_Text _cooldownReductionValueText;
 
-    private bool _subscribed;
     public ItemDef selectedItem => _selectedItem;
-
+    private bool _subscribed;
     public static event Action<bool> OnVisibilityChanged;
 
     private void Awake()
@@ -43,59 +46,25 @@ public sealed class CharacterSheetUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (PlayerContext.Instance != null)
-        {
-            PlayerContext.Instance.OnPlayerReady += HandlePlayerReady;
-            PlayerContext.Instance.OnPlayerCleared += HandlePlayerCleared;
-        }
-
         SubscribeModel();
         RefreshAll();
         _quickbar?.SetDockVisible(true);
-
         OnVisibilityChanged?.Invoke(true);
     }
-
     private void OnDisable()
     {
-        if (PlayerContext.Instance != null)
-        {
-            PlayerContext.Instance.OnPlayerReady -= HandlePlayerReady;
-            PlayerContext.Instance.OnPlayerCleared -= HandlePlayerCleared;
-        }
-
         UnsubscribeModel();
         _quickbar?.SetDockVisible(false);
-
         OnVisibilityChanged?.Invoke(false);
-    }
-
-    private void HandlePlayerReady()
-    {
-        TryBindFromContext();  
-        BindSlots();           
-        SubscribeModel();      
-        RefreshAll();
-    }
-
-    private void HandlePlayerCleared()
-    {
-        UnsubscribeModel();
-        _equipment = null; _inventory = null; _stats = null;
-        BindSlots();           
-        RefreshAll();
     }
 
     private void TryBindFromContext()
     {
         var f = PlayerContext.Instance ? PlayerContext.Instance.facade : null;
-
         if (!f) return;
-
-        _equipment  = f.equipment;
-        _inventory  = f.inventory;
-        _stats      = f.stats;
-
+        _equipment = f.equipment;
+        _inventory = f.inventory;
+        _stats = f.stats;
         BindSlots();
         SubscribeModel();
         RefreshAll();
@@ -105,7 +74,6 @@ public sealed class CharacterSheetUI : MonoBehaviour
     {
         if (_slots == null || _slots.Length == 0)
             _slots = GetComponentsInChildren<EquipmentSlotWidget>(true);
-
         for (int i = 0; i < _slots.Length; i++)
             _slots[i]?.Bind(_equipment, this, _inventory, _tooltip, _context);
     }
@@ -113,21 +81,15 @@ public sealed class CharacterSheetUI : MonoBehaviour
     private void SubscribeModel()
     {
         if (_subscribed || !_equipment) return;
-
-        // prefer method-group handlers so unsubscribe is correct
         _equipment.OnEquipmentChanged += OnEquipmentChanged;
         _equipment.OnSlotChanged += OnSlotChanged;
         _equipment.OnQuickSet += OnQuickSet;
-
         if (_stats) _stats.OnStatsChanged += OnStatsChanged;
-
         _subscribed = true;
     }
-
     private void UnsubscribeModel()
     {
         if (!_subscribed) return;
-
         if (_equipment)
         {
             _equipment.OnEquipmentChanged -= OnEquipmentChanged;
@@ -135,7 +97,6 @@ public sealed class CharacterSheetUI : MonoBehaviour
             _equipment.OnQuickSet -= OnQuickSet;
         }
         if (_stats) _stats.OnStatsChanged -= OnStatsChanged;
-
         _subscribed = false;
     }
 
@@ -143,46 +104,43 @@ public sealed class CharacterSheetUI : MonoBehaviour
     private void OnSlotChanged(EquipmentSlotType _, ItemDef __, ItemDef ___) => RefreshAll();
     private void OnQuickSet(int __, ItemDef ___) => _quickbar?.RefreshIcons();
     private void OnStatsChanged(CharacterStats __) => RefreshStats();
-
     public bool TryEquip(ItemDef def)
     {
         if (!_equipment || !def) return false;
         var ok = _equipment.Equip(def);
         if (ok)
-        {
-            _inventory?.TryRemove(def, 1); // if model doesn't consume, do it here
-            RefreshAll();
-        }
+            _inventory?.TryRemove(def, 1);
+        RefreshAll();
         return ok;
     }
-
     public void TryUnequip(EquipmentSlotType slot)
     {
         if (!_equipment) return;
         var def = _equipment.GetEquipped(slot);
         _equipment.Unequip(slot);
-        if (def) _inventory?.TryAdd(def, 1, out int leftover); // match your Inventory API
+        if (def) _inventory?.TryAdd(def, 1, out int leftover);
         RefreshAll();
     }
-
     public void RefreshAll()
     {
         if (_slots != null)
             for (int i = 0; i < _slots.Length; i++)
                 _slots[i]?.Refresh();
-
         _quickbar?.RefreshIcons();
         RefreshStats();
     }
 
     private void RefreshStats()
     {
-        if (_attackText) _attackText.text = _stats ? _stats.attack.ToString() : "0";
-        if (_armorText) _armorText.text = _stats ? _stats.armor.ToString() : "0";
+        if (_healthValueText) _healthValueText.text = _stats ? _stats.Health.ToString() : "00";
+        if (_armorValueText) _armorValueText.text = _stats ? _stats.Armor.ToString() : "00";
+        if (_attackPowerValueText) _attackPowerValueText.text = _stats ? _stats.AttackPower.ToString() : "00";
+        if (_spellPowerValueText) _spellPowerValueText.text = _stats ? _stats.SpellPower.ToString() : "00";
+        if (_attackSpeedValueText) _attackSpeedValueText.text = _stats ? _stats.AttackSpeed.ToString() : "00";
+        if (_critChanceValueText) _critChanceValueText.text = _stats ? _stats.CritChance.ToString("F0") : "00";
+        if (_moveSpeedValueText) _moveSpeedValueText.text = _stats ? _stats.MoveSpeed.ToString() : "00";
+        if (_cooldownReductionValueText) _cooldownReductionValueText.text = _stats ? _stats.CooldownReduction.ToString() : "00";
     }
 
-    public void SetSelectedItem(ItemDef def)
-    {
-        _selectedItem = def;
-    }
+    public void SetSelectedItem(ItemDef def) => _selectedItem = def;
 }

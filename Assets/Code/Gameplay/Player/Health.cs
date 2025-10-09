@@ -3,53 +3,57 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] private int _maxHealth = 3;
-    [SerializeField] private bool _isPlayerHealth;
-    
-    private int _current;
-    public int current => _current;
-    public int max => _maxHealth;
-    public bool isDead => _current <= 0;
+    [SerializeField] private int _baseMaxHealth = 100;
+    [SerializeField] private int _currentHealth;
+    [SerializeField] private int _gearHealth = 0; // total health from equipment
 
-    public event Action<Health> OnDeath;
+    public int max => _baseMaxHealth + _gearHealth;
+    public int current => _currentHealth;
+    public bool isDead => _currentHealth <= 0;
+
     public event Action<Health, int> OnDamaged;
+    public event Action<Health> OnDeath;
 
-    private GameObject damageSource;
+    private GameObject _damageSource;
+
+    private int _totalHealth;
 
     private void Awake()
     {
-        _current = Mathf.Max(1, _maxHealth);
+        _currentHealth = Mathf.Max(1, max);
     }
 
-    public void TakeDamage(int amount, Vector3 hitPoint, GameObject source)
+    public virtual void TakeDamage(int amount, Vector3 hitPoint, GameObject source)
     {
         if (isDead) return;
 
-        damageSource =  source;
+        _damageSource = source;
+        int prev = _currentHealth;
 
-        _current = Mathf.Max(0, _current - Mathf.Max(0, amount));
+        _currentHealth = Mathf.Max(0, _currentHealth - Mathf.Max(0, amount));
         OnDamaged?.Invoke(this, amount);
 
-        if (_current == 0) Die();
+        if (_currentHealth == 0) Die();
+    }
+
+    public virtual void TakeStatDamage(Stats attackerStats, Weapon weapon, Vector3 hitPoint, GameObject source, bool isSpell = false)
+    {
+        //int dmg = DamageCalculator.CalculateDamage(attackerStats, weapon, GetComponent<Stats>(), isSpell);
+        //TakeDamage(dmg, hitPoint, source);
     }
 
     public void Heal(int amount)
     {
-        if(isDead) return;
-
-        _current = Mathf.Clamp(_current + Mathf.Max(0, amount), 0, _maxHealth);
+        if (isDead) return;
+        _currentHealth = Mathf.Clamp(_currentHealth + Mathf.Max(0, amount), 0, max);
     }
 
-    public void Die()
+    public virtual void Die()
     {
         OnDeath?.Invoke(this);
-        if (_isPlayerHealth)
-        {
-            GameEvents.RaisePlayerDied();
-            GameEvents.RaiseRoundLost();
-        }
 
-        if (CompareTag("Villager") && damageSource.CompareTag("Player"))
+        // Example: If a villager and player killed, call soul/reputation
+        if (CompareTag("Villager") && _damageSource && _damageSource.CompareTag("Player"))
             GetComponent<Villager>().OnSoulAbsorb();
 
         Destroy(gameObject);

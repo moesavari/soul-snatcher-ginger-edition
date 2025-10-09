@@ -49,11 +49,7 @@ public class MeleeHitbox : MonoBehaviour
         if (_knockback > 0f && root.TryGetComponent<Rigidbody2D>(out var rb))
         {
             Vector2 dir = (root.position - transform.position).normalized;
-#if UNITY_6000_0_OR_NEWER
             rb.AddForce(dir * _knockback, ForceMode2D.Impulse);
-#else
-            rb.AddForce(dir * _knockback, ForceMode2D.Impulse);
-#endif
         }
     }
 }

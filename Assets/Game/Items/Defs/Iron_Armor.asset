@@ -14,10 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDef
   displayName: Iron Armor
   icon: {fileID: 21300000, guid: 567fdd2e557fefc478f8aaa7ae56fb11, type: 3}
+  description: 
   stackable: 0
   maxStack: 1
   kind: 1
   equipSlot: 3
   twoHanded: 0
-  baseAttack: 0
-  baseArmor: 4
+  _quality: 2
+  _stats:
+  - statType: 0
+    value: 14
+  - statType: 1
+    value: 25
+  - statType: 5
+    value: 5
+  _hasEnchantment: 0
+  _enchantmentDescription: 

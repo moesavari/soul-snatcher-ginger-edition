@@ -102,7 +102,6 @@ public static class CreateItemDefsFromSprites
         {
             def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.MainHand;
-            def.baseAttack = 4;
             return;
         }
         if (HasAny(s, "axe", "greataxe", "battleaxe"))
@@ -110,14 +109,12 @@ public static class CreateItemDefsFromSprites
             def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.MainHand;
             def.twoHanded = HasAny(s, "great", "twohand", "2h");
-            def.baseAttack = def.twoHanded ? 7 : 5;
             return;
         }
         if (HasAny(s, "mace", "hammer", "club"))
         {
             def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.MainHand;
-            def.baseAttack = 5;
             return;
         }
         if (HasAny(s, "bow", "longbow"))
@@ -125,7 +122,6 @@ public static class CreateItemDefsFromSprites
             def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.MainHand;
             def.twoHanded = true;
-            def.baseAttack = 6;
             return;
         }
         if (HasAny(s, "crossbow"))
@@ -133,7 +129,6 @@ public static class CreateItemDefsFromSprites
             def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.MainHand;
             def.twoHanded = true;
-            def.baseAttack = 7;
             return;
         }
         if (HasAny(s, "staff", "scepter"))
@@ -141,14 +136,12 @@ public static class CreateItemDefsFromSprites
             def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.MainHand;
             def.twoHanded = HasAny(s, "great", "twohand", "2h");
-            def.baseAttack = def.twoHanded ? 6 : 4;
             return;
         }
         if (HasAny(s, "shield", "buckler", "kite"))
         {
-            def.kind = ItemKind.Weapon; // or Accessory if shields are special
+            def.kind = ItemKind.Weapon;
             def.equipSlot = EquipmentSlotType.Offhand;
-            def.baseArmor = 3;
             return;
         }
 
@@ -157,28 +150,24 @@ public static class CreateItemDefsFromSprites
         {
             def.kind = ItemKind.Armor;
             def.equipSlot = EquipmentSlotType.Head;
-            def.baseArmor = 2;
             return;
         }
         if (HasAny(s, "armor", "chest", "breastplate", "tunic", "robe"))
         {
             def.kind = ItemKind.Armor;
             def.equipSlot = EquipmentSlotType.Chest;
-            def.baseArmor = 4;
             return;
         }
         if (HasAny(s, "leg", "pants", "greaves"))
         {
             def.kind = ItemKind.Armor;
             def.equipSlot = EquipmentSlotType.Legs;
-            def.baseArmor = 3;
             return;
         }
         if (HasAny(s, "boot", "shoe", "sandal"))
         {
             def.kind = ItemKind.Armor;
             def.equipSlot = EquipmentSlotType.Boots;
-            def.baseArmor = 2;
             return;
         }
 

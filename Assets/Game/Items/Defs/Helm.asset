@@ -14,10 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDef
   displayName: Helm
   icon: {fileID: 21300000, guid: 6509adb73ba1de04d898264b898cdf2e, type: 3}
+  description: 
   stackable: 0
   maxStack: 1
   kind: 1
   equipSlot: 2
   twoHanded: 0
-  baseAttack: 0
-  baseArmor: 2
+  _quality: 1
+  _stats:
+  - statType: 0
+    value: 15
+  - statType: 1
+    value: 10
+  _hasEnchantment: 0
+  _enchantmentDescription: 

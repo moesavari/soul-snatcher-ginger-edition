@@ -1,12 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Health))]
 
 public class Zombie : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float _moveSpeed = 1.2f;
     [SerializeField] private float _stopDistance = 0.5f;    // prevents body overlap with player
     [SerializeField] private float _accel = 12f;            // smoothing toward desired velocity
 
@@ -21,6 +19,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private AudioCue _spawnCue;
 
     [Header("AI Settings")]
+    [SerializeField] private NPCStats _stats;
     [SerializeField] private LayerMask _zombieMask;
     [SerializeField] private bool _includeTriggers = false;
     [SerializeField] private float _separationStrength = 0.5f;
@@ -34,7 +33,6 @@ public class Zombie : MonoBehaviour
     [SerializeField] private GameObject _burnFxPrefab;
 
     private Rigidbody2D _rb;
-    private Health _health;
     private ContactFilter2D _filter;
 
     private Vector2 _vel;
@@ -44,17 +42,24 @@ public class Zombie : MonoBehaviour
     private bool _isEnragedBurning;
     private bool _morgensternToten;
     private float _burnTimer;
-    private float _baseMoveSpeed;
+
+    private int _currentHealth;
+    public int currentHealth => _currentHealth;
+
+    public System.Action OnDeath;
+    public System.Action OnDamaged;
 
     private void Awake()
     {
         _rb = this.Require<Rigidbody2D>();
-        _health = this.Require<Health>();
+        _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        _baseMoveSpeed = _moveSpeed;
+        _currentHealth = _stats != null ? _stats.Health : 1;
 
-        if(_zombieBite == null) _zombieBite = GetComponentInChildren<ZombieBite>();
-        if(_zombieBite != null) _zombieBite.InitBaseValues();
+        if (_zombieBite == null) _zombieBite = GetComponentInChildren<ZombieBite>();
+        if (_zombieBite != null) _zombieBite.InitBaseValues();
+
+        _zombieBite.SetOwner(_stats);
     }
 
     private void OnEnable()
@@ -68,9 +73,9 @@ public class Zombie : MonoBehaviour
         };
 
         _deathNotified = false;
-        _health.OnDeath += OnDied;
+        //_health.OnDeath += OnDied;
 
-        if(_spawnCue != null) AudioManager.Instance.PlayCue(_spawnCue, worldPos: transform.position);
+        if (_spawnCue != null) AudioManager.Instance.PlayCue(_spawnCue, worldPos: transform.position);
 
         if (!TimeCycleManager.Instance.isNight)
         {
@@ -82,14 +87,14 @@ public class Zombie : MonoBehaviour
 
     private void OnDisable()
     {
-        _health.OnDeath -= OnDied;
+        //_health.OnDeath -= OnDied;
         GameEvents.DayStarted -= OnDayStarted;
     }
 
-    private void Update()
-    {
-        if (_isEnragedBurning) DoBurnTick();
-    }
+    //private void Update()
+    //{
+    //    if (_isEnragedBurning) DoBurnTick();
+    //}
 
     private void FixedUpdate()
     {
@@ -114,16 +119,16 @@ public class Zombie : MonoBehaviour
         if (_biteRig != null && toTarget.sqrMagnitude > 0.0001f)
             _biteRig.right = toTarget.normalized;
 
-        Vector2 desired = (dist > _stopDistance) ? toTarget.normalized * _moveSpeed : Vector2.zero;
+        Vector2 desired = (dist > _stopDistance) ? toTarget.normalized * _stats.MoveSpeed : Vector2.zero;
 
         // Pause movement if biting
-        if (_zombieBite != null && _zombieBite.isBiting) desired = Vector2.zero;
+        if (_zombieBite != null && _zombieBite.IsBiting) desired = Vector2.zero;
 
         // Soft separation (GC-free)
         ContactFilter2D filter = _filter; // struct copy; _filter set up once
 
         int count = Physics2D.OverlapCircle(pos, _separationRadius, filter, _overlapBuffer);
-        
+
         for (int i = 0; i < count; i++)
         {
             var hit = _overlapBuffer[i];
@@ -141,9 +146,9 @@ public class Zombie : MonoBehaviour
             }
         }
 
-        // Clamp final desired speed so separation can’t exceed _moveSpeed wildly
-        if (desired.sqrMagnitude > (_moveSpeed * _moveSpeed))
-            desired = desired.normalized * _moveSpeed;
+        // Clamp final desired speed so separation canï¿½t exceed _moveSpeed wildly
+        if (desired.sqrMagnitude > (_stats.MoveSpeed * _stats.MoveSpeed))
+            desired = desired.normalized * _stats.MoveSpeed;
 
         // Smooth toward desired velocity
         _vel = Vector2.MoveTowards(_vel, desired, _accel * Time.fixedDeltaTime);
@@ -159,29 +164,32 @@ public class Zombie : MonoBehaviour
         return gmPlayer != null ? gmPlayer.transform : null;
     }
 
-    private void OnDied(Health _)
+    private void OnDied()
     {
         if (_deathNotified) return;
 
-        if(_zombieBite != null) _zombieBite.SetEnraged(false);
-        _moveSpeed = _baseMoveSpeed;
+        if (_zombieBite != null) _zombieBite.SetEnraged(false);
         _isEnragedBurning = false;
 
         if (_morgensternToten) DebugManager.Log("Skipping Loot", this);
 
         _deathNotified = true;
+        OnDeath?.Invoke();
+        Destroy(gameObject);
     }
 
-    public void SetMoveSpeed(float speed)
+    public void TakeDamage(int amount)
     {
-        _moveSpeed = Mathf.Max(0f, speed);
+        OnDamaged?.Invoke();
+        _currentHealth = Mathf.Max(0, _currentHealth - Mathf.Max(0, amount));
+        if (_currentHealth <= 0) OnDied();
     }
 
     private void OnDayStarted()
     {
-        if(!isActiveAndEnabled) return;
+        if (!isActiveAndEnabled) return;
 
-        if(_health != null && _health.isDead) return;
+        //if (_health != null && _health.isDead) return;
 
         if (_isEnragedBurning) return;
 
@@ -193,7 +201,7 @@ public class Zombie : MonoBehaviour
         _isEnragedBurning = true;
 
         _burnTimer = _burnDuration;
-        _moveSpeed = _baseMoveSpeed * _enrageSpeedMult;
+        //_moveSpeed = _baseMoveSpeed * _enrageSpeedMult;
 
         if (_zombieBite != null) _zombieBite.SetEnraged(true);
 
@@ -201,22 +209,27 @@ public class Zombie : MonoBehaviour
             Instantiate(_burnFxPrefab, transform.position, Quaternion.identity, transform);
     }
 
-    private void DoBurnTick()
+    private void OnStatsChanged(NPCStats stats)
     {
-        _burnTimer -= Time.deltaTime;
-
-        if (_health != null && !_health.isDead)
-        {
-            int burnDamage = Mathf.CeilToInt(_burnDPS * Time.deltaTime);
-            if (burnDamage > 0) _health.TakeDamage(burnDamage, transform.position, gameObject);
-        }
-
-        if (_burnTimer <= 0f && _health != null && !_health.isDead)
-        {
-            _morgensternToten = true;
-            _health.Die();
-        }
+        //Setup enrage here
     }
+
+    //private void DoBurnTick()
+    //{
+    //    _burnTimer -= Time.deltaTime;
+
+    //    if (_health != null && !_health.isDead)
+    //    {
+    //        int burnDamage = Mathf.CeilToInt(_burnDPS * Time.deltaTime);
+    //        if (burnDamage > 0) _health.TakeDamage(burnDamage, transform.position, gameObject);
+    //    }
+
+    //    if (_burnTimer <= 0f && _health != null && !_health.isDead)
+    //    {
+    //        _morgensternToten = true;
+    //        _health.Die();
+    //    }
+    //}
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
