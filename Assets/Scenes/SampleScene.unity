@@ -6198,8 +6198,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _persistAcrossScenes: 1
-  _dayDurationSeconds: 15
-  _nightDurationSeconds: 15
+  _dayDurationSeconds: 120
+  _nightDurationSeconds: 180
   _nightSpawnDelay: 5
   _nightStartAudioCue: {fileID: 11400000, guid: 343bcb4159bcbce468c094570e0f4e04, type: 2}
   _startAtNight: 1

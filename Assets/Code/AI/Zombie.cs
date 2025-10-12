@@ -31,6 +31,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private float _burnDPS = 0.5f;
     [SerializeField] private float _enrageSpeedMult = 1.35f;
     [SerializeField] private GameObject _burnFxPrefab;
+    [SerializeField] private float _sunKillTime = 7f;
 
     private Rigidbody2D _rb;
     private ContactFilter2D _filter;
@@ -42,6 +43,7 @@ public class Zombie : MonoBehaviour
     private bool _isEnragedBurning;
     private bool _morgensternToten;
     private float _burnTimer;
+    private float _burnDamagePool = 0f;
 
     private int _currentHealth;
     public int currentHealth => _currentHealth;
@@ -68,12 +70,11 @@ public class Zombie : MonoBehaviour
         {
             useLayerMask = true,
             layerMask = _zombieMask,
-            useTriggers = _includeTriggers,   // true if your separation colliders are triggers
-            useDepth = false                  // set true + min/max if you need depth filtering
+            useTriggers = _includeTriggers, 
+            useDepth = false                 
         };
 
         _deathNotified = false;
-        //_health.OnDeath += OnDied;
 
         if (_spawnCue != null) AudioManager.Instance.PlayCue(_spawnCue, worldPos: transform.position);
 
@@ -87,14 +88,13 @@ public class Zombie : MonoBehaviour
 
     private void OnDisable()
     {
-        //_health.OnDeath -= OnDied;
         GameEvents.DayStarted -= OnDayStarted;
     }
 
-    //private void Update()
-    //{
-    //    if (_isEnragedBurning) DoBurnTick();
-    //}
+    private void Update()
+    {
+        if (_isEnragedBurning) DoBurnTick();
+    }
 
     private void FixedUpdate()
     {
@@ -147,8 +147,9 @@ public class Zombie : MonoBehaviour
         }
 
         // Clamp final desired speed so separation can�t exceed _moveSpeed wildly
-        if (desired.sqrMagnitude > (_stats.MoveSpeed * _stats.MoveSpeed))
-            desired = desired.normalized * _stats.MoveSpeed;
+        float maxSpeed = _stats.MoveSpeed * (_isEnragedBurning ? _enrageSpeedMult : 1f);
+        if (desired.sqrMagnitude > (maxSpeed * maxSpeed))
+            desired = desired.normalized * maxSpeed;
 
         // Smooth toward desired velocity
         _vel = Vector2.MoveTowards(_vel, desired, _accel * Time.fixedDeltaTime);
@@ -189,8 +190,6 @@ public class Zombie : MonoBehaviour
     {
         if (!isActiveAndEnabled) return;
 
-        //if (_health != null && _health.isDead) return;
-
         if (_isEnragedBurning) return;
 
         EnterEnragedForm();
@@ -198,38 +197,47 @@ public class Zombie : MonoBehaviour
 
     private void EnterEnragedForm()
     {
+        if (_isEnragedBurning) return;
+
         _isEnragedBurning = true;
 
+        // 1) Set burn window to the hard cap
+        _burnDuration = _sunKillTime;
         _burnTimer = _burnDuration;
-        //_moveSpeed = _baseMoveSpeed * _enrageSpeedMult;
 
+        // 2) Scale DPS so a full-health zombie dies in exactly _sunKillTime seconds
+        //    (current HP < max → dies faster automatically)
+        //    If your max health lives in a different field, replace _maxHealth accordingly.
+        _burnDPS = Mathf.Max(0.0001f, _stats.Health / _sunKillTime);
+
+        // 3) Reset accumulator so we start clean
+        _burnDamagePool = 0f;
+
+        // 4) Keep your existing “enraged bite” flip / VFX, etc.
         if (_zombieBite != null) _zombieBite.SetEnraged(true);
-
-        if (_burnFxPrefab != null)
-            Instantiate(_burnFxPrefab, transform.position, Quaternion.identity, transform);
+        //if (_burnFxPrefab != null) SpawnBurnVfx();
     }
 
-    private void OnStatsChanged(NPCStats stats)
+    private void DoBurnTick()
     {
-        //Setup enrage here
+        _burnTimer -= Time.deltaTime;
+
+        _burnDamagePool += _burnDPS * Time.deltaTime;
+
+        int burnDamageNow = Mathf.FloorToInt(_burnDamagePool);
+        if (burnDamageNow > 0 && _currentHealth > 0)
+        {
+            TakeDamage(burnDamageNow);
+            _burnDamagePool -= burnDamageNow;
+        }
+
+        if (_burnTimer <= 0f && _currentHealth > 0)
+        {
+            _morgensternToten = true;    
+            TakeDamage(_currentHealth);  
+        }
     }
 
-    //private void DoBurnTick()
-    //{
-    //    _burnTimer -= Time.deltaTime;
-
-    //    if (_health != null && !_health.isDead)
-    //    {
-    //        int burnDamage = Mathf.CeilToInt(_burnDPS * Time.deltaTime);
-    //        if (burnDamage > 0) _health.TakeDamage(burnDamage, transform.position, gameObject);
-    //    }
-
-    //    if (_burnTimer <= 0f && _health != null && !_health.isDead)
-    //    {
-    //        _morgensternToten = true;
-    //        _health.Die();
-    //    }
-    //}
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

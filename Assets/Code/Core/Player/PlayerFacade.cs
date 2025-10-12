@@ -6,7 +6,6 @@ public class PlayerFacade : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] private PlayerController _controller;
-    [SerializeField] private CombatInput _combat;
     [SerializeField] private Health _health;
     [SerializeField] private Inventory _inventory;
     [SerializeField] private Equipment _equipment;
@@ -18,7 +17,6 @@ public class PlayerFacade : MonoBehaviour
     [SerializeField] private Collider2D _meleeHitbox;
 
     public PlayerController controller => _controller;
-    public CombatInput combat => _combat;
     public Health health => _health;
     public Inventory inventory => _inventory;
     public Equipment equipment => _equipment;

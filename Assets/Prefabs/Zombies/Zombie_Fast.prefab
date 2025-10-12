@@ -288,6 +288,7 @@ MonoBehaviour:
   _burnDPS: 0.5
   _enrageSpeedMult: 1.35
   _burnFxPrefab: {fileID: 0}
+  _sunKillTime: 7
 --- !u!114 &9057078888510701665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,10 +421,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c75df1aa7b9d2fc49b7ab26a48cbe501, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCStats
-  _baseHealth: 50
+  type: 0
+  _baseHealth: 75
   _baseArmor: 5
-  _baseAttackPower: 8
+  _baseAttackPower: 7
   _baseSpellPower: 0
-  _baseAttackSpeed: 1
-  _baseCritChance: 0.05
-  _baseMoveSpeed: 3.5
+  _baseAttackSpeed: 2
+  _baseCritChance: 0.3
+  _baseMoveSpeed: 5
