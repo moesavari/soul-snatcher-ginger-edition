@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97feaf8fd5ba8a4e93559c4331f50cd, type: 3}
+  m_Name: AlchemistInventory
+  m_EditorClassIdentifier: Assembly-CSharp::VendorInventory
+  vendorName: Alchemist
+  priceMultiplier: 1
+  stock:
+  - item: {fileID: 11400000, guid: cf07cec77817fb449a8c2954abae6b82, type: 2}
+    quantity: 5
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: c02987827d1e1294b8629deec86e9f65, type: 2}
+    quantity: 5
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 378f49554eb178b4f84353ef657477c5, type: 2}
+    quantity: 5
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: b80e7b2e73e245b479fbcc8b37b51597, type: 2}
+    quantity: 5
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: baf4a889f74a0c14686e3b593cb3e71a, type: 2}
+    quantity: 5
+    overridePrice: 0

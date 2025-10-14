@@ -201,19 +201,12 @@ public class Zombie : MonoBehaviour
 
         _isEnragedBurning = true;
 
-        // 1) Set burn window to the hard cap
         _burnDuration = _sunKillTime;
         _burnTimer = _burnDuration;
-
-        // 2) Scale DPS so a full-health zombie dies in exactly _sunKillTime seconds
-        //    (current HP < max → dies faster automatically)
-        //    If your max health lives in a different field, replace _maxHealth accordingly.
         _burnDPS = Mathf.Max(0.0001f, _stats.Health / _sunKillTime);
 
-        // 3) Reset accumulator so we start clean
         _burnDamagePool = 0f;
 
-        // 4) Keep your existing “enraged bite” flip / VFX, etc.
         if (_zombieBite != null) _zombieBite.SetEnraged(true);
         //if (_burnFxPrefab != null) SpawnBurnVfx();
     }

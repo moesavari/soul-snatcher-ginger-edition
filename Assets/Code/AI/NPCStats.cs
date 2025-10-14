@@ -20,9 +20,6 @@ public class NPCStats : Stats
     [SerializeField] private float _baseCritChance = 0.05f;
     [SerializeField] private float _baseMoveSpeed = 3.5f;
 
-    // No CooldownReduction for NPCs
-    private float _cooldownReduction = 0f;
-
     // Expose stat properties (for reference & calculation)
     public override int Health => _baseHealth;
     public override int Armor => _baseArmor;
@@ -32,7 +29,7 @@ public class NPCStats : Stats
     public override float AttackSpeed => _baseAttackSpeed;
     public override float MoveSpeed => _baseMoveSpeed;
     public override float CooldownReduction => 0f;
-    public override int Level => 0;
+    public override int Level => 1;
 
     public event Action<NPCStats> OnStatsChanged;
     public event Action OnDeath;
@@ -67,5 +64,10 @@ public class NPCStats : Stats
             default:
                 break;
         }
+    }
+
+    public void RaiseDeath()
+    {
+        OnDeath?.Invoke();
     }
 }

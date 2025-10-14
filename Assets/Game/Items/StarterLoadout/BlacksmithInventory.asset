@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97feaf8fd5ba8a4e93559c4331f50cd, type: 3}
+  m_Name: BlacksmithInventory
+  m_EditorClassIdentifier: Assembly-CSharp::VendorInventory
+  vendorName: Blacksmith
+  priceMultiplier: 1
+  stock:
+  - item: {fileID: 11400000, guid: 8ecbb930e0b09e347a75c705f675fc6a, type: 2}
+    quantity: 0
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: e85862364c0105b4aab36f38cc092a00, type: 2}
+    quantity: 0
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 2b9974f2ce834a74da5765de054ceee2, type: 2}
+    quantity: 0
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 054d86ee9b3542241a5a3fed0b472e88, type: 2}
+    quantity: 0
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 6894fc9c8a0f63b40a04a2944e39fecf, type: 2}
+    quantity: 0
+    overridePrice: 0

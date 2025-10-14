@@ -9,17 +9,24 @@ public class InputManager : MonoSingleton<InputManager>
     public static event Action<Vector2> Move;
     public static event Action MeleePressed;
     public static event Action RangedPressed;
-    public static event Action<int> QuickbarPressed;   // 0..N-1
-    public static event Action ToggleSheetPressed;     // fires when equipment toggles
+    public static event Action<int> QuickbarPressed;   
+    public static event Action ToggleSheetPressed;     
     public static event Action EscapePressed;
     public static event Action OnBindingsChanged;
+    public static event Action InteractRescuePressed;
+    public static event Action InteractSiphonPressed;
+
+    private static int _lockCount = 0;
+    public static bool isLocked => _lockCount > 0;
 
     // ====== BINDINGS ======
     public enum InputAction
     {
         ToggleEquipment, ToggleInventory,
         Melee, Ranged,
-        Quick1, Quick2, Quick3, Quick4
+        Quick1, Quick2, Quick3, Quick4,
+        InteractRescue,
+        InteractSiphon,
     }
 
     [Serializable]
@@ -44,6 +51,8 @@ public class InputManager : MonoSingleton<InputManager>
     {
         new Binding(InputAction.ToggleEquipment, KeyCode.C),
         new Binding(InputAction.ToggleInventory, KeyCode.I),
+        new Binding(InputAction.InteractRescue,  KeyCode.E),
+        new Binding(InputAction.InteractSiphon,  KeyCode.Q),
         new Binding(InputAction.Melee,           KeyCode.Mouse0),
         new Binding(InputAction.Ranged,          KeyCode.Mouse1),
         new Binding(InputAction.Quick1,          KeyCode.Alpha1),
@@ -92,7 +101,7 @@ public class InputManager : MonoSingleton<InputManager>
     private void ReadMovement()
     {
         float h = _useRawAxes ? Input.GetAxisRaw(_horizontalAxis) : Input.GetAxis(_horizontalAxis);
-        float v = _useRawAxes ? Input.GetAxisRaw(_verticalAxis) : Input.GetAxis(_verticalAxis);
+        float v = _useRawAxes ? Input.GetAxisRaw(_verticalAxis)   : Input.GetAxis(_verticalAxis);
         var mv = new Vector2(h, v);
         if (mv.sqrMagnitude < _deadZone * _deadZone) mv = Vector2.zero;
         Move?.Invoke(mv);
@@ -100,8 +109,10 @@ public class InputManager : MonoSingleton<InputManager>
 
     private void ReadActions()
     {
-        if (GetKeyDown(InputAction.Melee)) MeleePressed?.Invoke();
-        if (GetKeyDown(InputAction.Ranged)) RangedPressed?.Invoke();
+        if (GetKeyDown(InputAction.Melee))          MeleePressed?.Invoke();
+        if (GetKeyDown(InputAction.Ranged))         RangedPressed?.Invoke();
+        if (GetKeyDown(InputAction.InteractRescue)) InteractRescuePressed?.Invoke();
+        if (GetKeyDown(InputAction.InteractSiphon)) InteractSiphonPressed?.Invoke();
     }
 
     private void ReadQuickbar()
@@ -133,13 +144,15 @@ public class InputManager : MonoSingleton<InputManager>
         if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
         {
             EscapePressed?.Invoke();
-            if (_equipmentOpen && _equipmentRoot) { _equipmentOpen = false; _equipmentRoot.SetActive(false); }
-            else if (_inventoryOpen && _inventoryRoot) { _inventoryOpen = false; _inventoryRoot.SetActive(false); }
+            if (_equipmentOpen && _equipmentRoot)       { _equipmentOpen = false; _equipmentRoot.SetActive(false); }
+            else if (_inventoryOpen && _inventoryRoot)  { _inventoryOpen = false; _inventoryRoot.SetActive(false); }
         }
     }
 
     private bool GetKeyDown(InputAction a)
     {
+        if(isLocked) return false;
+
         if (!_bindings.TryGetValue(a, out var b))
         {
             EnsureAllBindingsPresent();
@@ -156,8 +169,8 @@ public class InputManager : MonoSingleton<InputManager>
 
 
     // ---------- binding API ----------
-    public static KeyCode GetPrimary(InputAction a) => Instance._bindings[a].primary;
-    public static KeyCode GetSecondary(InputAction a) => Instance._bindings[a].secondary;
+    public static KeyCode GetPrimary(InputAction a)     => Instance._bindings[a].primary;
+    public static KeyCode GetSecondary(InputAction a)   => Instance._bindings[a].secondary;
 
     public static void SetPrimary(InputAction a, KeyCode key)
     {
@@ -194,6 +207,8 @@ public class InputManager : MonoSingleton<InputManager>
         LogBindings("WipeSavedBindings");
     }
 
+    public static void PushLock() => _lockCount++;
+    public static void PopLock() => _lockCount = Mathf.Max(0, _lockCount - 1);
 
     // ---------- persistence ----------
     [Serializable] private class SaveBlob { public List<Binding> list = new List<Binding>(); }

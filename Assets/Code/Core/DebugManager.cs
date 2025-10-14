@@ -42,6 +42,7 @@ public static class DebugManager
     {
         if (string.IsNullOrEmpty(message)) return;
         if (IsDuplicate(message, context)) return;
+        if (context == null) return;
 
         _isOurLog = true;
         Debug.LogWarning(Prefix(context) + " " + message, context);

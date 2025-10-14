@@ -17,13 +17,11 @@ public class ReputationMeterController : MonoBehaviour
     [SerializeField] private Sprite[] _tierSprites;
 
     [Header("Config")]
-    [SerializeField] private float _min = -100f;
-    [SerializeField] private float _max = 100f;
     [SerializeField] private float _lerpSpeed = 10f;
     [SerializeField] private bool _snapWholeNumbers = false;
 
     [Header("Tiers")]
-    [Tooltip("Edges BETWEEN tiers, sorted low→high. Example (7): -70,-40,-10,10,40,70")]
+    [Tooltip("Edges BETWEEN tiers, sorted low→high.")]
     [SerializeField] private float[] _tierEdges = new float[] { -70f, -40f, -10f, 10f, 40f, 70f };
     [SerializeField] private float _tierHysteresis = 2f;
 
@@ -62,8 +60,10 @@ public class ReputationMeterController : MonoBehaviour
     private void Awake()
     {
         if (_slider == null) _slider = GetComponent<Slider>();
-        _slider.minValue = _min;
-        _slider.maxValue = _max;
+
+        _slider.minValue = ReputationSystem.MIN_REPUTATION;
+        _slider.maxValue = ReputationSystem.MAX_REPUTATION;
+
         _slider.wholeNumbers = false; 
         SetImmediate(0f);
 
@@ -92,7 +92,7 @@ public class ReputationMeterController : MonoBehaviour
     // --- Public API ----------------------------------------------------------
     public void SetImmediate(float v)
     {
-        _targetValue = Mathf.Clamp(v, _min, _max);
+        _targetValue = Mathf.Clamp(v, _slider.minValue, _slider.maxValue);
         value = _targetValue;
         _slider.SetValueWithoutNotify(value);
         ApplyVisuals(value);
@@ -100,13 +100,13 @@ public class ReputationMeterController : MonoBehaviour
 
     public void AnimateTo(float v)
     {
-        _targetValue = Mathf.Clamp(v, _min, _max);
+        _targetValue = Mathf.Clamp(v, _slider.minValue, _slider.maxValue);
     }
 
     public void AnimateToNormalized(float n)
     {
         n = Mathf.Clamp01(n);
-        AnimateTo(Mathf.Lerp(_min, _max, n));
+        AnimateTo(Mathf.Lerp(_slider.minValue, _slider.maxValue, n));
     }
 
     // --- Internals -----------------------------------------------------------
@@ -118,7 +118,7 @@ public class ReputationMeterController : MonoBehaviour
 
     private void ApplyVisuals(float v)
     {
-        normalized = Mathf.InverseLerp(_min, _max, v);
+        normalized = Mathf.InverseLerp(_slider.minValue, _slider.maxValue, v);
 
         if (_handle)
         {
@@ -216,8 +216,9 @@ public class ReputationMeterController : MonoBehaviour
     {
         if (_slider)
         {
-            _slider.minValue = _min;
-            _slider.maxValue = _max;
+            _slider.minValue = ReputationSystem.MIN_REPUTATION;
+            _slider.maxValue = ReputationSystem.MAX_REPUTATION;
+
             _slider.wholeNumbers = false;
         }
     }

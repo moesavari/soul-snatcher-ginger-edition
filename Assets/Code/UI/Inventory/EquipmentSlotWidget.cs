@@ -141,7 +141,6 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     public void OnPointerClick(PointerEventData e)
     {
         var def = _equipment ? _equipment.GetEquipped(_slot) : null;
-        if (!def) { DebugManager.Log("Click on empty slot", this); return; }
 
         switch (e.button)
         {

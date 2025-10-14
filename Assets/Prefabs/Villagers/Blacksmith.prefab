@@ -9,11 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9035417178109814851}
-  - component: {fileID: 4897657401967153162}
+  - component: {fileID: 6931197091997603070}
+  - component: {fileID: 1177110490301720442}
   - component: {fileID: -988887206494673246}
   - component: {fileID: 8078934202703807700}
+  - component: {fileID: 4897657401967153162}
   m_Layer: 7
-  m_Name: Villager
+  m_Name: Blacksmith
   m_TagString: Villager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +37,7 @@ Transform:
   - {fileID: 5464048898682191495}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4897657401967153162
+--- !u!114 &6931197091997603070
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,9 +46,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5375736781444733887}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2868dc8d9819204bac06ebf9689fdcc, type: 3}
+  m_Script: {fileID: 11500000, guid: c7304dc5aa1b8904fbefae54c701230a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Villager
+  m_EditorClassIdentifier: Assembly-CSharp::Vendor
   _stats: {fileID: -988887206494673246}
   _hideSpot: {fileID: 0}
   _wanderRadius: 1.5
@@ -59,6 +61,24 @@ MonoBehaviour:
   _repAmount: 10
   _soulAmount: 1
   _rescueRepBonus: 15
+  _inventory: {fileID: 11400000, guid: fd639b7c81397b44ebbbff59f89c112e, type: 2}
+  _repRules: {fileID: 0}
+  _defaultAddQuantity: 1
+  _openAtNight: 0
+  _restockEveryNDays: 1
+--- !u!114 &1177110490301720442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5375736781444733887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e557eb36164da994da1578cb1cac8a22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VendorInteraction
+  _openCooldown: 0.2
 --- !u!114 &-988887206494673246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,7 +106,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5375736781444733887}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e05d41a8a26abed479e946188f6ea9d7, type: 3}
   m_Name: 
@@ -97,6 +117,30 @@ MonoBehaviour:
     m_Bits: 8
   _interactCooldown: 0.5
   _promptRoot: {fileID: 0}
+--- !u!114 &4897657401967153162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5375736781444733887}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2868dc8d9819204bac06ebf9689fdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Villager
+  _stats: {fileID: -988887206494673246}
+  _hideSpot: {fileID: 0}
+  _wanderRadius: 1.5
+  _panicRadius: 6
+  _panicSpeedMult: 1.6
+  _emergeScatter: 1
+  _zombieMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _repAmount: 10
+  _soulAmount: 1
+  _rescueRepBonus: 15
 --- !u!1 &7847940435159266104
 GameObject:
   m_ObjectHideFlags: 0

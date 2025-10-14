@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6400da94a9bc2a458e3b5e249c62883, type: 3}
+  m_Name: AlchemistRules
+  m_EditorClassIdentifier: Assembly-CSharp::VendorReputationRules
+  ranges:
+  - min: 0
+    max: 0
+    add: []
+    remove: []
+    priceMultiplier: 0
+    overrides: []
+  - min: 0
+    max: 0
+    add: []
+    remove: []
+    priceMultiplier: 0
+    overrides: []

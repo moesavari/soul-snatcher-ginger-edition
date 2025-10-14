@@ -6,20 +6,28 @@ public static class MissingScriptsScanner
     [MenuItem("Tools/Diagnostics/Find Missing Scripts In Scene")]
     private static void FindMissingInScene()
     {
+        var all = Object.FindObjectsByType<GameObject>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
+
         int count = 0;
-        foreach (var go in Object.FindObjectsOfType<GameObject>(true))
+        foreach (var go in all)
         {
-            foreach (var c in go.GetComponents<Component>())
+            var comps = go.GetComponents<Component>();
+            foreach (var c in comps)
             {
                 if (c == null)
                 {
-                    Debug.LogWarning($"{GetFullPath(go)}", go);
+                    DebugManager.LogWarning($"[MissingScripts] {GetFullPath(go)}", go);
                     count++;
                 }
             }
         }
-        Debug.Log($"Scene scan complete. Found {count} missing scripts.");
+
+        DebugManager.Log($"[MissingScripts] Scan complete. Missing components found: {count}");
     }
+
 
     [MenuItem("Tools/Diagnostics/Remove Missing Scripts In Selection")]
     private static void RemoveMissingInSelection()
@@ -28,9 +36,9 @@ public static class MissingScriptsScanner
         foreach (var obj in Selection.gameObjects)
         {
             removed += GameObjectUtility.RemoveMonoBehavioursWithMissingScript(obj);
-            Debug.Log($"Removed on {GetFullPath(obj)}", obj);
+            DebugManager.Log($"Removed on {GetFullPath(obj)}", obj);
         }
-        Debug.Log($"Total removed from selection: {removed}");
+        DebugManager.Log($"Total removed from selection: {removed}");
     }
 
     private static string GetFullPath(GameObject go)

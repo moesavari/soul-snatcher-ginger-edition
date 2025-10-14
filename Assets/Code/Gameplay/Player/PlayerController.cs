@@ -6,7 +6,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private CharacterStats _stats;
 
     [Header("Movement")]
-    [SerializeField] private float _baseMoveSpeed = 4f;
     [SerializeField] private Animator _animator;
     [SerializeField] private Rigidbody2D _rigidbody;
     [SerializeField] private KnockbackReceiver _knockback;

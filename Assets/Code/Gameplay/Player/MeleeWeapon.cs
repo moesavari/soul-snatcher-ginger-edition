@@ -17,13 +17,12 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private LayerMask _hitMask;           
 
     [Header("Damage / Knockback")]
-    [SerializeField] private int _damage = 2;
     [SerializeField] private float _knockback = 6f;        
     [SerializeField] private float _stunTime = 0.08f;      
     [SerializeField] private string _ownerTag = "Player";
 
     [Header("Stat References")]
-    [SerializeField] private Stats _owner; // Set on equip or spawn
+    [SerializeField] private Stats _owner;
     [SerializeField] private int _power = 10;
 
     [Header("Optional")]

@@ -135,8 +135,6 @@ public class NightOutcomeManager : MonoBehaviour
         int alive = 0;
         foreach (var v in villies)
         {
-            var h = v.GetComponent<Health>();
-            if (h != null && !h.isDead) alive++;
         }
         return alive;
     }

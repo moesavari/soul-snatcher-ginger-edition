@@ -32,7 +32,7 @@ public class DebugOverlay : MonoBehaviour
         _rect = new Rect(10, 10, width, 10);
 
         if (_reputation == null)
-            _reputation = FindObjectOfType<ReputationMeterController>();
+            _reputation = FindFirstObjectByType<ReputationMeterController>();
     }
 
     private void Update()
@@ -65,7 +65,7 @@ public class DebugOverlay : MonoBehaviour
             GUILayout.Label("<color=orange>No ReputationMeterController found.</color>", Rich());
             if (GUILayout.Button("Find Now"))
             {
-                _reputation = FindObjectOfType<ReputationMeterController>();
+                _reputation = FindFirstObjectByType<ReputationMeterController>();
             }
         }
         else

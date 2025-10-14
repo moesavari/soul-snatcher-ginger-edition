@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97feaf8fd5ba8a4e93559c4331f50cd, type: 3}
+  m_Name: CookInventory
+  m_EditorClassIdentifier: Assembly-CSharp::VendorInventory
+  vendorName: Cook
+  priceMultiplier: 1
+  stock:
+  - item: {fileID: 11400000, guid: 973ac14e4a2e7af4798bf461e5d84325, type: 2}
+    quantity: 10
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 360c165393a7a1b48b3c37fac7ed4912, type: 2}
+    quantity: 7
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 16b6f9ca1cb08fd4c9783cf030dfe326, type: 2}
+    quantity: 13
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 14bd0c65c21e0ed48afb3804ec637a9e, type: 2}
+    quantity: 2
+    overridePrice: 0
+  - item: {fileID: 11400000, guid: 37c3d530bb133da49a83ebca6b60a2be, type: 2}
+    quantity: 3
+    overridePrice: 0
