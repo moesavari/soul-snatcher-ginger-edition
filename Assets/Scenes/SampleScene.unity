@@ -2017,7 +2017,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9035417178109814851, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.01
       objectReference: {fileID: 0}
     - target: {fileID: 9035417178109814851, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9778,7 +9778,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.75
+  m_fontSize: 28.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11540,10 +11540,12 @@ MonoBehaviour:
   _useBtn: {fileID: 775356059}
   _splitBtn: {fileID: 2134295726}
   _destroyBtn: {fileID: 120419725}
+  _confirmButton: {fileID: 0}
   _quantity: {fileID: 709645471}
   _followMouse: 0
   _mouseOffset: {x: 80, y: 80}
   _canvas: {fileID: 0}
+  _screenPadding: {x: 8, y: 8}
 --- !u!1 &1821719769
 GameObject:
   m_ObjectHideFlags: 0
