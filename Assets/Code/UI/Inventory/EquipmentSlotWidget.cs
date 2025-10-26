@@ -14,7 +14,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     [SerializeField] private ItemTooltipUI _tooltip;
     [SerializeField] private ItemContextMenuUI _context;
 
-    private CharacterSheetUI _sheet;
+    private EquipmentUI _sheet;
     private Sprite _baseSprite;
     private bool _subscribed;
 
@@ -30,7 +30,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         if (s == _slot) Refresh();
     }
 
-    public void Bind(Equipment eq, CharacterSheetUI sheet, Inventory inv, ItemTooltipUI tip, ItemContextMenuUI ctx)
+    public void Bind(Equipment eq, EquipmentUI sheet, Inventory inv, ItemTooltipUI tip, ItemContextMenuUI ctx)
     {
         _equipment = eq; 
         _inventory = inv;
@@ -38,7 +38,6 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         _context = ctx; 
         _sheet = sheet;
 
-        // Be resilient: auto-locate an Image if not assigned
         if (!_icon)
         {
             _icon = GetComponent<Image>();
@@ -50,10 +49,9 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
             if (_baseSprite == null)
                 _baseSprite = _emptyFrame ? _emptyFrame : _icon.sprite;
 
-            // make sure it can actually render
             _icon.enabled = true;
             var c = _icon.color; c.a = 1f; _icon.color = c;
-            _icon.raycastTarget = true; // avoid blocking clicks accidentally
+            _icon.raycastTarget = true;
         }
 
         SubscribeModel();
@@ -103,15 +101,6 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         var def = _equipment.GetEquipped(_slot);
         var targetSprite = (def && def.icon) ? def.icon : _baseSprite;
         SetSprite(targetSprite, def ? def.name : "(empty)");
-
-        // Extra visibility diagnostics
-        if (!gameObject.activeInHierarchy)
-            DebugManager.LogWarning($"GameObject inactive; icon won’t render.", this);
-        var cg = GetComponentInParent<CanvasGroup>();
-        if (cg && cg.alpha < 0.99f)
-            DebugManager.LogWarning($"CanvasGroup alpha={cg.alpha} (may hide icon).", this);
-        if (!_icon.enabled)
-            DebugManager.LogWarning($"Image.enabled is false (forcing true).", this);
     }
 
     private void SetSprite(Sprite sprite, string label)
@@ -121,8 +110,6 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         _icon.enabled = true;
         var c = _icon.color; c.a = 1f; _icon.color = c;
         _icon.sprite = sprite;
-
-        //DebugManager.Log($"Slot {_slot} -> {label} | sprite={(sprite ? sprite.name : "null")}", this);
     }
 
     // ---------- UI Events ----------
@@ -130,7 +117,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         var def = _equipment ? _equipment.GetEquipped(_slot) : null;
         if (!def) return;
-        _tooltip?.ShowFrom(UIPanelID.Equipment, this, def, e.position); // adapt to your tooltip API
+        _tooltip?.ShowFrom(UIPanelID.Equipment, this, def, e.position);
     }
 
     public void OnPointerExit(PointerEventData e)
@@ -142,15 +129,19 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         var def = _equipment ? _equipment.GetEquipped(_slot) : null;
 
+        if(!def || _context == null) return;
+
         switch (e.button)
         {
             case PointerEventData.InputButton.Left:
-                // Open context menu (Unequip / Inspect, etc.)
-                _context?.ShowForEquipped(_slot, def, e.position, OnContextAction);
-                break;
+                _context?.ShowForEquipped(
+                    _slot,
+                    def,
+                    e.position,
+                    a => OnContextAction(a.ToString(), _slot, def) 
+                ); break;
 
             case PointerEventData.InputButton.Right:
-                // Quick Unequip to inventory
                 TryUnequipToInventory(def);
                 break;
             default:
@@ -166,7 +157,6 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         var current = _equipment.GetEquipped(_slot);
         if (!current) { DebugManager.LogWarning("Unequip: slot empty", this); return; }
 
-        // Equipment handles moving the item back to inventory internally.
         var ok = _equipment.Unequip(_slot);
         if (!ok) { DebugManager.LogWarning("Unequip failed", this); return; }
 

@@ -50,16 +50,16 @@ public class QuickbarUI : MonoBehaviour
 
     private void TryAssignFromSelection(int index)
     {
-        var sheet = GetComponentInParent<CharacterSheetUI>(true);
-        if (!sheet) sheet = FindFirstObjectByType<CharacterSheetUI>(FindObjectsInactive.Include);
+        var sheet = GetComponentInParent<EquipmentUI>(true);
+        if (!sheet) sheet = FindFirstObjectByType<EquipmentUI>(FindObjectsInactive.Include);
         if (!sheet) return;
-        var def = sheet.selectedItem;
-        if (def == null) { DebugManager.LogWarning("Select a consumable from the bag first.", this); return; }
-        if (_equipment != null && _equipment.SetQuickItem(index, def))
-        {
-            sheet.SetSelectedItem(null);
-            RefreshIcons();
-        }
+        //var def = sheet.selectedItem;
+        //if (def == null) { DebugManager.LogWarning("Select a consumable from the bag first.", this); return; }
+        //if (_equipment != null && _equipment.SetQuickItem(index, def))
+        //{
+        //    sheet.SetSelectedItem(null);
+        //    RefreshIcons();
+        //}
     }
 
     private void HandleQuickbarChanged(int index, ItemDef def) => RefreshIcons();

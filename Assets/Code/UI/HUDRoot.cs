@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum UIPanelID { None, Inventory, Equipment }
+public enum UIPanelID { None, Inventory, Equipment, Shop }
 
 [DisallowMultipleComponent]
 

@@ -23,14 +23,14 @@ public class VillagerInteraction : MonoBehaviour
 
     private void OnEnable()
     {
-        InputManager.InteractRescuePressed += OnRescuePressed;
-        InputManager.InteractSiphonPressed += OnSiphonPressed;
+        InputManager.InteractPressed += OnRescuePressed;
+        InputManager.SiphonPressed += OnSiphonPressed;
     }
 
     private void OnDisable()
     {
-        InputManager.InteractRescuePressed -= OnRescuePressed;
-        InputManager.InteractSiphonPressed -= OnSiphonPressed;
+        InputManager.InteractPressed -= OnRescuePressed;
+        InputManager.SiphonPressed -= OnSiphonPressed;
     }
 
     private void Update()

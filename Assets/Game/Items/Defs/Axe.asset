@@ -22,11 +22,11 @@ MonoBehaviour:
   twoHanded: 0
   _quality: 2
   _stats:
+  - statType: 1
+    value: 143
+  - statType: 0
+    value: 143
   - statType: 2
-    value: 25
-  - statType: 4
-    value: 12
-  - statType: 5
-    value: 5
-  _hasEnchantment: 0
+    value: 143
+  _hasEnchantment: 1
   _enchantmentDescription: 

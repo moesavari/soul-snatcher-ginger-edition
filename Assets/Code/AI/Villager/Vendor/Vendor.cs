@@ -1,11 +1,11 @@
 using Game.Systems;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public class Vendor : Villager
 {
     [Header("Vendor")]
+    [SerializeField] private string _vendorName;
     [SerializeField] private VendorInventory _inventory;
     [SerializeField] private VendorReputationRules _repRules;
     [SerializeField] private int _defaultAddQuantity = 1;
@@ -15,7 +15,6 @@ public class Vendor : Villager
     [SerializeField] private int _restockEveryNDays = 1;
 
     private int _dayCounter;
-    private bool _isNight = false;
 
     private float _currentRepPriceMult = 1f;
     public float currentRepPriceMult => _currentRepPriceMult;
@@ -24,6 +23,8 @@ public class Vendor : Villager
     public VendorInventory runtimeInventory => _runtimeInventory;
 
     public VendorInventory inventory => _inventory;
+
+    public string vendorName => _vendorName;
 
     protected override void Awake()
     {
@@ -65,11 +66,10 @@ public class Vendor : Villager
 
     private void Restock()
     {
-        var st = _runtimeInventory.stock;
-        for (int i = 0; i < st.Count; i++)
+        foreach (var src in _inventory.stock)
         {
-            var orig = _inventory.stock[i];
-            st[i].quantity = Mathf.Max(st[i].quantity, orig.quantity);
+            if (!src.item) continue;
+            _runtimeInventory.Ensure(src.item, src.quantity, src.overridePrice);
         }
     }
 

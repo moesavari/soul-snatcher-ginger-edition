@@ -2,6 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 public class UIRaycastAudit : MonoBehaviour
 {
     [Tooltip("Root of the UI you want to audit (e.g., InventoryHUD or EquipmentPanel root).")]
@@ -48,3 +49,4 @@ public class UIRaycastAudit : MonoBehaviour
 
     void Start() { RunAudit(); }
 }
+#endif

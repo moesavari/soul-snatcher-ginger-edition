@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Search;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Game/Vendor Inventory")]
@@ -17,6 +16,8 @@ public class VendorInventory : ScriptableObject
     public string vendorName = "Shop";
     [Range(0.1f, 5f)] public float priceMultiplier = 1f;
     public List<StockEntry> stock = new List<StockEntry>();
+
+    public event Action OnStockChanged;
 
     public int GetPrice(ItemDef def, int basePrice, float repMultiplier = 1f)
     {
@@ -39,13 +40,20 @@ public class VendorInventory : ScriptableObject
     {
         for (int i = 0; i < stock.Count; i++)
         {
-            if (stock[i].item == def && stock[i].quantity > 0)
+            if (stock[i].item == def)
             {
-                stock[i].quantity--;
+                var entry = stock[i];
+                entry.quantity--;
+
+                if (entry.quantity <= 0)
+                    stock.RemoveAt(i);
+                else
+                    stock[i] = entry;
+
+                OnStockChanged?.Invoke(); 
                 return true;
             }
         }
-
         return false;
     }
 
@@ -56,16 +64,12 @@ public class VendorInventory : ScriptableObject
             if (stock[i].item == def)
             {
                 stock[i].quantity++;
+                OnStockChanged?.Invoke();
                 return;
             }
         }
-
-        stock.Add(new StockEntry
-        {
-            item = def,
-            quantity = 1,
-            overridePrice = -1
-        });
+        stock.Add(new StockEntry { item = def, quantity = 1, overridePrice = -1 });
+        OnStockChanged?.Invoke();
     }
 
     public int GetQuantity(ItemDef def)

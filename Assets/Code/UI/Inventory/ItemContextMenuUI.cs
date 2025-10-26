@@ -1,203 +1,304 @@
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using Game.Systems;
 
 public class ItemContextMenuUI : MonoBehaviour
 {
-    [Header("Scene refs")]
-    [SerializeField] private Canvas _canvas;
-    [SerializeField] private RectTransform _root;
+    public enum EquippedContextAction { Unequip, Sell, Cancel }
 
-    [Header("UI")]
+    [Header("Root")]
+    [SerializeField] private GameObject _root;
+
+    [Header("Text")]
     [SerializeField] private TMP_Text _title;
+
+    [Header("Buttons")]
     [SerializeField] private Button _equipBtn;
     [SerializeField] private Button _unequipBtn;
     [SerializeField] private Button _useBtn;
     [SerializeField] private Button _splitBtn;
     [SerializeField] private Button _destroyBtn;
+    [SerializeField] private Button _confirmButton;
 
-    [Header("Behavior")]
-    [SerializeField] private Vector2 _spawnOffset = new(12f, -12f);
+    [Header("Helpers")]
+    [SerializeField] private QuantityPromptUI _quantity;
 
-    // callbacks provided by systems (for Show)
-    private System.Action<ItemDef> _onEquip, _onUnequip, _onUse, _onDestroy, _onSplit;
+    [Header("Positioning")]
+    [SerializeField] private bool _followMouse = false;
+    [SerializeField] private Vector2 _mouseOffset = new Vector2(24f, -24f);
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private Vector2 _screenPadding = new Vector2(8f, 8f); // NEW: keep popup inside view
 
-    // state for button callbacks
-    [SerializeField] private ItemDef _item;
+    private RectTransform _rt;
+    private ItemDef _def;
 
-    private UIPanelID _ownerPanel = UIPanelID.None;
-    private Component _ownerWidget;
-    private bool _isOpen = false;
+    private System.Action _onBuyOne;
+    private System.Action<int> _onBuyMany;
+    private System.Action _onSellOne;
+    private System.Action<int> _onSellMany;
+    private System.Action _onShopChanged;
+
+    private bool _visible;
+    private ItemDef _currentItem;
+    private Vendor _currentVendor;
 
     private void Awake()
     {
-        if (!_canvas) _canvas = GetComponentInParent<Canvas>(true);
+        if (_canvas == null) _canvas = GetComponentInParent<Canvas>(true);
+        _rt = _root ? _root.GetComponent<RectTransform>() : null;
         Hide();
-        WireDefaultListeners();
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        InventoryBagUI.OnVisibilityChanged += OnInventoryVisibility;
-        CharacterSheetUI.OnVisibilityChanged += OnEquipmentVisibility;
+        if (_visible && _followMouse) PositionAt(Input.mousePosition);
     }
 
-    private void OnDisable()
+    private static void Set(Button b, bool on, string label = null)
     {
-        InventoryBagUI.OnVisibilityChanged -= OnInventoryVisibility;
-        CharacterSheetUI.OnVisibilityChanged -= OnEquipmentVisibility;
-    }
-
-    private void LateUpdate()
-    {
-        if (_isOpen && _ownerWidget && !_ownerWidget.gameObject.activeInHierarchy)
-            Hide();
-    }
-
-    private void OnValidate()
-    {
-        if (_root && _canvas && _root == _canvas.transform as RectTransform)
-            DebugManager.LogError("Root must be the menu panel, not the Canvas.", this);
-    }
-
-    private void OnInventoryVisibility(bool visible)
-    {
-        if (!visible && _isOpen && _ownerPanel == UIPanelID.Inventory)
-            Hide();
-    }
-
-    private void OnEquipmentVisibility(bool visible)
-    {
-        if (!visible && _isOpen && _ownerPanel == UIPanelID.Equipment)
-            Hide();
-    }
-
-    private void WireDefaultListeners()
-    {
-        _equipBtn.onClick.RemoveAllListeners();
-        _unequipBtn.onClick.RemoveAllListeners();
-        _useBtn.onClick.RemoveAllListeners();
-        _splitBtn.onClick.RemoveAllListeners();
-        _destroyBtn.onClick.RemoveAllListeners();
-
-        _equipBtn.onClick.AddListener(()        => { _onEquip?.Invoke(_item);       Hide(); });
-        _unequipBtn.onClick.AddListener(()      => { _onUnequip?.Invoke(_item);     Hide(); });
-        _useBtn.onClick.AddListener(()          => { _onUse?.Invoke(_item);         Hide(); });
-        _splitBtn.onClick.AddListener(()        => { _onSplit?.Invoke(_item);       Hide(); });
-        _destroyBtn.onClick.AddListener(()      => { _onDestroy?.Invoke(_item);     Hide(); });
-    }
-
-    public void Init(System.Action<ItemDef> onEquip,
-                     System.Action<ItemDef> onUnequip,
-                     System.Action<ItemDef> onUse,
-                     System.Action<ItemDef> onDestroy,
-                     System.Action<ItemDef> onSplit)
-    {
-        _onEquip = onEquip;
-        _onUnequip = onUnequip;
-        _onUse = onUse;
-        _onDestroy = onDestroy;
-        _onSplit = onSplit;
-    }
-
-    public void ShowFrom(UIPanelID ownerPanel, Component ownerWidget, ItemDef def, bool isEquipped, Vector2 screenPos)
-    {
-        _ownerPanel = ownerPanel;
-        _ownerWidget = ownerWidget;
-        _isOpen = true;
-
-        Show(def, isEquipped, screenPos);
-    }
-
-    public void Show(ItemDef def, bool isEquipped, Vector2 screenPos)
-    {
-        _isOpen = true;
-        if (_ownerPanel == UIPanelID.None) _ownerPanel = UIPanelID.Inventory;
-
-        _item = def;
-        _title.text = def ? def.displayName : string.Empty;
-
-        _equipBtn.gameObject.SetActive(def && !isEquipped && def.equipSlot != EquipmentSlotType.None);
-        _unequipBtn.gameObject.SetActive(def && isEquipped);
-        _useBtn.gameObject.SetActive(def && def.kind == ItemKind.Consumable);
-        _splitBtn.gameObject.SetActive(def && def.stackable);
-        _destroyBtn.gameObject.SetActive(def);
-
-        WireDefaultListeners();
-
-        _root.gameObject.SetActive(true);
-        Position(screenPos + _spawnOffset);
-        _root.SetAsLastSibling();
+        if (!b) return;
+        b.gameObject.SetActive(on);
+        if (on && label != null)
+        {
+            var t = b.GetComponentInChildren<TMP_Text>();
+            if (t) t.text = label;
+        }
+        b.onClick.RemoveAllListeners();
     }
 
     public void Hide()
     {
-        _isOpen = false;
-        _ownerPanel = UIPanelID.None;
-        _ownerWidget = null;
-
-        _root.gameObject.SetActive(false);
+        _visible = false;
+        if (_root) _root.SetActive(false);
     }
 
-    private void Position(Vector2 screenPos)
+    private void OpenAt(Vector2 screenPos)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            (RectTransform)_canvas.transform, screenPos,
-            _canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _canvas.worldCamera,
-            out var local);
+        if (!_root) return;
+        _visible = true;
+        _root.SetActive(true);
 
-        var canvasRect = (RectTransform)_canvas.transform;
-        var r = _root.rect;
-        var bounds = canvasRect.rect;
-
-        float halfW = r.width * 0.5f, halfH = r.height * 0.5f;
-        local.x = Mathf.Clamp(local.x, bounds.xMin + halfW, bounds.xMax - halfW);
-        local.y = Mathf.Clamp(local.y, bounds.yMin + halfH, bounds.yMax - halfH);
-
-        _root.anchoredPosition = local;
+        PositionAt(screenPos);
     }
 
-    public void ShowForEquipped(EquipmentSlotType slot, ItemDef def, Vector2 screenPos,
-                                System.Action<string, EquipmentSlotType, ItemDef> onAction)
+    // ---------------- INVENTORY (no shop) ----------------
+    public void ShowInventory(ItemDef item, bool equipped, Vector2 screenPos)
     {
-        _isOpen = true;
-        if (_ownerPanel == UIPanelID.None) _ownerPanel = UIPanelID.Equipment;
+        if (!item) { Hide(); return; }
+        if (_title) _title.text = item.displayName;
 
-        _item = def;
-        _title.text = def ? def.displayName : string.Empty;
+        bool isConsumable = item.kind == ItemKind.Consumable;
+        bool canEquip = item.equipSlot != EquipmentSlotType.None;
 
-        _equipBtn.gameObject.SetActive(false);
-        _splitBtn.gameObject.SetActive(false);
-        _unequipBtn.gameObject.SetActive(def);
-        _useBtn.gameObject.SetActive(def && def.kind == ItemKind.Consumable);
-        _destroyBtn.gameObject.SetActive(def);
+        Set(_equipBtn, canEquip && !equipped, "Equip");
+        Set(_unequipBtn, equipped, "Unequip");
+        Set(_useBtn, isConsumable, "Use");
+        Set(_splitBtn, item.stackable, "Split");
+        Set(_destroyBtn, true, "Destroy");
 
-        _equipBtn.onClick.RemoveAllListeners();
-        _unequipBtn.onClick.RemoveAllListeners();
-        _useBtn.onClick.RemoveAllListeners();
-        _splitBtn.onClick.RemoveAllListeners();
-        _destroyBtn.onClick.RemoveAllListeners();
+        if (canEquip && !equipped) _equipBtn.onClick.AddListener(() => { PlayerContext.Instance?.facade?.equipment?.Equip(item); Hide(); });
+        if (equipped) _unequipBtn.onClick.AddListener(() => { PlayerContext.Instance?.facade?.equipment?.Unequip(item.equipSlot); Hide(); });
+        if (isConsumable) _useBtn.onClick.AddListener(() => { PlayerContext.Instance?.facade?.inventory?.TryRemove(item, 1); Hide(); });
+        if (item.stackable) _splitBtn.onClick.AddListener(() =>
+        {
+            _quantity.Open(Input.mousePosition, 99, amt => { /* internal split if needed */ }, 1, 1);
+            Hide();
+        });
+        _destroyBtn.onClick.AddListener(() => { PlayerContext.Instance?.facade?.inventory?.TryRemove(item, 1); Hide(); });
+
+        _followMouse = false;
+        OpenAt(screenPos);
+    }
+
+    public void ShowForEquipped(EquipmentSlotType slot, ItemDef item, Vector2 screenPos, System.Action<EquippedContextAction> onAction = null)
+    {
+        if (!item) { Hide(); return; }
+        if (_title) _title.text = item.displayName;
+
+        // Reset buttons
+        Set(_equipBtn, false);
+        Set(_splitBtn, false);
+        Set(_useBtn, false);
+        Set(_destroyBtn, true, "Cancel");
+        Set(_unequipBtn, true, "Unequip");
 
         _unequipBtn.onClick.AddListener(() =>
         {
-            onAction?.Invoke("Unequip", slot, def);
+            PlayerContext.Instance?.facade?.equipment?.Unequip(slot);
+            onAction?.Invoke(EquippedContextAction.Unequip);
             Hide();
         });
 
-        _useBtn.onClick.AddListener(() =>
+        // If shop is open, allow selling equipped item
+        bool shopOpen = ShopController.IsReady && ShopController.Instance.activeVendor != null;
+        if (shopOpen)
         {
-            onAction?.Invoke("Use", slot, def);
-            Hide();
-        });
+            Set(_useBtn, true, "Sell");
+            _useBtn.onClick.AddListener(() =>
+            {
+                PlayerContext.Instance?.facade?.equipment?.Unequip(slot);
+                ShopController.Instance?.TrySell(item, 1);
+                onAction?.Invoke(EquippedContextAction.Sell);
+                Hide();
+            });
+        }
 
         _destroyBtn.onClick.AddListener(() =>
         {
-            onAction?.Invoke("Destroy", slot, def);
+            onAction?.Invoke(EquippedContextAction.Cancel);
             Hide();
         });
 
-        _root.gameObject.SetActive(true);
-        Position(screenPos + _spawnOffset);
-        _root.SetAsLastSibling();
+        _followMouse = false;
+        OpenAt(screenPos);
+    }
+
+    // ---------------- SHOP: BUY ----------------
+    public void ShowShopBuy(ItemDef item, int maxQty, int priceEach, Vector2 screenPos)
+    {
+        if (!item) { Hide(); return; }
+        if (_title) _title.text = item.displayName;
+
+        _currentItem = item;
+        _currentVendor = ShopController.IsReady ? ShopController.Instance.activeVendor : null;
+
+        bool stack = item.stackable;
+
+        Set(_equipBtn, false);
+        Set(_unequipBtn, false);
+        Set(_destroyBtn, false);
+        Set(_useBtn, !stack, "Buy");
+        Set(_splitBtn, stack, "Buy Amount");
+
+        _useBtn.onClick.RemoveAllListeners();
+        _splitBtn.onClick.RemoveAllListeners();
+
+        if (!stack)
+        {
+            _useBtn.onClick.AddListener(() =>
+            {
+                // Buy 1 via controller; panel will redraw through controller events.
+                ShopController.Instance?.TryBuy(item, 1);
+                Hide();
+            });
+        }
+        else
+        {
+            _splitBtn.onClick.AddListener(() =>
+            {
+                _quantity.Open(Input.mousePosition, Mathf.Max(1, maxQty), amt =>
+                {
+                    ShopController.Instance?.TryBuy(item, amt);
+                }, 1, Mathf.Clamp(1, 1, maxQty));
+                Hide();
+            });
+        }
+
+        _followMouse = false;
+        OpenAt(screenPos);
+    }
+
+    // ---------------- SHOP: SELL ----------------
+    public void ShowShopSell(ItemDef item, Vector2 screenPos)
+    {
+        if (!item) { Hide(); return; }
+        if (_title) _title.text = item.displayName;
+
+        bool stack = item.stackable;
+
+        Set(_equipBtn, false);
+        Set(_unequipBtn, false);
+        Set(_destroyBtn, false);
+        Set(_useBtn, !stack, "Sell");
+        Set(_splitBtn, stack, "Sell Amount");
+
+        int playerQty = GetPlayerQuantity(item);
+        int sellEach = GetSellPriceEach(item);
+
+        _useBtn.onClick.RemoveAllListeners();
+        _splitBtn.onClick.RemoveAllListeners();
+
+        if (!stack)
+        {
+            _useBtn.onClick.AddListener(() =>
+            {
+                ShopController.Instance?.TrySell(item, 1);
+                Hide();
+            });
+        }
+        else
+        {
+            _splitBtn.onClick.AddListener(() =>
+            {
+                _quantity.Open(Input.mousePosition, Mathf.Max(1, playerQty), amt =>
+                {
+                    ShopController.Instance?.TrySell(item, amt);
+                }, 1, Mathf.Clamp(1, 1, playerQty));
+                Hide();
+            });
+        }
+
+        _followMouse = false;
+        OpenAt(screenPos);
+    }
+
+    // ---- helpers ----
+
+    private int GetPlayerQuantity(ItemDef item)
+    {
+        var inv = PlayerContext.Instance?.facade?.inventory;
+        if (inv == null || item == null) return 0;
+
+        var m = inv.GetType().GetMethod("GetCount", new[] { typeof(ItemDef) })
+              ?? inv.GetType().GetMethod("Count", new[] { typeof(ItemDef) })
+              ?? inv.GetType().GetMethod("GetQuantity", new[] { typeof(ItemDef) });
+
+        if (m != null) return (int)m.Invoke(inv, new object[] { item });
+
+        return 1;
+    }
+
+    private int GetSellPriceEach(ItemDef item)
+    {
+        var ctrl = ShopController.Instance;
+        var v = ctrl?.activeVendor;
+        if (item == null || v == null) return 0;
+
+        int basePrice = (int)item.quality * 25 + 10;
+        float repMult = v.currentRepPriceMult *
+                        Mathf.Lerp(1.2f, 0.85f, ReputationSystem.Instance.Normalized);
+        int buyEach = v.runtimeInventory.GetPrice(item, basePrice, repMult);
+        return Mathf.Max(1, Mathf.RoundToInt(buyEach * 0.5f));
+    }
+
+    // ---- positioning (CLAMPED to canvas) ----
+    private void PositionAt(Vector2 screenPos)
+    {
+        if (_rt == null || _canvas == null) return;
+
+        var canvasRT = _canvas.transform as RectTransform;
+
+        // Use the given screenPos (or mouse if follow enabled), then add offset
+        var sp = _followMouse ? (Vector2)Input.mousePosition : screenPos;
+        sp += _mouseOffset;
+
+        // Convert to canvas-local position
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRT, sp, _canvas.worldCamera, out var local);
+
+        // CLAMP: keep the popup fully inside the canvas rect
+        var panelHalf = _rt.rect.size * 0.5f;
+        var cRect = canvasRT.rect;
+
+        var min = new Vector2(cRect.xMin + panelHalf.x + _screenPadding.x,
+                              cRect.yMin + panelHalf.y + _screenPadding.y);
+        var max = new Vector2(cRect.xMax - panelHalf.x - _screenPadding.x,
+                              cRect.yMax - panelHalf.y - _screenPadding.y);
+
+        local.x = Mathf.Clamp(local.x, min.x, max.x);
+        local.y = Mathf.Clamp(local.y, min.y, max.y);
+
+        _rt.anchoredPosition = local;
     }
 }

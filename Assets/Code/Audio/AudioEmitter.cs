@@ -7,23 +7,19 @@ public class AudioEmitter : MonoBehaviour
 
     public void Play()
     {
-        if(_cue == null)
-        {
-            DebugManager.LogWarning("No AudioCue set.", this);
-            return;
-        }
+        if (_cue == null) { DebugManager.LogWarning("No AudioCue set.", this); return; }
+        if (!AudioManager.IsReady) { DebugManager.LogWarning("AudioManager not ready.", this); return; }
 
-        if (_attachToThis)
-            AudioManager.Instance.PlayCue(_cue, attachTo: transform);
-        else
-            AudioManager.Instance.PlayCue(_cue, worldPos: transform.position);
+        if (_attachToThis) AudioManager.Instance.PlayCue(_cue, attachTo: transform);
+        else AudioManager.Instance.PlayCue(_cue, worldPos: transform.position);
     }
 
     public void PlayOneShot(AudioClip clip, AudioChannel channel = AudioChannel.SFX, float volume = 1f, float pitch = 1f)
     {
-        if (_attachToThis)
-            AudioManager.Instance.PlayAttached(clip, channel, transform, 1f, 1f, 25f, volume, pitch, false);
-        else
-            AudioManager.Instance.PlayAtPoint(clip, channel, transform.position, 1f, 1f, 25f, volume, pitch, false);
+        if (!AudioManager.IsReady) { DebugManager.LogWarning("AudioManager not ready.", this); return; }
+
+        if (_attachToThis) AudioManager.Instance.PlayAttached(clip, channel, transform, 1f, 1f, 25f, volume, pitch, false);
+        else AudioManager.Instance.PlayAtPoint(clip, channel, transform.position, 1f, 1f, 25f, volume, pitch, false);
     }
+
 }

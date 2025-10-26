@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [DefaultExecutionOrder(-2000)]
 public class InputManager : MonoSingleton<InputManager>
@@ -10,14 +11,23 @@ public class InputManager : MonoSingleton<InputManager>
     public static event Action MeleePressed;
     public static event Action RangedPressed;
     public static event Action<int> QuickbarPressed;   
-    public static event Action ToggleSheetPressed;     
     public static event Action EscapePressed;
     public static event Action OnBindingsChanged;
-    public static event Action InteractRescuePressed;
-    public static event Action InteractSiphonPressed;
+    public static event Action InteractPressed;
+    public static event Action SiphonPressed;
+    public static event Action CancelPressed;
+    public static event Action ToggleInventoryPressed;
+    public static event Action ToggleEquipmentPressed;
 
     private static int _lockCount = 0;
     public static bool isLocked => _lockCount > 0;
+
+    private static readonly HashSet<InputAction> _allowWhileLocked =
+    new() {
+        InputAction.Cancel,
+        InputAction.ToggleInventory,
+        InputAction.ToggleEquipment
+    };
 
     // ====== BINDINGS ======
     public enum InputAction
@@ -25,8 +35,9 @@ public class InputManager : MonoSingleton<InputManager>
         ToggleEquipment, ToggleInventory,
         Melee, Ranged,
         Quick1, Quick2, Quick3, Quick4,
-        InteractRescue,
-        InteractSiphon,
+        Interact,
+        Siphon,
+        Cancel,
     }
 
     [Serializable]
@@ -51,42 +62,28 @@ public class InputManager : MonoSingleton<InputManager>
     {
         new Binding(InputAction.ToggleEquipment, KeyCode.C),
         new Binding(InputAction.ToggleInventory, KeyCode.I),
-        new Binding(InputAction.InteractRescue,  KeyCode.E),
-        new Binding(InputAction.InteractSiphon,  KeyCode.Q),
+        new Binding(InputAction.Interact,        KeyCode.E),
+        new Binding(InputAction.Siphon,          KeyCode.Q),
         new Binding(InputAction.Melee,           KeyCode.Mouse0),
         new Binding(InputAction.Ranged,          KeyCode.Mouse1),
         new Binding(InputAction.Quick1,          KeyCode.Alpha1),
         new Binding(InputAction.Quick2,          KeyCode.Alpha2),
         new Binding(InputAction.Quick3,          KeyCode.Alpha3),
         new Binding(InputAction.Quick4,          KeyCode.Alpha4),
+        new Binding(InputAction.Cancel,          KeyCode.Escape),
     };
 
     private readonly Dictionary<InputAction, Binding> _bindings = new Dictionary<InputAction, Binding>();
 
-    // keep a single, stable prefs key
     private const string PREFS_KEY = "InputBindings";
-
-    [Header("UI Roots (no faders)")]
-    [SerializeField] private GameObject _equipmentRoot;   // InventoryHUD/EquipmentPanel
-    [SerializeField] private GameObject _inventoryRoot;   // InventoryHUD/InventoryPanel
-    [SerializeField] private bool _equipmentStartClosed = true;
-    [SerializeField] private bool _inventoryStartClosed = true;
-
-    private bool _equipmentOpen;
-    private bool _inventoryOpen;
 
     // ---------- lifecycle ----------
     protected override void Awake()
     {
         base.Awake();
         LoadBindings();
-    }
-
-    private void Start()
-    {
-        // Initial visibility (simple SetActive)
-        if (_equipmentRoot) { _equipmentOpen = !_equipmentStartClosed; _equipmentRoot.SetActive(_equipmentOpen); }
-        if (_inventoryRoot) { _inventoryOpen = !_inventoryStartClosed; _inventoryRoot.SetActive(_inventoryOpen); }
+        UpgradeDefaultsIfNeeded();
+        EnsureAllBindingsPresent();
     }
 
     private void Update()
@@ -109,64 +106,65 @@ public class InputManager : MonoSingleton<InputManager>
 
     private void ReadActions()
     {
-        if (GetKeyDown(InputAction.Melee))          MeleePressed?.Invoke();
-        if (GetKeyDown(InputAction.Ranged))         RangedPressed?.Invoke();
-        if (GetKeyDown(InputAction.InteractRescue)) InteractRescuePressed?.Invoke();
-        if (GetKeyDown(InputAction.InteractSiphon)) InteractSiphonPressed?.Invoke();
+        if (GetKeyDown(InputAction.Cancel)) CancelPressed?.Invoke();
+
+        bool overUI = IsPointerOverUI();
+        if (!overUI)
+        {
+            if (GetKeyDown(InputAction.Melee))      MeleePressed?.Invoke();
+            if (GetKeyDown(InputAction.Ranged))     RangedPressed?.Invoke();
+            if (GetKeyDown(InputAction.Interact))   InteractPressed?.Invoke();
+            if (GetKeyDown(InputAction.Siphon))     SiphonPressed?.Invoke();
+        }
     }
 
     private void ReadQuickbar()
     {
-        if (GetKeyDown(InputAction.Quick1)) QuickbarPressed?.Invoke(0);
-        if (GetKeyDown(InputAction.Quick2)) QuickbarPressed?.Invoke(1);
-        if (GetKeyDown(InputAction.Quick3)) QuickbarPressed?.Invoke(2);
-        if (GetKeyDown(InputAction.Quick4)) QuickbarPressed?.Invoke(3);
+        if (!IsPointerOverUI())
+        {
+            if (GetKeyDown(InputAction.Quick1)) QuickbarPressed?.Invoke(0);
+            if (GetKeyDown(InputAction.Quick2)) QuickbarPressed?.Invoke(1);
+            if (GetKeyDown(InputAction.Quick3)) QuickbarPressed?.Invoke(2);
+            if (GetKeyDown(InputAction.Quick4)) QuickbarPressed?.Invoke(3);
+        }
     }
 
     private void ReadUI()
     {
-        // Equipment toggle
         if (GetKeyDown(InputAction.ToggleEquipment))
-        {
-            _equipmentOpen = !_equipmentOpen;
-            if (_equipmentRoot) _equipmentRoot.SetActive(_equipmentOpen);
-            ToggleSheetPressed?.Invoke();
-        }
+            ToggleEquipmentPressed?.Invoke();
 
-        // Inventory toggle
         if (GetKeyDown(InputAction.ToggleInventory))
-        {
-            _inventoryOpen = !_inventoryOpen;
-            if (_inventoryRoot) _inventoryRoot.SetActive(_inventoryOpen);
-        }
+            ToggleInventoryPressed?.Invoke();
 
-        // ESC closes whichever is open (Equipment priority)
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
-        {
+        if (Input.GetKeyDown(KeyCode.Escape))
             EscapePressed?.Invoke();
-            if (_equipmentOpen && _equipmentRoot)       { _equipmentOpen = false; _equipmentRoot.SetActive(false); }
-            else if (_inventoryOpen && _inventoryRoot)  { _inventoryOpen = false; _inventoryRoot.SetActive(false); }
-        }
     }
 
     private bool GetKeyDown(InputAction a)
     {
-        if(isLocked) return false;
+        if (isLocked && !_allowWhileLocked.Contains(a)) return false;
 
         if (!_bindings.TryGetValue(a, out var b))
         {
             EnsureAllBindingsPresent();
-            if (!_bindings.TryGetValue(a, out b))
-            {
-                // Only log once per action if you want; for now just return false quietly
-                return false;
-            }
-            SaveBindings(); // persist the fix
+            _bindings.TryGetValue(a, out b);
         }
-        return (b.primary != KeyCode.None && Input.GetKeyDown(b.primary)) ||
-               (b.secondary != KeyCode.None && Input.GetKeyDown(b.secondary));
+
+        if (b.primary == KeyCode.None && b.secondary == KeyCode.None) return false;
+
+        return (b.primary != KeyCode.None && Input.GetKeyDown(b.primary))
+            || (b.secondary != KeyCode.None && Input.GetKeyDown(b.secondary));
     }
 
+
+    private static bool IsPointerOverUI()
+    {
+        var es = EventSystem.current;
+        if(es == null) return false;
+
+        return es.IsPointerOverGameObject();
+    }
 
     // ---------- binding API ----------
     public static KeyCode GetPrimary(InputAction a)     => Instance._bindings[a].primary;
@@ -285,6 +283,21 @@ public class InputManager : MonoSingleton<InputManager>
             if (!_bindings.ContainsKey(def.action))
                 _bindings[def.action] = new Binding(def.action, def.primary, def.secondary);
     }
+
+    private void UpgradeDefaultsIfNeeded()
+    {
+        bool changed = false;
+        void Ensure(InputAction a, KeyCode primary, KeyCode secondary = KeyCode.None)
+        {
+            if (_defaults.Find(b => b.action == a).action != a)
+            {
+                _defaults.Add(new Binding(a, primary, secondary)); changed = true;
+            }
+        }
+        Ensure(InputAction.Cancel, KeyCode.Escape, KeyCode.JoystickButton1);
+        if (changed) SaveBindings();
+    }
+
 
     // Force a reload from PlayerPrefs at runtime (for Settings/Debug)
     public static void ForceReload()

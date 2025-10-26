@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 [DefaultExecutionOrder(9998)]
 public class WorldRaycastProbe : MonoBehaviour
 {
@@ -30,3 +31,4 @@ public class WorldRaycastProbe : MonoBehaviour
         }
     }
 }
+#endif

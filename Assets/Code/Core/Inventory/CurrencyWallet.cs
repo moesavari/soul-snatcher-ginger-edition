@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[DefaultExecutionOrder(-50)]
 public class CurrencyWallet : MonoSingleton<CurrencyWallet>
 {
     [SerializeField] private int _gold;

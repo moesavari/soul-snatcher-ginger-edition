@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 [DefaultExecutionOrder(9999)]
 public class UIRaycastProbe : MonoBehaviour
 {
@@ -101,3 +102,4 @@ public class UIRaycastProbe : MonoBehaviour
         GUILayout.EndArea();
     }
 }
+#endif

@@ -15,11 +15,11 @@ public class VendorInteraction : MonoBehaviour
 
     private void OnEnable()
     {
-        InputManager.InteractRescuePressed += OnInteract; // reuse your existing interact
+        InputManager.InteractPressed += OnInteract;
     }
     private void OnDisable()
     {
-        InputManager.InteractRescuePressed -= OnInteract;
+        InputManager.InteractPressed -= OnInteract;
     }
 
     private void OnInteract()

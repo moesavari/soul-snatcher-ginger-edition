@@ -25,7 +25,7 @@ public class Villager : MonoBehaviour
     private float _currentSpeed;
     private int _currentHealth;
 
-    private bool _isNight;
+    protected bool _isNight;
     private bool _isPanicking;
     private bool _isHiding;
     public bool isHiding => _isHiding;

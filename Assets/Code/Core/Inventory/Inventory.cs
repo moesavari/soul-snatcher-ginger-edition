@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace Game.Core.Inventory
@@ -8,6 +9,7 @@ namespace Game.Core.Inventory
     {
         [SerializeField] private int _slots = 12;
         [SerializeField] private List<ItemStack> _contents = new List<ItemStack>();
+        [SerializeField] private TMP_Text _goldText;
 
         public int slots => _slots;
         public IReadOnlyList<ItemStack> contents => _contents;
@@ -20,6 +22,18 @@ namespace Game.Core.Inventory
             if (_contents.Count < _slots)
                 for (int i = _contents.Count; i < _slots; i++) 
                     _contents.Add(new ItemStack());
+        }
+
+        private void OnEnable()
+        {
+            if (_goldText) _goldText.text = CurrencyWallet.Instance ? CurrencyWallet.Instance.gold.ToString() : "0";
+                
+            if (CurrencyWallet.Instance != null) CurrencyWallet.Instance.OnGoldChanged += OnGoldChanged;
+        }
+
+        private void OnDisable()
+        {
+            if(CurrencyWallet.Instance != null) CurrencyWallet.Instance.OnGoldChanged -= OnGoldChanged;
         }
 
         public bool TryAdd(ItemDef def, int amount, out int leftover)
@@ -107,17 +121,16 @@ namespace Game.Core.Inventory
                 var s = _contents[i];
                 if (s.IsEmpty) continue;
 
-                // Fire removed for the amount being cleared
                 FireRemoved(new ItemStack { def = s.def, amount = s.amount });
 
                 _contents[i] = new ItemStack();
             }
         }
 
-
         private void FireAdded(ItemStack s) { OnItemAdded?.Invoke(this, s); GameEvents.RaiseItemAdded(this, s); }
 
         private void FireRemoved(ItemStack s) { OnItemRemoved?.Invoke(this, s); GameEvents.RaiseItemRemoved(this, s); }
 
+        private void OnGoldChanged(int value) { if (_goldText) _goldText.text = value.ToString(); }
     }
 }

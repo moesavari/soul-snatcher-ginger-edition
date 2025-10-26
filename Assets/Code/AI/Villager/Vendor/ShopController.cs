@@ -7,6 +7,7 @@ public class ShopController : MonoSingleton<ShopController>
 {
     [SerializeField] private GameObject _shopRoot;
     [SerializeField] private int _buybackCapacity = 10;
+    [SerializeField] private VendorPanelUI _vendorPanel;
 
     private Vendor _activeVendor;
     public Vendor activeVendor => _activeVendor;
@@ -17,30 +18,68 @@ public class ShopController : MonoSingleton<ShopController>
     public event Action OnShopClosed;
     public event Action OnChanged;
 
+    private bool _uiVisible;
+
+    protected override void OnSingletonAwake()
+    {
+        if (_shopRoot == null)
+        {
+            var panel = FindFirstObjectByType<VendorPanelUI>();
+            if (panel) _shopRoot = panel.gameObject;
+        }
+        if (_shopRoot) _shopRoot.SetActive(false);
+    }
+
     protected override void Awake()
     {
         base.Awake();
         if(_shopRoot) _shopRoot.SetActive(false);
     }
 
-    public void Open(Vendor v)
+    private void OnEnable()
     {
-        if(!v || v.inventory == null) return;
+        InputManager.CancelPressed += HandleCancel;
+    }
 
-        _activeVendor = v;
+    private void OnDisable()
+    {
+        InputManager.CancelPressed -= HandleCancel;
+    }
+
+    public void Open(Vendor vendor)
+    {
+        if (vendor == null) { Debug.LogWarning("[Shop] Open called with null vendor"); return; }
+
+        _activeVendor = vendor;
+        OnShopOpened?.Invoke(vendor);
+        _vendorPanel.Bind(vendor);
+
+        var shown = TrySetShopRoot(true);
+        if (shown) InputManager.PushLock();
+
+        OnChanged?.Invoke();
 
         if (_shopRoot) _shopRoot.SetActive(true);
-        InputManager.PushLock();
-        OnShopOpened?.Invoke(v);
+    }
+
+    private void SetShopRootVisible(bool visible)
+    {
+        if(_vendorPanel) _vendorPanel.gameObject.SetActive(visible);
     }
 
     public void Close()
     {
+        TrySetShopRoot(false);
         _activeVendor = null;
 
         if (_shopRoot) _shopRoot.SetActive(false);
         InputManager.PopLock();
         OnShopClosed?.Invoke();
+    }
+
+    private void HandleCancel()
+    {
+        if (_activeVendor != null || _uiVisible) Close();
     }
 
     private int GetBasePrice(ItemDef item)
@@ -52,6 +91,43 @@ public class ShopController : MonoSingleton<ShopController>
     {
         float t = ReputationSystem.Instance.Normalized;
         return Mathf.Lerp(1.2f, 0.85f, t);
+    }
+
+    private void EnsureShopRoot()
+    {
+        if (_shopRoot != null) return;
+
+        var panel = FindFirstObjectByType<VendorPanelUI>();
+        if (panel) _shopRoot = panel.gameObject;
+    }
+
+    private bool TrySetShopRoot(bool on)
+    {
+        EnsureShopRoot();
+
+        if (_shopRoot == null)
+        {
+            DebugManager.LogWarning("No Shop Root assigned/found. UI will not be shown.", this);
+            _uiVisible = false;
+            return false;
+        }
+
+        var t = _shopRoot.transform.parent;
+        while (t != null)
+        {
+            if (!t.gameObject.activeSelf)
+            {
+                DebugManager.LogError($"Parent '{t.name}' is inactive, shop UI cannot be shown. Activate UIRoot/Canvas Parents.", this);
+                _uiVisible |= false;
+                return false;
+            }
+
+            t = t.parent;
+        }
+
+        _shopRoot.SetActive(true);
+        _uiVisible = on;
+        return on;
     }
 
     public bool TryBuy(ItemDef item, int qty = 1)

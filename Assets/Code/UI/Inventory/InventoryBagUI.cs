@@ -1,227 +1,185 @@
-using Game.Core.Inventory;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
-#if TMP_PRESENT || TEXTMESHPRO_PRESENT
+using Game.Core.Inventory;
 using TMPro;
-#endif
 
 public class InventoryBagUI : MonoBehaviour
 {
-    public enum RenderMode { StaticGrid, DynamicList }
+    [Header("Roots")]
+    [SerializeField] private GameObject _root;
+    [SerializeField] private ItemContextMenuUI _context;
+    [SerializeField] private TMP_Text _goldText;
 
-    [Header("Mode")]
-    [SerializeField] private RenderMode _mode = RenderMode.StaticGrid;
+    [Header("Grid")]
+    [SerializeField] private UIGridPool<InventoryCellView> _pool;
+    [SerializeField, Min(1)] private int _slotsVisible = 20;
 
-    [Header("Data source")]
-    [Tooltip("Leave null to auto-use the player's inventory from PlayerContext.")]
+    [Header("Optional data source")]
     [SerializeField] private Inventory _inventoryOverride;
 
-    [Header("Refs")]
-    [SerializeField] private CharacterSheetUI _characterSheetUI;
-    [SerializeField] private Transform _gridRoot;
-
-    [Header("DynamicList mode only")]
-    [SerializeField] private GameObject _buttonPrefab; 
-
-    private Inventory _inv;                                   
-    private readonly List<Button> _buttons = new();           
-    private readonly List<Sprite> _baseSprites = new();       
-    private readonly List<BagCellView> _cells = new();
-
-    public static event Action<bool> OnVisibilityChanged;
+    private Inventory _inv;
+    private int _lastToggleFrame = -1;
 
     private void Awake()
     {
-        if (_mode == RenderMode.StaticGrid)
-            CacheStaticButtons();
+        if (_pool)
+            _pool.BuildOnce();
+
+        foreach (var cell in _pool.Cells)
+        {
+            cell.Clicked -= OnCellClicked;
+            cell.Clicked += OnCellClicked;
+        }
+
+        for (int i = 0; i < _pool.Cells.Count; i++)
+            _pool.Cells[i].gameObject.SetActive(i < _slotsVisible);
+
+        DrawEmpty();
     }
 
     private void OnEnable()
     {
-        BindInventory();
-        Redraw();
-        OnVisibilityChanged?.Invoke(true);
+        ResolveInventory();
+
+        if (_inv != null)
+        {
+            _inv.OnItemAdded += HandleInvChanged;
+            _inv.OnItemRemoved += HandleInvChanged;
+        }
+
+        var wallet = CurrencyWallet.Instance;
+        if (wallet != null)
+        {
+            wallet.OnGoldChanged += UpdateGold;
+            UpdateGold(wallet.gold);
+        }
+        else
+        {
+            UpdateGold(0);
+        }
+
+        InputManager.ToggleInventoryPressed += OnToggleInventory;
+        InputManager.EscapePressed += OnEscape;
+
+        RedrawFromInventory();
     }
 
     private void OnDisable()
     {
-        UnbindInventory();
-        if (_mode == RenderMode.DynamicList)
-            ClearDynamicChildren();
-        OnVisibilityChanged?.Invoke(false);
-    }
-
-    // ---------- binding ----------
-    private Inventory ResolveInventory()
-    {
-        if (_inventoryOverride) return _inventoryOverride;
-        if (PlayerContext.Instance != null && PlayerContext.Instance.facade != null)
-            return PlayerContext.Instance.facade.inventory;
-        return null;
-    }
-
-    private void BindInventory()
-    {
-        UnbindInventory();
-        _inv = ResolveInventory();
-        if (_inv == null)
-        {
-            DebugManager.LogWarning("No inventory found.", this);
-            return;
-        }
-        _inv.OnItemAdded += OnInvChanged;
-        _inv.OnItemRemoved += OnInvChanged;
-    }
-
-    private void UnbindInventory()
-    {
         if (_inv != null)
         {
-            _inv.OnItemAdded -= OnInvChanged;
-            _inv.OnItemRemoved -= OnInvChanged;
+            _inv.OnItemAdded -= HandleInvChanged;
+            _inv.OnItemRemoved -= HandleInvChanged;
             _inv = null;
         }
+
+        var wallet = CurrencyWallet.Instance;
+        if (wallet != null) wallet.OnGoldChanged -= UpdateGold;
+
+        InputManager.ToggleInventoryPressed -= OnToggleInventory;
+        InputManager.EscapePressed          -= OnEscape;
     }
 
-    private void OnInvChanged(Inventory inv, ItemStack _) => Redraw();
-
-    // ---------- UI ----------
-    public void Redraw()
+    private void OnToggleInventory()
     {
-        if (_inv == null || _gridRoot == null) return;
+        if(!_root) return;
+        if (_lastToggleFrame == Time.frameCount) return;
 
-        switch (_mode)
+        _lastToggleFrame = Time.frameCount;
+        _root.SetActive(!_root.activeSelf);
+    }
+
+    private void OnEscape()
+    {
+        if(_root && _root.activeSelf) _root.SetActive(false);
+    }
+
+    private void OnCellClicked(ItemDef def, int amount, Vector2 screenPos)
+    {
+        if (def == null || _context == null) return;
+
+        bool shopOpen =
+            ShopController.Instance != null &&
+            ShopController.Instance.activeVendor != null;
+
+        if (shopOpen)
         {
-            case RenderMode.StaticGrid:
-                PaintStaticGrid();
-                break;
-
-            case RenderMode.DynamicList:
-                BuildDynamicList();
-                break;
+            _context.ShowShopSell(def, screenPos);
+        }
+        else
+        {
+            _context.ShowInventory(def, false, screenPos);
         }
     }
 
-    // ===== STATIC GRID =====
-    private void CacheStaticButtons()
+    private void ResolveInventory()
     {
-        _buttons.Clear();
-        _baseSprites.Clear();
-        _cells.Clear();
-
-        if (!_gridRoot) return;
-
-        // grab buttons in layout order
-        _gridRoot.GetComponentsInChildren(true, _buttons);
-
-        foreach (var b in _buttons)
-        {
-            // cache original frame
-            var img = b.GetComponent<Image>();
-            _baseSprites.Add(img ? img.sprite : null);
-
-            // cache the BagCellView that handles hover/click
-            var cell = b.GetComponent<BagCellView>();
-            _cells.Add(cell);
-        }
+        if (_inventoryOverride != null) { _inv = _inventoryOverride; return; }
+        _inv = PlayerContext.Instance?.facade?.inventory;
     }
 
-    private void PaintStaticGrid()
+    private void HandleInvChanged(Inventory _, ItemStack __)
     {
-        if (_buttons.Count == 0) CacheStaticButtons();
-        if (_inv == null) return;
+        RedrawFromInventory();
+    }
 
-        var slots = _inv.contents;
-        int count = Mathf.Min(_buttons.Count, slots.Count);
+    private void UpdateGold(int amount)
+    {
+        if(_goldText) _goldText.text = CurrencyWallet.Instance.gold.ToString();
+    }
 
-        for (int i = 0; i < count; i++)
+    public void Show() { if (_root) _root.SetActive(true); }
+    public void Hide() { if (_root) _root.SetActive(false); }
+    public void Toggle() { if (_root) _root.SetActive(!_root.activeSelf); }
+
+    public void DrawEmpty()
+    {
+        if (_pool == null) return;
+
+        _pool.ForEach((cell, i) =>
         {
-            var b = _buttons[i];
-            var cell = _cells[i];
-            var s = slots[i];
+            if (!cell.gameObject.activeSelf) return;
+            cell.ShowEmpty();
+        });
+    }
 
-            if (!b) continue;
+    public void RedrawFromInventory()
+    {
+        if (_pool == null)
+        {
+            DebugManager.LogWarning("Pool not assigned.", this);
+            return;
+        }
 
-            if (cell != null)
+        if (_inv == null || _inv.contents == null)
+        {
+            DrawEmpty();
+            return;
+        }
+
+        IReadOnlyList<ItemStack> list = _inv.contents;
+
+        int i = 0;
+        for (; i < _pool.Cells.Count; i++)
+        {
+            var cell = _pool.Cells[i];
+            if (!cell.gameObject.activeSelf) continue;
+
+            if (i < list.Count)
             {
-                cell.Bind(s.def, s.amount);
-                cell.Refresh();
-            }
+                var s = list[i];
 
-            var img = b.GetComponent<Image>();
-#if TMP_PRESENT || TEXTMESHPRO_PRESENT
-            var label = b.GetComponentInChildren<TMP_Text>(true);
-#else
-            var label = b.GetComponentInChildren<Text>(true);
-#endif
-            // clear old listeners then add a fresh one
-            b.onClick.RemoveAllListeners();
+                bool empty = s.IsEmpty || s.def == null || s.amount <= 0;
 
-            if (s.IsEmpty || s.def == null)
-            {
-                if (img) img.sprite = _baseSprites.Count > i ? _baseSprites[i] : img.sprite;
-                if (label) label.text = "";
+                if (empty)
+                    cell.ShowEmpty();
+                else
+                    cell.Bind(s.def, s.amount);
             }
             else
             {
-                if (img) img.sprite = s.def.icon ? s.def.icon : (_baseSprites.Count > i ? _baseSprites[i] : img.sprite);
-                if (label)
-                    label.text = s.def.stackable && s.amount > 1
-                        ? $"{s.def.displayName} x{s.amount}"
-                        : s.def.displayName;
-
-                if (_characterSheetUI != null)
-                {
-                    var captured = s.def;
-                    b.onClick.AddListener(() => _characterSheetUI.SetSelectedItem(captured));
-                }
+                cell.ShowEmpty();
             }
         }
-    }
-
-    // ===== DYNAMIC LIST =====
-    private void BuildDynamicList()
-    {
-        if (_buttonPrefab == null)
-        {
-            DebugManager.LogWarning("Button Prefab is null (DynamicList mode). Assign a prefab asset.", this);
-            return;
-        }
-
-        ClearDynamicChildren();
-
-        var list = _inv.contents;
-        foreach (var s in list)
-        {
-            if (s.IsEmpty || s.def == null) continue;
-            var go = Instantiate(_buttonPrefab, _gridRoot);
-
-            var img = go.GetComponentInChildren<Image>(true);
-            if (img) img.sprite = s.def.icon;
-
-#if TMP_PRESENT || TEXTMESHPRO_PRESENT
-            var label = go.GetComponentInChildren<TMP_Text>(true);
-#else
-            var label = go.GetComponentInChildren<Text>(true);
-#endif
-            if (label)
-                label.text = s.def.stackable && s.amount > 1
-                    ? $"{s.def.displayName} x{s.amount}"
-                    : s.def.displayName;
-
-            var btn = go.GetComponent<Button>();
-            if (btn && _characterSheetUI)
-            {
-                var captured = s.def;
-                btn.onClick.AddListener(() => _characterSheetUI.SetSelectedItem(captured));
-            }
-        }
-    }
-
-    private void ClearDynamicChildren()
-    {
-        foreach (Transform c in _gridRoot) Destroy(c.gameObject);
     }
 }
