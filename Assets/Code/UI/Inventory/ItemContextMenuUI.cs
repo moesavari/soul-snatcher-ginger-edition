@@ -187,10 +187,34 @@ public class ItemContextMenuUI : MonoBehaviour
         {
             _splitBtn.onClick.AddListener(() =>
             {
-                _quantity.Open(Input.mousePosition, Mathf.Max(1, maxQty), amt =>
+                int clampedMax = Mathf.Max(1, maxQty);
+
+                // If we know the price, clamp by what the player can afford
+                var wallet = CurrencyWallet.Instance;
+                if (wallet != null && priceEach > 0)
                 {
-                    ShopController.Instance?.TryBuy(item, amt);
-                }, 1, Mathf.Clamp(1, 1, maxQty));
+                    int maxAffordable = wallet.gold / priceEach;
+                    clampedMax = Mathf.Clamp(maxAffordable, 0, maxQty);
+                }
+
+                // If they can’t afford even 1, don’t bother opening the prompt
+                if (clampedMax <= 0)
+                {
+                    Debug.Log("Not enough gold to buy any of this item.");
+                    return;
+                }
+
+                _quantity.Open(
+                    Input.mousePosition,
+                    clampedMax,
+                    amt =>
+                    {
+                        ShopController.Instance?.TryBuy(item, amt);
+                    },
+                    1,
+                    Mathf.Clamp(1, 1, clampedMax)
+                );
+
                 Hide();
             });
         }

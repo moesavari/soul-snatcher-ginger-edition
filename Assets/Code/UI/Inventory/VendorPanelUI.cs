@@ -124,7 +124,7 @@ public class VendorPanelUI : MonoBehaviour
                 {
                     if (_context == null || _canvas == null) return;
                     Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(_canvas.worldCamera, rt.position);
-                    _context.ShowShopBuy(def, qty, 0, screenPos);   // uses your existing ShowShopBuy API
+                    _context.ShowShopBuy(def, qty, priceEach, screenPos);
                 });
             }
         }
@@ -143,15 +143,20 @@ public class VendorPanelUI : MonoBehaviour
     public void Hide()
     {
         if (_root) _root.SetActive(false);
+        _context?.Hide();
     }
 
     public void Toggle(string title = "SHOP")
     {
         if (_root == null) return;
+
         bool next = !_root.activeSelf;
         if (next && _title) _title.text = title;
+
         _root.SetActive(next);
+
         if (next) RedrawFromVendor();
+        else _context?.Hide();
     }
 
     // ---------------- Helpers ----------------

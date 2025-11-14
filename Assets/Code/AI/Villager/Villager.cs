@@ -20,6 +20,8 @@ public class Villager : MonoBehaviour
     [SerializeField] private int _soulAmount = 1;              // siphon reward (souls)
     [SerializeField] private int _rescueRepBonus = 15;         // extra on rescue
 
+    protected virtual bool shouldWanderDuringDay => true;
+
     private readonly Collider2D[] _overlap = new Collider2D[8];
 
     private float _currentSpeed;
@@ -77,11 +79,11 @@ public class Villager : MonoBehaviour
         else
         {
             // Daytime: wander
+            if (!shouldWanderDuringDay) return;
+
             if ((transform.position - _wanderTarget).sqrMagnitude < 0.05f) PickNewWanderTarget();
             MoveTo(_wanderTarget, _stats.MoveSpeed);
         }
-
-        // if (Input.GetKeyDown(KeyCode.R)) { OnSoulAbsorb(); GetComponent<Health>().Die(); }
     }
 
     private void OnDay()

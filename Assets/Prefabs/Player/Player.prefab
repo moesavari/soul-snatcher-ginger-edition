@@ -59,7 +59,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stats: {fileID: 6431218430879947762}
-  _baseMoveSpeed: 4
   _animator: {fileID: 8414242338154478687}
   _rigidbody: {fileID: 171722781039522034}
   _knockback: {fileID: 3510817545347683597}
@@ -216,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
   _slots: 32
   _contents: []
+  _goldText: {fileID: 0}
 --- !u!114 &1548919638647246636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,12 +278,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFacade
   _controller: {fileID: 5887548895762428287}
-  _combat: {fileID: 0}
-  _health: {fileID: 0}
   _inventory: {fileID: 1418639616888690901}
   _equipment: {fileID: 1548919638647246636}
   _stats: {fileID: 6431218430879947762}
-  _melee: {fileID: 0}
+  _melee: {fileID: 1149582906338251518}
   _ranged: {fileID: 4039748005341639780}
   _aimRig: {fileID: 8336565356926838932}
   _firePoint: {fileID: 8234449984960637436}
@@ -310,7 +308,6 @@ MonoBehaviour:
   _hitMask:
     serializedVersion: 2
     m_Bits: 64
-  _damage: 2
   _knockback: 6
   _stunTime: 0.08
   _ownerTag: Player

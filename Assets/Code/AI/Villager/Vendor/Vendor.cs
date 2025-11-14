@@ -14,6 +14,8 @@ public class Vendor : Villager
     [SerializeField] private bool _openAtNight = false;
     [SerializeField] private int _restockEveryNDays = 1;
 
+    protected override bool shouldWanderDuringDay => false;
+
     private int _dayCounter;
 
     private float _currentRepPriceMult = 1f;

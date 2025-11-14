@@ -59,19 +59,31 @@ public class EquipmentUI : MonoBehaviour
         if (_lastToggleFrame == Time.frameCount) return;
 
         _lastToggleFrame = Time.frameCount;
-        _root.SetActive(!_root.activeSelf);
 
-        if (_root.activeSelf) RefreshAll();
+        bool next = !_root.activeSelf;
+        _root.SetActive(next);
+        
+        if (next) RefreshAll();
+        else _context.Hide();
     }
 
     private void OnEscape()
     {
-        if (_root && _root.activeSelf) _root.SetActive(false);
+        if (_root && _root.activeSelf) { _root.SetActive(false); _context?.Hide(); }
     }
 
     public void Show() { if (_root) { _root.SetActive(true); RefreshAll(); } }
-    public void Hide() { if (_root) _root.SetActive(false); }
-    public void Toggle() { if (_root) { _root.SetActive(!_root.activeSelf); if (_root.activeSelf) RefreshAll(); } }
+    public void Hide() { if (_root) _root.SetActive(false); _context?.Hide(); }
+    public void Toggle()
+    {
+        if (!_root) return;
+
+        bool next = !_root.activeSelf;
+        _root.SetActive(next);
+
+        if (next) RefreshAll();
+        else _context?.Hide();
+    }
 
     public void RefreshAll()
     {

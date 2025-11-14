@@ -17,16 +17,16 @@ MonoBehaviour:
   stock:
   - item: {fileID: 11400000, guid: cf07cec77817fb449a8c2954abae6b82, type: 2}
     quantity: 5
-    overridePrice: 0
+    overridePrice: 10
   - item: {fileID: 11400000, guid: c02987827d1e1294b8629deec86e9f65, type: 2}
     quantity: 5
-    overridePrice: 0
+    overridePrice: 10
   - item: {fileID: 11400000, guid: 378f49554eb178b4f84353ef657477c5, type: 2}
     quantity: 5
-    overridePrice: 0
+    overridePrice: 10
   - item: {fileID: 11400000, guid: b80e7b2e73e245b479fbcc8b37b51597, type: 2}
     quantity: 5
-    overridePrice: 0
+    overridePrice: 10
   - item: {fileID: 11400000, guid: baf4a889f74a0c14686e3b593cb3e71a, type: 2}
     quantity: 5
-    overridePrice: 0
+    overridePrice: 10

@@ -8,6 +8,8 @@ public enum UIPanelID { None, Inventory, Equipment, Shop }
 
 public class HUDRoot : MonoBehaviour
 {
+    [SerializeField] private SoulSystem _soulSystem;
+
     [Header("References")]
     [SerializeField] private Image _healthFill;
     [SerializeField] private TMP_Text _soulsText;
@@ -34,7 +36,6 @@ public class HUDRoot : MonoBehaviour
     private PlayerController _playerHealth;
     private CharacterStats _stats;
     private GameObject _player;
-    private ISoulReadOnly _soulSource;
     private IHairStageReadOnly _hairSource;
 
     public CanvasGroup bannerGroup => _bannerGroup;
@@ -54,6 +55,16 @@ public class HUDRoot : MonoBehaviour
         GameEvents.PlayerSpawned += OnPlayerSpawned;
 
         TryBindExistingPlayer();
+
+        if (_soulSystem != null)
+        {
+            _soulSystem.OnSoulsChanged += OnSoulsChanged;
+            UpdateSouls(_soulSystem.souls);
+        }
+        else
+        {
+            _soulsText?.SetText("Souls: 0");
+        }
     }
 
     private void OnDisable()
@@ -67,7 +78,7 @@ public class HUDRoot : MonoBehaviour
             _playerHealth.OnDeath -= OnPlayerDeath;
         }
 
-        if (_soulSource != null) _soulSource.SoulsChanged -= OnSoulsChanged;
+        if (_soulSystem != null) _soulSystem.OnSoulsChanged -= OnSoulsChanged;
         if (_hairSource != null) _hairSource.HairStageChanged -= OnHairStageChanged;
     }
 
@@ -101,14 +112,6 @@ public class HUDRoot : MonoBehaviour
         _playerHealth.OnDeath += OnPlayerDeath;
 
         UpdateHealthBar();
-
-        _soulSource = _player.GetComponent<ISoulReadOnly>();
-        if (_soulSource != null)
-        {
-            _soulSource.SoulsChanged += OnSoulsChanged;
-            UpdateSouls(_soulSource.souls);
-        }
-        else _soulsText?.SetText("Souls: 0");
 
         _hairSource = _player.GetComponent<IHairStageReadOnly>();
         if (_hairSource != null)
@@ -177,7 +180,6 @@ public class HUDRoot : MonoBehaviour
         float pct = (_stats.Health <= 0) ? 0f : Mathf.Clamp01((float)_playerHealth.currentHealth / _stats.Health);
         _healthFill.fillAmount = pct;
     }
-
 
     private void UpdateSouls(int souls)
     {

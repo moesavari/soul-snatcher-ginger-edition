@@ -86,12 +86,17 @@ public class InventoryBagUI : MonoBehaviour
         if (_lastToggleFrame == Time.frameCount) return;
 
         _lastToggleFrame = Time.frameCount;
-        _root.SetActive(!_root.activeSelf);
+
+        bool next = !_root.activeSelf;
+        _root.SetActive(next);
+
+        if (!next && _context != null)
+            _context.Hide();
     }
 
     private void OnEscape()
     {
-        if(_root && _root.activeSelf) _root.SetActive(false);
+        if (_root && _root.activeSelf) { _root.SetActive(false); _context?.Hide(); } 
     }
 
     private void OnCellClicked(ItemDef def, int amount, Vector2 screenPos)
@@ -129,8 +134,17 @@ public class InventoryBagUI : MonoBehaviour
     }
 
     public void Show() { if (_root) _root.SetActive(true); }
-    public void Hide() { if (_root) _root.SetActive(false); }
-    public void Toggle() { if (_root) _root.SetActive(!_root.activeSelf); }
+    public void Hide() { if (_root) _root.SetActive(false); _context.Hide(); }
+    public void Toggle() 
+    {
+        if (!_root) return;
+
+        bool next = !_root.activeSelf;
+        _root.SetActive(next);
+
+        if (!next)
+            _context?.Hide();
+    }
 
     public void DrawEmpty()
     {

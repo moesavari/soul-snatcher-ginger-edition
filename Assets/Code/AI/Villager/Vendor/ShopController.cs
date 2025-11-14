@@ -73,6 +73,11 @@ public class ShopController : MonoSingleton<ShopController>
         _activeVendor = null;
 
         if (_shopRoot) _shopRoot.SetActive(false);
+
+        var ctx = FindFirstObjectByType<ItemContextMenuUI>();
+        if (ctx != null)
+            ctx.Hide();
+
         InputManager.PopLock();
         OnShopClosed?.Invoke();
     }
