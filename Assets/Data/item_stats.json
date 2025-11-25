@@ -1,0 +1,67 @@
+[
+  {
+    "item_id": 1,
+    "stat_id": 3,
+    "value": 5
+  },
+  {
+    "item_id": 2,
+    "stat_id": 1,
+    "value": 20
+  },
+  {
+    "item_id": 2,
+    "stat_id": 2,
+    "value": 5
+  },
+  {
+    "item_id": 3,
+    "stat_id": 3,
+    "value": 20
+  },
+  {
+    "item_id": 3,
+    "stat_id": 6,
+    "value": 5
+  },
+  {
+    "item_id": 3,
+    "stat_id": 5,
+    "value": 5
+  },
+  {
+    "item_id": 12,
+    "stat_id": 3,
+    "value": 125
+  },
+  {
+    "item_id": 12,
+    "stat_id": 5,
+    "value": 12
+  },
+  {
+    "item_id": 12,
+    "stat_id": 6,
+    "value": 150
+  },
+  {
+    "item_id": 13,
+    "stat_id": 3,
+    "value": 115
+  },
+  {
+    "item_id": 13,
+    "stat_id": 5,
+    "value": 110
+  },
+  {
+    "item_id": 13,
+    "stat_id": 6,
+    "value": 12
+  },
+  {
+    "item_id": 13,
+    "stat_id": 8,
+    "value": 15
+  }
+]
