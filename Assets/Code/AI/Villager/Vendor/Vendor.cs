@@ -1,5 +1,7 @@
 using Game.Systems;
 using UnityEngine;
+using Game.Core.Inventory;
+using System.Collections.Generic;
 
 [DisallowMultipleComponent]
 public class Vendor : Villager
@@ -9,6 +11,9 @@ public class Vendor : Villager
     [SerializeField] private VendorInventory _inventory;
     [SerializeField] private VendorReputationRules _repRules;
     [SerializeField] private int _defaultAddQuantity = 1;
+
+    [Tooltip("ID from vendors.json; 0 = use ScriptableObject inventory")]
+    [SerializeField] private int _vendorId = 0;
 
     [Header("Day settings")]
     [SerializeField] private bool _openAtNight = false;
@@ -31,9 +36,21 @@ public class Vendor : Villager
     protected override void Awake()
     {
         base.Awake();
-        _runtimeInventory = Instantiate(_inventory);
+
+        if (_vendorId <= 0 || !ItemDatabaseRuntime.IsReady || !ItemDefRegistry.IsReady)
+        {
+            // Fallback: old behaviour
+            _runtimeInventory = Instantiate(_inventory);
+            Debug.Log($"[Vendor] '{_vendorName}' using legacy inventory (vendorId={_vendorId}).");
+        }
+        else
+        {
+            BuildRuntimeInventoryFromJson();
+        }
+
         ReputationSystem.Instance.OnReputationChanged += OnRepChanged;
     }
+
 
     private void OnEnable()
     {
@@ -115,4 +132,48 @@ public class Vendor : Villager
 
         _currentRepPriceMult = Mathf.Max(0.01f, r.priceMultiplier);
     }
+
+    private void BuildRuntimeInventoryFromJson()
+    {
+        var db = ItemDatabaseRuntime.Instance;
+        var registry = ItemDefRegistry.Instance;
+
+        if (!db.TryGetVendor(_vendorId, out var vendorJson))
+        {
+            Debug.LogWarning($"[Vendor] No vendor.json entry for id={_vendorId}, using legacy inventory.");
+            _runtimeInventory = Instantiate(_inventory);
+            return;
+        }
+
+        _runtimeInventory = ScriptableObject.CreateInstance<VendorInventory>();
+        _runtimeInventory.vendorName = vendorJson.name;
+        _runtimeInventory.priceMultiplier = vendorJson.basePriceMultiplier;
+        _runtimeInventory.stock = new List<VendorInventory.StockEntry>();
+
+        var stockList = db.GetVendorStock(_vendorId);
+
+        foreach (var s in stockList)
+        {
+            if (!db.TryGetItem(s.itemId, out var itemJson)) continue;
+
+            // For now we use iconId as the itemCode
+            if (!registry.TryGet(itemJson.iconId, out var def))
+            {
+                Debug.LogWarning($"[Vendor] No ItemDef for code '{itemJson.iconId}' (vendorId={_vendorId}).");
+                continue;
+            }
+
+            var entry = new VendorInventory.StockEntry
+            {
+                item = def,
+                quantity = s.maxQuantity,
+                overridePrice = s.overridePrice
+            };
+
+            _runtimeInventory.stock.Add(entry);
+        }
+
+        Debug.Log($"[Vendor] '{vendorJson.name}' built runtime stock from JSON: {_runtimeInventory.stock.Count} entries.");
+    }
+
 }

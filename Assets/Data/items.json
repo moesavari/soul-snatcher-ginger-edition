@@ -1,78 +1,114 @@
 [
   {
-    "id": 1,
-    "name": "Rusty Sword",
-    "description": "Barely holds together, but it cuts.",
+    "id": 14,
+    "name": "Sword",
+    "description": "",
     "rarity_id": 1,
     "type": "weapon",
     "armor_slot": null,
     "weapon_type": "sword_1h",
-    "value": 10,
+    "value": 500,
     "max_stack": 1,
-    "icon_id": "icon_rusty_sword",
+    "icon_id": "Weapon_262",
     "base_item_id": null,
     "stats": [
       {
         "id": "attack_power",
         "name": "Attack Power",
-        "value": 5
+        "value": 12
       }
     ],
     "enchantments": []
   },
   {
-    "id": 2,
-    "name": "Worn Leather Vest",
-    "description": "Seen better days but still usable.",
+    "id": 15,
+    "name": "Halbred",
+    "description": "",
     "rarity_id": 2,
-    "type": "armor",
-    "armor_slot": "chest",
-    "weapon_type": null,
-    "value": 15,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "axe_2h",
+    "value": 0,
     "max_stack": 1,
-    "icon_id": "icon_worn_vest",
+    "icon_id": "Weapon_178",
     "base_item_id": null,
     "stats": [
       {
-        "id": "health",
-        "name": "Health",
-        "value": 20
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 15
       },
       {
-        "id": "armor",
-        "name": "Armor",
-        "value": 5
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 12
       }
     ],
     "enchantments": []
   },
   {
-    "id": 3,
-    "name": "Blacksmith's Finest",
-    "description": "Well-balanced blade crafted with care.",
+    "id": 16,
+    "name": "Bow",
+    "description": "",
     "rarity_id": 3,
     "type": "weapon",
     "armor_slot": null,
-    "weapon_type": "sword_1h",
-    "value": 60,
+    "weapon_type": "bow",
+    "value": 0,
     "max_stack": 1,
-    "icon_id": "icon_blacksmith_finest",
+    "icon_id": "Weapon_58",
     "base_item_id": null,
     "stats": [
       {
         "id": "attack_power",
         "name": "Attack Power",
         "value": 20
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 15
       },
       {
         "id": "crit_chance",
         "name": "Crit Chance",
         "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 17,
+    "name": "Broadsword",
+    "description": "",
+    "rarity_id": 4,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_2h",
+    "value": 0,
+    "max_stack": 1,
+    "icon_id": "Weapon_196",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 1234
       },
       {
         "id": "attack_speed",
         "name": "Attack Speed",
-        "value": 5
+        "value": 412
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 1121
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 154
       }
     ],
     "enchantments": [
@@ -88,8 +124,8 @@
     ]
   },
   {
-    "id": 12,
-    "name": "Soul-Shear Reaper ",
+    "id": 18,
+    "name": "Scythe",
     "description": "",
     "rarity_id": 5,
     "type": "weapon",
@@ -97,23 +133,23 @@
     "weapon_type": "axe_2h",
     "value": 0,
     "max_stack": 1,
-    "icon_id": "weapon_46_1763718719053.png",
-    "base_item_id": 1,
+    "icon_id": "Weapon_111",
+    "base_item_id": 14,
     "stats": [
       {
         "id": "attack_power",
         "name": "Attack Power",
-        "value": 125
+        "value": 124312
       },
       {
         "id": "attack_speed",
         "name": "Attack Speed",
-        "value": 12
+        "value": 11231
       },
       {
         "id": "crit_chance",
         "name": "Crit Chance",
-        "value": 150
+        "value": 412
       }
     ],
     "enchantments": [
@@ -125,52 +161,6 @@
         "affected_stat_code": null,
         "min_value": -80,
         "max_value": -100
-      }
-    ]
-  },
-  {
-    "id": 13,
-    "name": "The Dawnmother's Wrath",
-    "description": "",
-    "rarity_id": 4,
-    "type": "weapon",
-    "armor_slot": null,
-    "weapon_type": "sword_2h",
-    "value": 0,
-    "max_stack": 1,
-    "icon_id": "weapon_209_1763718778106.png",
-    "base_item_id": null,
-    "stats": [
-      {
-        "id": "attack_power",
-        "name": "Attack Power",
-        "value": 115
-      },
-      {
-        "id": "attack_speed",
-        "name": "Attack Speed",
-        "value": 110
-      },
-      {
-        "id": "crit_chance",
-        "name": "Crit Chance",
-        "value": 12
-      },
-      {
-        "id": "cdr",
-        "name": "Cooldown Reduction",
-        "value": 15
-      }
-    ],
-    "enchantments": [
-      {
-        "id": 7,
-        "name": "Bloodsurge",
-        "description": "Heals for 50% damage dealt. ",
-        "kind": "beneficial",
-        "affected_stat_code": null,
-        "min_value": 50,
-        "max_value": 80
       }
     ]
   }

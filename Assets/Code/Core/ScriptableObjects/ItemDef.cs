@@ -6,7 +6,8 @@ public enum ItemQuality
     Junk,
     Common,
     Rare,
-    Legendary
+    Legendary,
+    Cursed
 }
 
 public enum StatType
@@ -37,9 +38,13 @@ public class ItemDef : ScriptableObject
     public Sprite icon;
     public string description;
 
+    [Header("Identity")]
+    public string itemCode;
+
     [Header("Inventory")]
     public bool stackable = false;
     public int maxStack = 1;
+    public int value;
 
     [Header("Classification")]
     public ItemKind kind = ItemKind.Other;

@@ -196,6 +196,38 @@ public class ShopController : MonoSingleton<ShopController>
         return true;
     }
 
+    public bool TrySellFromSlot(int slotIndex, ItemDef item, int qty = 1, float sellFactor = 0.5f)
+    {
+        if (_activeVendor == null || item == null || qty <= 0) return false;
+
+        var inv = PlayerContext.Instance?.facade?.inventory;
+        if (inv == null) return false;
+
+        // Only sell from the clicked slot
+        if (!inv.TryRemoveAt(slotIndex, item, qty)) return false;
+
+        float vendorRepMult = _activeVendor.currentRepPriceMult;
+        float globalRepMult = GetGlobalRepMultiplier();
+        float totalMult = vendorRepMult * globalRepMult;
+
+        int eachBuy = _activeVendor.runtimeInventory.GetPrice(item, GetBasePrice(item), totalMult);
+        int eachSell = Mathf.Max(1, Mathf.RoundToInt(eachBuy * Mathf.Clamp01(sellFactor)));
+
+        CurrencyWallet.Instance.AddGold(eachSell * qty);
+
+        for (int i = 0; i < qty; i++)
+        {
+            _activeVendor.runtimeInventory.AddOne(item);
+            _buybackItems.Enqueue(item);
+            if (_buybackItems.Count > _buybackCapacity)
+                _buybackItems.Dequeue();
+        }
+
+        OnChanged?.Invoke();
+        return true;
+    }
+
+
     public bool TryBuyBack(ItemDef item)
     {
         if(!_buybackItems.Contains(item)) return false;

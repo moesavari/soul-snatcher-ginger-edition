@@ -104,6 +104,32 @@ namespace Game.Core.Inventory
             return true;
         }
 
+        public bool HasAt(int index, ItemDef def, int amount)
+        {
+            if (def == null || amount <= 0) return false;
+            if (index < 0 || index >= _contents.Count) return false;
+
+            var s = _contents[index];
+            return s.def == def && s.amount >= amount;
+        }
+
+        public bool TryRemoveAt(int index, ItemDef def, int amount)
+        {
+            if (!HasAt(index, def, amount)) return false;
+
+            var s = _contents[index];
+            s.amount -= amount;
+
+            if (s.amount <= 0)
+                s = new ItemStack();
+
+            _contents[index] = s;
+
+            FireRemoved(new ItemStack { def = def, amount = amount });
+            return true;
+        }
+
+
         public bool Has(ItemDef def, int amount)
         {
             if (def == null || amount <= 0) return false;

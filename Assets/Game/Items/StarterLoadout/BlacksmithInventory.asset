@@ -14,19 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VendorInventory
   vendorName: Blacksmith
   priceMultiplier: 1
-  stock:
-  - item: {fileID: 11400000, guid: 8ecbb930e0b09e347a75c705f675fc6a, type: 2}
-    quantity: 1
-    overridePrice: 15
-  - item: {fileID: 11400000, guid: e85862364c0105b4aab36f38cc092a00, type: 2}
-    quantity: 1
-    overridePrice: 15
-  - item: {fileID: 11400000, guid: 2b9974f2ce834a74da5765de054ceee2, type: 2}
-    quantity: 1
-    overridePrice: 9
-  - item: {fileID: 11400000, guid: 054d86ee9b3542241a5a3fed0b472e88, type: 2}
-    quantity: 1
-    overridePrice: 10
-  - item: {fileID: 11400000, guid: 6894fc9c8a0f63b40a04a2944e39fecf, type: 2}
-    quantity: 1
-    overridePrice: 15
+  stock: []

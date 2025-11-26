@@ -14,10 +14,11 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [Header("Shared popups")]
     [SerializeField] private ItemTooltipUI _tooltip;
 
-    public event Action<ItemDef, int, Vector2> Clicked;
+    public event Action<int, ItemDef, int, Vector2> Clicked;
 
     private ItemDef _def;
     private int _count;
+    private int _index;
 
     public void ShowEmpty()
     {
@@ -62,6 +63,12 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public void OnPointerClick(PointerEventData e)
     {
         if (_def == null) return;
-        Clicked?.Invoke(_def, _count, e.position);
+        Clicked?.Invoke(_index, _def, _count, e.position);
     }
+
+    public void SetIndex(int index)
+    {
+        _index = index;
+    }
+
 }

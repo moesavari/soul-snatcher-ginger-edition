@@ -99,7 +99,7 @@ public class InventoryBagUI : MonoBehaviour
         if (_root && _root.activeSelf) { _root.SetActive(false); _context?.Hide(); } 
     }
 
-    private void OnCellClicked(ItemDef def, int amount, Vector2 screenPos)
+    private void OnCellClicked(int index, ItemDef def, int amount, Vector2 screenPos)
     {
         if (def == null || _context == null) return;
 
@@ -109,7 +109,7 @@ public class InventoryBagUI : MonoBehaviour
 
         if (shopOpen)
         {
-            _context.ShowShopSell(def, screenPos);
+            _context.ShowShopSell(def, screenPos, index, amount);
         }
         else
         {
@@ -178,6 +178,7 @@ public class InventoryBagUI : MonoBehaviour
         {
             var cell = _pool.Cells[i];
             if (!cell.gameObject.activeSelf) continue;
+            cell.SetIndex(i);
 
             if (i < list.Count)
             {

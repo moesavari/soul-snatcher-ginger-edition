@@ -29,10 +29,11 @@ public class ItemDefEditor : Editor
 
     private int GetStatCount(ItemQuality q) => q switch
     {
-        ItemQuality.Junk => 1,
-        ItemQuality.Common => 2,
-        ItemQuality.Rare => 3,
-        ItemQuality.Legendary => 4,
+        ItemQuality.Junk        => 1,
+        ItemQuality.Common      => 2,
+        ItemQuality.Rare        => 3,
+        ItemQuality.Legendary   => 4,
+        ItemQuality.Cursed      => 4,
         _ => 1,
     };
 

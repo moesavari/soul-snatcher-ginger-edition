@@ -16,5 +16,50 @@
     "rep_min": 0,
     "rep_max": 100,
     "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 14,
+    "min_quantity": 1,
+    "max_quantity": 1,
+    "rep_min": -100,
+    "rep_max": 100,
+    "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 15,
+    "min_quantity": 1,
+    "max_quantity": 1,
+    "rep_min": -100,
+    "rep_max": 100,
+    "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 16,
+    "min_quantity": 1,
+    "max_quantity": 1,
+    "rep_min": -100,
+    "rep_max": 100,
+    "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 17,
+    "min_quantity": 1,
+    "max_quantity": 1,
+    "rep_min": -100,
+    "rep_max": 100,
+    "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 18,
+    "min_quantity": 1,
+    "max_quantity": 1,
+    "rep_min": -100,
+    "rep_max": 100,
+    "rarity_boost": 0
   }
 ]

@@ -224,7 +224,7 @@ public class ItemContextMenuUI : MonoBehaviour
     }
 
     // ---------------- SHOP: SELL ----------------
-    public void ShowShopSell(ItemDef item, Vector2 screenPos)
+    public void ShowShopSell(ItemDef item, Vector2 screenPos, int slotIndex, int stackCount)
     {
         if (!item) { Hide(); return; }
         if (_title) _title.text = item.displayName;
@@ -237,7 +237,8 @@ public class ItemContextMenuUI : MonoBehaviour
         Set(_useBtn, !stack, "Sell");
         Set(_splitBtn, stack, "Sell Amount");
 
-        int playerQty = GetPlayerQuantity(item);
+        // Use the clicked stack's amount, not total player quantity
+        int maxQty = Mathf.Max(1, stackCount);
         int sellEach = GetSellPriceEach(item);
 
         _useBtn.onClick.RemoveAllListeners();
@@ -247,7 +248,7 @@ public class ItemContextMenuUI : MonoBehaviour
         {
             _useBtn.onClick.AddListener(() =>
             {
-                ShopController.Instance?.TrySell(item, 1);
+                ShopController.Instance?.TrySellFromSlot(slotIndex, item, 1);
                 Hide();
             });
         }
@@ -255,10 +256,16 @@ public class ItemContextMenuUI : MonoBehaviour
         {
             _splitBtn.onClick.AddListener(() =>
             {
-                _quantity.Open(Input.mousePosition, Mathf.Max(1, playerQty), amt =>
-                {
-                    ShopController.Instance?.TrySell(item, amt);
-                }, 1, Mathf.Clamp(1, 1, playerQty));
+                _quantity.Open(
+                    Input.mousePosition,
+                    maxQty,
+                    amt =>
+                    {
+                        ShopController.Instance?.TrySellFromSlot(slotIndex, item, amt);
+                    },
+                    1,
+                    Mathf.Clamp(1, 1, maxQty)
+                );
                 Hide();
             });
         }
@@ -266,6 +273,7 @@ public class ItemContextMenuUI : MonoBehaviour
         _followMouse = false;
         OpenAt(screenPos);
     }
+
 
     // ---- helpers ----
 

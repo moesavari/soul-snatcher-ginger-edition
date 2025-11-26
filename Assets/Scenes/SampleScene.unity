@@ -2004,6 +2004,10 @@ PrefabInstance:
       value: Blacksmith
       objectReference: {fileID: 0}
     - target: {fileID: 6931197091997603070, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
+      propertyPath: _vendorId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6931197091997603070, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
       propertyPath: _vendorName
       value: BLACKSMITH
       objectReference: {fileID: 0}
@@ -2050,7 +2054,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5375736781444733887, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1627664292}
   m_SourcePrefab: {fileID: 100100000, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
 --- !u!1 &242509763
 GameObject:
@@ -3063,6 +3070,7 @@ MonoBehaviour:
   _slotsVisible: 20
   _canvas: {fileID: 0}
   _context: {fileID: 1815301369}
+  _vendorRuntime: {fileID: 0}
 --- !u!1 &447908414
 GameObject:
   m_ObjectHideFlags: 0
@@ -8737,6 +8745,7 @@ Transform:
   - {fileID: 1122669702}
   - {fileID: 1110079866}
   - {fileID: 1043830028}
+  - {fileID: 2042401546}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1249463358
@@ -9779,7 +9788,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.8
+  m_fontSize: 28.75
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10453,6 +10462,26 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1627664285 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5375736781444733887, guid: e61c67ca6d7698e4d9f527e2cff30349, type: 3}
+  m_PrefabInstance: {fileID: 199242519}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1627664292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627664285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f072711a40a9d8d42a2aa6b46782f71f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Inventory.VendorRuntime
+  _vendorId: 1
+  _vendorNameOverride: 
+  _stock: []
 --- !u!1 &1630735393
 GameObject:
   m_ObjectHideFlags: 0
@@ -12713,6 +12742,75 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8020e1de1ce56b4dbebd26c4573c479, type: 3}
+--- !u!1 &2042401545
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2042401546}
+  - component: {fileID: 2042401547}
+  - component: {fileID: 2042401548}
+  m_Layer: 0
+  m_Name: ItemDatabase
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2042401546
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042401545}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1245675266}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2042401547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042401545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a2bcaefe5816bc4488a8460520e0d42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Inventory.ItemDatabaseRuntime
+  _persistAcrossScenes: 1
+  _itemsJson: {fileID: 4900000, guid: 86934a38293387f449dea8b2d3993aec, type: 3}
+  _vendorsJson: {fileID: 4900000, guid: fff04258113e3784698c4b841f14eb3f, type: 3}
+  _vendorStockJson: {fileID: 4900000, guid: cda7cd2081c5c9140a4b628a6880256c, type: 3}
+  _logSyncDetails: 1
+--- !u!114 &2042401548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2042401545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 022b178f6c1246e44ba8889da1ce415d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefRegistry
+  _persistAcrossScenes: 1
+  _itemDefs:
+  - {fileID: 11400000, guid: c71f85c8e8477be4d853e91d737195b6, type: 2}
+  - {fileID: 11400000, guid: c2a41fd3064eea34c9be39c800f575ec, type: 2}
+  - {fileID: 11400000, guid: 4c87428cf3e822a439997c6c6822809b, type: 2}
+  - {fileID: 11400000, guid: 282bb24c955d1864388c26640705b096, type: 2}
+  - {fileID: 11400000, guid: ff83970bf81462a4ebf95dfc6898a1e1, type: 2}
 --- !u!1 &2049837201
 GameObject:
   m_ObjectHideFlags: 0
