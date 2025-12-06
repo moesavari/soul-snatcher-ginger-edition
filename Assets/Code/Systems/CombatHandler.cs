@@ -52,7 +52,7 @@ public class CombatHandler : MonoBehaviour
             return;
         }
 
-        var arrow = Instantiate(_arrowPrefab, _firePoint.position, _firePoint.rotation);
+        var arrow = SpawnManager.Instance.Spawn(_arrowPrefab, _firePoint.position, _firePoint.rotation);
         if (arrow.TryGetComponent<Rigidbody2D>(out var rb))
             rb.velocity = _firePoint.right * _arrowSpeed;
     }

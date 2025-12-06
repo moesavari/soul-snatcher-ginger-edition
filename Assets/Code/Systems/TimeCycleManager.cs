@@ -27,7 +27,7 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
     private void Update()
     {
         _timer -= Time.deltaTime;
-        if (_timer < 0) return;
+        if (_timer > 0) return;
 
         if (_isNight) StartDay();
         else StartNight();
