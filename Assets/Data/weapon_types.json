@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "code": "sword_1h",
+    "display_name": "One-Handed Sword",
+    "handedness": "one_handed"
+  },
+  {
+    "id": 2,
+    "code": "sword_2h",
+    "display_name": "Two-Handed Sword",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 3,
+    "code": "axe_1h",
+    "display_name": "One-Handed Axe",
+    "handedness": "one_handed"
+  },
+  {
+    "id": 4,
+    "code": "axe_2h",
+    "display_name": "Two-Handed Axe",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 5,
+    "code": "mace_1h",
+    "display_name": "One-Handed Mace",
+    "handedness": "one_handed"
+  },
+  {
+    "id": 6,
+    "code": "mace_2h",
+    "display_name": "Two-Handed Mace",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 7,
+    "code": "dagger",
+    "display_name": "Dagger",
+    "handedness": "one_handed"
+  },
+  {
+    "id": 8,
+    "code": "bow",
+    "display_name": "Bow",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 9,
+    "code": "crossbow",
+    "display_name": "Crossbow",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 10,
+    "code": "spear",
+    "display_name": "Spear",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 11,
+    "code": "staff",
+    "display_name": "Staff",
+    "handedness": "two_handed"
+  },
+  {
+    "id": 12,
+    "code": "wand",
+    "display_name": "Wand",
+    "handedness": "one_handed"
+  }
+]

@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "code": "junk",
+    "name": "Junk",
+    "color_hex": "#B0B0B0",
+    "min_stats": 1,
+    "max_stats": 1,
+    "min_beneficial_enchants": 0,
+    "max_beneficial_enchants": 0,
+    "min_cursed_enchants": 0,
+    "max_cursed_enchants": 0,
+    "can_be_cursed_base": 1
+  },
+  {
+    "id": 2,
+    "code": "common",
+    "name": "Common",
+    "color_hex": "#00FF00",
+    "min_stats": 2,
+    "max_stats": 2,
+    "min_beneficial_enchants": 0,
+    "max_beneficial_enchants": 0,
+    "min_cursed_enchants": 0,
+    "max_cursed_enchants": 0,
+    "can_be_cursed_base": 0
+  },
+  {
+    "id": 3,
+    "code": "rare",
+    "name": "Rare",
+    "color_hex": "#0070FF",
+    "min_stats": 3,
+    "max_stats": 3,
+    "min_beneficial_enchants": 0,
+    "max_beneficial_enchants": 1,
+    "min_cursed_enchants": 0,
+    "max_cursed_enchants": 0,
+    "can_be_cursed_base": 0
+  },
+  {
+    "id": 4,
+    "code": "legendary",
+    "name": "Legendary",
+    "color_hex": "#FF8000",
+    "min_stats": 4,
+    "max_stats": 4,
+    "min_beneficial_enchants": 1,
+    "max_beneficial_enchants": 1,
+    "min_cursed_enchants": 0,
+    "max_cursed_enchants": 0,
+    "can_be_cursed_base": 0
+  },
+  {
+    "id": 5,
+    "code": "cursed",
+    "name": "Cursed",
+    "color_hex": "#FF0000",
+    "min_stats": 3,
+    "max_stats": 3,
+    "min_beneficial_enchants": 1,
+    "max_beneficial_enchants": 1,
+    "min_cursed_enchants": 1,
+    "max_cursed_enchants": 1,
+    "can_be_cursed_base": 0
+  }
+]

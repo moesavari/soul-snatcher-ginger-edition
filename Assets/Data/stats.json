@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "code": "health",
+    "name": "Health"
+  },
+  {
+    "id": 2,
+    "code": "armor",
+    "name": "Armor"
+  },
+  {
+    "id": 3,
+    "code": "attack_power",
+    "name": "Attack Power"
+  },
+  {
+    "id": 4,
+    "code": "spell_power",
+    "name": "Spell Power"
+  },
+  {
+    "id": 5,
+    "code": "attack_speed",
+    "name": "Attack Speed"
+  },
+  {
+    "id": 6,
+    "code": "crit_chance",
+    "name": "Crit Chance"
+  },
+  {
+    "id": 7,
+    "code": "move_speed",
+    "name": "Move Speed"
+  },
+  {
+    "id": 8,
+    "code": "cdr",
+    "name": "Cooldown Reduction"
+  }
+]

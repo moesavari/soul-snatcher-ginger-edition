@@ -1,0 +1,167 @@
+[
+  {
+    "id": 14,
+    "name": "Sword",
+    "description": "",
+    "rarity_id": 1,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_1h",
+    "value": 500,
+    "max_stack": 1,
+    "icon_id": "Weapon_262",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 12
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 15,
+    "name": "Halbred",
+    "description": "",
+    "rarity_id": 2,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "axe_2h",
+    "value": 0,
+    "max_stack": 1,
+    "icon_id": "Weapon_178",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 15
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 12
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 16,
+    "name": "Bow",
+    "description": "",
+    "rarity_id": 3,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "bow",
+    "value": 0,
+    "max_stack": 1,
+    "icon_id": "Weapon_58",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 15
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 17,
+    "name": "Broadsword",
+    "description": "",
+    "rarity_id": 4,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_2h",
+    "value": 0,
+    "max_stack": 1,
+    "icon_id": "Weapon_196",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 1234
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 412
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 1121
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 154
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 1,
+        "name": "Sharpened Edge",
+        "description": "Increases Attack Power by an additional 10�15.",
+        "kind": "beneficial",
+        "affected_stat_code": "attack_power",
+        "min_value": 10,
+        "max_value": 15
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Scythe",
+    "description": "",
+    "rarity_id": 5,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "axe_2h",
+    "value": 0,
+    "max_stack": 1,
+    "icon_id": "Weapon_111",
+    "base_item_id": 14,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 124312
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 11231
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 412
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 5,
+        "name": "Soul-Shear Reaper",
+        "description": "Periodically summons scythes to deal 80% weapon damage. Mana drains over time. ",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -80,
+        "max_value": -100
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "code": "head",
+    "display_name": "Head"
+  },
+  {
+    "id": 2,
+    "code": "chest",
+    "display_name": "Chest"
+  },
+  {
+    "id": 3,
+    "code": "legs",
+    "display_name": "Legs"
+  },
+  {
+    "id": 4,
+    "code": "boots",
+    "display_name": "Boots"
+  },
+  {
+    "id": 5,
+    "code": "amulet",
+    "display_name": "Amulet"
+  },
+  {
+    "id": 6,
+    "code": "gloves",
+    "display_name": "Gloves"
+  }
+]
