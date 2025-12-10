@@ -1,10 +1,22 @@
 [
   {
-    "id": 1,
-    "name": "Blacksmith"
+    "id": 3,
+    "name": "Alchemist"
   },
   {
-    "id": 2,
-    "name": "Traveling Merchant"
+    "id": 4,
+    "name": "Cook"
+  },
+  {
+    "id": 5,
+    "name": "General goods "
+  },
+  {
+    "id": 6,
+    "name": "Shady merchant"
+  },
+  {
+    "id": 7,
+    "name": "Blacksmith"
   }
 ]

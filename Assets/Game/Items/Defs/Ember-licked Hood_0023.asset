@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59837a458a8a9724c888861cfa6e7724, type: 3}
+  m_Name: Ember-licked Hood_0023
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDef
+  displayName: Ember-licked Hood
+  icon: {fileID: 21300000, guid: 8d1329c12e8c36d4cab86754576408bd, type: 3}
+  description: 
+  itemCode: 23
+  stackable: 0
+  maxStack: 1
+  value: 75
+  kind: 1
+  equipSlot: 2
+  twoHanded: 0
+  _quality: 2
+  _stats:
+  - statType: 1
+    value: 25
+  - statType: 3
+    value: 15
+  - statType: 4
+    value: 6
+  _hasEnchantment: 1
+  _enchantmentDescription: Increase damage by 10%

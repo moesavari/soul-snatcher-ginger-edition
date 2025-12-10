@@ -1,64 +1,455 @@
 [
   {
-    "id": 14,
-    "name": "Sword",
+    "id": 19,
+    "name": "Chesty",
     "description": "",
     "rarity_id": 1,
-    "type": "weapon",
-    "armor_slot": null,
-    "weapon_type": "sword_1h",
-    "value": 500,
+    "type": "armor",
+    "armor_slot": "chest",
+    "weapon_type": null,
+    "value": 25,
     "max_stack": 1,
-    "icon_id": "Weapon_262",
+    "icon_id": "",
     "base_item_id": null,
     "stats": [
       {
-        "id": "attack_power",
-        "name": "Attack Power",
-        "value": 12
+        "id": "armor",
+        "name": "Armor",
+        "value": 15
       }
     ],
     "enchantments": []
   },
   {
-    "id": 15,
-    "name": "Halbred",
+    "id": 20,
+    "name": "Apple",
     "description": "",
     "rarity_id": 2,
-    "type": "weapon",
+    "type": "consumable",
     "armor_slot": null,
-    "weapon_type": "axe_2h",
-    "value": 0,
+    "weapon_type": null,
+    "value": 5,
+    "max_stack": 15,
+    "icon_id": "",
+    "base_item_id": null,
+    "stats": [],
+    "enchantments": []
+  },
+  {
+    "id": 21,
+    "name": "Leather Helm",
+    "description": "",
+    "rarity_id": 1,
+    "type": "armor",
+    "armor_slot": "head",
+    "weapon_type": null,
+    "value": 15,
     "max_stack": 1,
-    "icon_id": "Weapon_178",
+    "icon_id": "Helm",
     "base_item_id": null,
     "stats": [
       {
-        "id": "attack_power",
-        "name": "Attack Power",
+        "id": "armor",
+        "name": "Armor",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 22,
+    "name": "Rusted Iron Helm",
+    "description": "",
+    "rarity_id": 2,
+    "type": "armor",
+    "armor_slot": "head",
+    "weapon_type": null,
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "health",
+        "name": "Health",
+        "value": 20
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 8
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 23,
+    "name": "Ember-licked Hood",
+    "description": "",
+    "rarity_id": 3,
+    "type": "armor",
+    "armor_slot": "head",
+    "weapon_type": null,
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Helmet_8",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 25
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
         "value": 15
       },
       {
         "id": "attack_speed",
         "name": "Attack Speed",
+        "value": 6
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 8,
+        "name": "Burning focus",
+        "description": "Increase damage by 10%",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Crown of the Dayguard",
+    "description": "",
+    "rarity_id": 4,
+    "type": "armor",
+    "armor_slot": "head",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Helmet_2",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 35
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 20
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 5
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 9,
+        "name": "Sun's blessing",
+        "description": "Decreases damage taken by 20%",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Crown of Withered Thorns",
+    "description": "",
+    "rarity_id": 5,
+    "type": "armor",
+    "armor_slot": "head",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Helmet_7",
+    "base_item_id": 21,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 40
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 60
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 10,
+        "name": "Withered thorns ",
+        "description": "5x Mana regen. 2x damage taken",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Tattered Rag",
+    "description": "",
+    "rarity_id": 1,
+    "type": "armor",
+    "armor_slot": "chest",
+    "weapon_type": null,
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Leather_Armor",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 27,
+    "name": "Patchwork Vest",
+    "description": "",
+    "rarity_id": 2,
+    "type": "armor",
+    "armor_slot": "chest",
+    "weapon_type": null,
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "BodyArmor_8",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "health",
+        "name": "Health",
+        "value": 30
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
         "value": 12
       }
     ],
     "enchantments": []
   },
   {
-    "id": 16,
-    "name": "Bow",
+    "id": 28,
+    "name": "Frost-Stitched Carapace",
     "description": "",
     "rarity_id": 3,
-    "type": "weapon",
-    "armor_slot": null,
-    "weapon_type": "bow",
-    "value": 0,
+    "type": "armor",
+    "armor_slot": "chest",
+    "weapon_type": null,
+    "value": 75,
     "max_stack": 1,
-    "icon_id": "Weapon_58",
+    "icon_id": "BodyArmor_3",
     "base_item_id": null,
     "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 40
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 12
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 11,
+        "name": "Chillblood",
+        "description": "Slows attackers by 20%",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Vestments of the Eternal Sentinel",
+    "description": "",
+    "rarity_id": 4,
+    "type": "armor",
+    "armor_slot": "chest",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "BodyArmor_5",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 55
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 25
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 25
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 5
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 12,
+        "name": "Sanctified Aegis ",
+        "description": "Grants 5% Max HP every 5 seconds",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Vest of the Hollow Lord",
+    "description": "",
+    "rarity_id": 5,
+    "type": "armor",
+    "armor_slot": "chest",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "BodyArmor_6",
+    "base_item_id": 26,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 50
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 80
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 20
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 13,
+        "name": "Hollow void",
+        "description": "Spells create void echoes for 80% effectiveness. Lose 1% HP per second",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Cloth Gloves",
+    "description": "",
+    "rarity_id": 1,
+    "type": "armor",
+    "armor_slot": "gloves",
+    "weapon_type": null,
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Gloves_9",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 32,
+    "name": "Farmer’s Wraps",
+    "description": "",
+    "rarity_id": 2,
+    "type": "armor",
+    "armor_slot": "gloves",
+    "weapon_type": null,
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "Gloves_10",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "health",
+        "name": "Health",
+        "value": 10
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 33,
+    "name": "Gauntlets of Dawnbreak",
+    "description": "",
+    "rarity_id": 3,
+    "type": "armor",
+    "armor_slot": "gloves",
+    "weapon_type": null,
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Gloves_8",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 15
+      },
       {
         "id": "attack_power",
         "name": "Attack Power",
@@ -67,89 +458,1000 @@
       {
         "id": "attack_speed",
         "name": "Attack Speed",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 14,
+        "name": "Radiance ",
+        "description": "5% chance to blind nearby enemies",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Hands of the Purifier",
+    "description": "",
+    "rarity_id": 4,
+    "type": "armor",
+    "armor_slot": "gloves",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Gloves_1",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
         "value": 15
       },
       {
-        "id": "crit_chance",
-        "name": "Crit Chance",
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 30
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 30
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 15,
+        "name": "Smite touch",
+        "description": "Attacks deal bonus holy damage",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Grasp of the Damned",
+    "description": "",
+    "rarity_id": 5,
+    "type": "armor",
+    "armor_slot": "gloves",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Gloves_4",
+    "base_item_id": 31,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 50
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 30
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 20
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 16,
+        "name": "Damned grasp ",
+        "description": "50% increased damage. Critical hits deal 5% damage to you",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Jorts",
+    "description": "",
+    "rarity_id": 1,
+    "type": "armor",
+    "armor_slot": "legs",
+    "weapon_type": null,
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Pants_5",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "health",
+        "name": "Health",
         "value": 5
       }
     ],
     "enchantments": []
   },
   {
-    "id": 17,
-    "name": "Broadsword",
+    "id": 37,
+    "name": "Scavenger Trousers",
+    "description": "",
+    "rarity_id": 2,
+    "type": "armor",
+    "armor_slot": "legs",
+    "weapon_type": null,
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "Pants_6",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 10
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 38,
+    "name": "Voidrunner Greaves",
+    "description": "",
+    "rarity_id": 3,
+    "type": "armor",
+    "armor_slot": "legs",
+    "weapon_type": null,
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Pants_8",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 15
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 15
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 12
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 17,
+        "name": "Phase shift",
+        "description": "5% chance to ignore hits",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Warden’s March",
     "description": "",
     "rarity_id": 4,
-    "type": "weapon",
-    "armor_slot": null,
-    "weapon_type": "sword_2h",
-    "value": 0,
+    "type": "armor",
+    "armor_slot": "legs",
+    "weapon_type": null,
+    "value": 150,
     "max_stack": 1,
-    "icon_id": "Weapon_196",
+    "icon_id": "Pants_10",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 40
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 15
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 18,
+        "name": "Warden's March",
+        "description": "Reduces slow effectiveness by 50%",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Plague-Stepped Leggings",
+    "description": "",
+    "rarity_id": 5,
+    "type": "armor",
+    "armor_slot": "legs",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Pants_8",
+    "base_item_id": 36,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 50
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 19,
+        "name": "Plaguelands",
+        "description": "Ignore damage over time. Deal damage over time to nearby villagers",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Fancy Boots",
+    "description": "",
+    "rarity_id": 1,
+    "type": "armor",
+    "armor_slot": "boots",
+    "weapon_type": null,
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Boots_2",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 42,
+    "name": "Mud-Caked Boots",
+    "description": "",
+    "rarity_id": 2,
+    "type": "armor",
+    "armor_slot": "boots",
+    "weapon_type": null,
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "Boots_7",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 8
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 4
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 43,
+    "name": "Gale-Step Boots",
+    "description": "",
+    "rarity_id": 3,
+    "type": "armor",
+    "armor_slot": "boots",
+    "weapon_type": null,
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Boots_10",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 10
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 15
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 12
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 20,
+        "name": "Gale step",
+        "description": "Grants 10% haste ",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Footpads of the Celestial Track",
+    "description": "",
+    "rarity_id": 4,
+    "type": "armor",
+    "armor_slot": "boots",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Boots_3",
     "base_item_id": null,
     "stats": [
       {
         "id": "attack_power",
         "name": "Attack Power",
-        "value": 1234
+        "value": 25
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 25
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 10
       },
       {
         "id": "attack_speed",
         "name": "Attack Speed",
-        "value": 412
-      },
-      {
-        "id": "crit_chance",
-        "name": "Crit Chance",
-        "value": 1121
-      },
-      {
-        "id": "cdr",
-        "name": "Cooldown Reduction",
-        "value": 154
+        "value": 10
       }
     ],
     "enchantments": [
       {
-        "id": 1,
-        "name": "Sharpened Edge",
-        "description": "Increases Attack Power by an additional 10�15.",
+        "id": 22,
+        "name": "Celestial tracks",
+        "description": "Grants 40% move speed every 10 seconds",
         "kind": "beneficial",
-        "affected_stat_code": "attack_power",
-        "min_value": 10,
-        "max_value": 15
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
       }
     ]
   },
   {
-    "id": 18,
-    "name": "Scythe",
+    "id": 45,
+    "name": "Boots of Burdened Souls",
+    "description": "",
+    "rarity_id": 5,
+    "type": "armor",
+    "armor_slot": "boots",
+    "weapon_type": null,
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Boots_5",
+    "base_item_id": 41,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 40
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 25
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 15
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 23,
+        "name": "Burdened soles",
+        "description": "Leave behind a hallowed trail that damages enemies. Move speed reduced by 35%",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Crude Sword",
+    "description": "",
+    "rarity_id": 1,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_1h",
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Weapon_2",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 10
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 47,
+    "name": "Rusty Shortsword",
+    "description": "",
+    "rarity_id": 2,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_1h",
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "Weapon_262",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 10
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 48,
+    "name": "Blazefang Dagger",
+    "description": "",
+    "rarity_id": 3,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "dagger",
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Weapon_142",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 25
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 10
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 27,
+        "name": "Blazefang ",
+        "description": "Deals 10% extra damage as fire ",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Dawnrender Blade",
+    "description": "",
+    "rarity_id": 4,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_1h",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Weapon_197",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 45
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 20
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 12
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 28,
+        "name": "Dawnrender",
+        "description": "Heals HP for 2% crit damage",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Fang of the Fallen Seraph",
+    "description": "",
+    "rarity_id": 5,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "dagger",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Weapon_77",
+    "base_item_id": 46,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 60
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 30
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 15
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 29,
+        "name": "Fallen Seraph",
+        "description": "Deals damage equal to 10% of enemy max HP. You take 1% damage per hit. ",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Rusty Mace",
+    "description": "",
+    "rarity_id": 1,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "mace_2h",
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Weapon_41",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 10
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 52,
+    "name": "Splintered Greatclub",
+    "description": "",
+    "rarity_id": 2,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "mace_2h",
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "Weapon_300",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 5
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 15
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 53,
+    "name": "Stormcleaver Axe",
+    "description": "",
+    "rarity_id": 3,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "axe_2h",
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Weapon_170",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 35
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 15
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 30,
+        "name": "Stormcleaver",
+        "description": "Deals 10% damage to 4 nearby enemies",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 20,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Titanfall Greatsword",
+    "description": "",
+    "rarity_id": 4,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "sword_2h",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Weapon_204",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 60
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 25
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 10
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 15
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 31,
+        "name": "Titanfall",
+        "description": "Every 3rd attack will swing around you instead",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Grave Titan Maul",
+    "description": "",
+    "rarity_id": 5,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "mace_2h",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Weapon_106",
+    "base_item_id": 51,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 90
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 40
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 20
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 32,
+        "name": "Grieved Titan",
+        "description": "Attacks deal 50% extra damage below half health. Your HP is locked to 50%",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Meager Staff",
+    "description": "",
+    "rarity_id": 1,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "staff",
+    "value": 15,
+    "max_stack": 1,
+    "icon_id": "Weapon_52",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 7
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 57,
+    "name": "Worn Oak Channeler",
+    "description": "",
+    "rarity_id": 2,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "staff",
+    "value": 50,
+    "max_stack": 1,
+    "icon_id": "Weapon_312",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 10
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 5
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 58,
+    "name": "Frostspire Staff",
+    "description": "",
+    "rarity_id": 3,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "staff",
+    "value": 75,
+    "max_stack": 1,
+    "icon_id": "Weapon_182",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 25
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
+        "value": 10
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 10
+      }
+    ],
+    "enchantments": []
+  },
+  {
+    "id": 59,
+    "name": "Astral Conduit",
+    "description": "",
+    "rarity_id": 4,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "staff",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 40
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 20
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 15
+      },
+      {
+        "id": "move_speed",
+        "name": "Move Speed",
+        "value": 10
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 34,
+        "name": "Astral Conduit",
+        "description": "10% chance to spawn a cosmic orbiting shard",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
+      }
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Staff of the Hollow Nebula",
+    "description": "",
+    "rarity_id": 5,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "staff",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Weapon_117",
+    "base_item_id": 56,
+    "stats": [
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 70
+      },
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 30
+      },
+      {
+        "id": "cdr",
+        "name": "Cooldown Reduction",
+        "value": 15
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 35,
+        "name": "Hollow Nebula",
+        "description": "Your spells fire a void bolt with 40% effectiveness. You lose 1% HP permanently. ",
+        "kind": "cursed",
+        "affected_stat_code": null,
+        "min_value": -60,
+        "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Soul-Shear Reaper",
     "description": "",
     "rarity_id": 5,
     "type": "weapon",
     "armor_slot": null,
     "weapon_type": "axe_2h",
-    "value": 0,
+    "value": 150,
     "max_stack": 1,
     "icon_id": "Weapon_111",
-    "base_item_id": 14,
+    "base_item_id": 51,
     "stats": [
       {
         "id": "attack_power",
         "name": "Attack Power",
-        "value": 124312
+        "value": 15000
       },
       {
         "id": "attack_speed",
         "name": "Attack Speed",
-        "value": 11231
+        "value": 15
       },
       {
         "id": "crit_chance",
         "name": "Crit Chance",
-        "value": 412
+        "value": 20
       }
     ],
     "enchantments": [
@@ -161,6 +1463,52 @@
         "affected_stat_code": null,
         "min_value": -80,
         "max_value": -100
+      }
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Sol’tharyn, The Dawnpiercer",
+    "description": "",
+    "rarity_id": 4,
+    "type": "weapon",
+    "armor_slot": null,
+    "weapon_type": "bow",
+    "value": 150,
+    "max_stack": 1,
+    "icon_id": "Weapon_253",
+    "base_item_id": null,
+    "stats": [
+      {
+        "id": "attack_power",
+        "name": "Attack Power",
+        "value": 1500
+      },
+      {
+        "id": "spell_power",
+        "name": "Spell Power",
+        "value": 50
+      },
+      {
+        "id": "attack_speed",
+        "name": "Attack Speed",
+        "value": 40
+      },
+      {
+        "id": "crit_chance",
+        "name": "Crit Chance",
+        "value": 20
+      }
+    ],
+    "enchantments": [
+      {
+        "id": 47,
+        "name": "Arrows of the first light",
+        "description": "Bow fires light piercing arrows, not requiring physical arrows. ",
+        "kind": "beneficial",
+        "affected_stat_code": null,
+        "min_value": 60,
+        "max_value": 100
       }
     ]
   }
