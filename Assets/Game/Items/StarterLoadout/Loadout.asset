@@ -13,11 +13,5 @@ MonoBehaviour:
   m_Name: Loadout
   m_EditorClassIdentifier: Assembly-CSharp::StarterLoadout
   items:
-  - item: {fileID: 11400000, guid: 4c87428cf3e822a439997c6c6822809b, type: 2}
-    count: 1
-  - item: {fileID: 11400000, guid: 282bb24c955d1864388c26640705b096, type: 2}
-    count: 1
-  - item: {fileID: 11400000, guid: c2a41fd3064eea34c9be39c800f575ec, type: 2}
-    count: 1
-  - item: {fileID: 11400000, guid: ff83970bf81462a4ebf95dfc6898a1e1, type: 2}
+  - item: {fileID: 11400000, guid: 51a256033c72ed8409cf87037d748345, type: 2}
     count: 1

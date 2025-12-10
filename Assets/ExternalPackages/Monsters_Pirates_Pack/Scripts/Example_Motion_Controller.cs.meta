@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ad9058fb1721aca42bcd59494a55b925
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 27080
+  packageName: Monsters and Pirates Pixel Art Pack
+  packageVersion: V1
+  assetPath: Assets/Monsters_Pirates_Pack/Scripts/Example_Motion_Controller.cs
+  uploadId: 45262

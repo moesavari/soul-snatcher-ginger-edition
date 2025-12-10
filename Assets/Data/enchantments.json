@@ -1,41 +1,5 @@
 [
   {
-    "id": 1,
-    "name": "Sharpened Edge",
-    "description": "Increases Attack Power by an additional 10�15.",
-    "kind": "beneficial",
-    "affected_stat_id": 3,
-    "min_value": 10,
-    "max_value": 15
-  },
-  {
-    "id": 2,
-    "name": "Blood Price",
-    "description": "Reduces Health by 10�15.",
-    "kind": "cursed",
-    "affected_stat_id": 1,
-    "min_value": -15,
-    "max_value": -10
-  },
-  {
-    "id": 3,
-    "name": "Cursed Bubble",
-    "description": "Grants replenishing shield. Sets max health to 1.",
-    "kind": "cursed",
-    "affected_stat_id": 1,
-    "min_value": -50,
-    "max_value": -100
-  },
-  {
-    "id": 4,
-    "name": "Cursed enchantment ",
-    "description": "Empty",
-    "kind": "beneficial",
-    "affected_stat_id": null,
-    "min_value": -100,
-    "max_value": 100
-  },
-  {
     "id": 5,
     "name": "Soul-Shear Reaper",
     "description": "Periodically summons scythes to deal 80% weapon damage. Mana drains over time. ",
@@ -61,5 +25,347 @@
     "affected_stat_id": null,
     "min_value": 50,
     "max_value": 80
+  },
+  {
+    "id": 8,
+    "name": "Burning focus",
+    "description": "Increase damage by 10%",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 9,
+    "name": "Sun's blessing",
+    "description": "Decreases damage taken by 20%",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 10,
+    "name": "Withered thorns ",
+    "description": "5x Mana regen. 2x damage taken",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 11,
+    "name": "Chillblood",
+    "description": "Slows attackers by 20%",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 12,
+    "name": "Sanctified Aegis ",
+    "description": "Grants 5% Max HP every 5 seconds",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 13,
+    "name": "Hollow void",
+    "description": "Spells create void echoes for 80% effectiveness. Lose 1% HP per second",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 14,
+    "name": "Radiance ",
+    "description": "5% chance to blind nearby enemies",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 15,
+    "name": "Smite touch",
+    "description": "Attacks deal bonus holy damage",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 16,
+    "name": "Damned grasp ",
+    "description": "50% increased damage. Critical hits deal 5% damage to you",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 17,
+    "name": "Phase shift",
+    "description": "5% chance to ignore hits",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 18,
+    "name": "Warden's March",
+    "description": "Reduces slow effectiveness by 50%",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 19,
+    "name": "Plaguelands",
+    "description": "Ignore damage over time. Deal damage over time to nearby villagers",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 20,
+    "name": "Gale step",
+    "description": "Grants 10% haste ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 22,
+    "name": "Celestial tracks",
+    "description": "Grants 40% move speed every 10 seconds",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 23,
+    "name": "Burdened soles",
+    "description": "Leave behind a hallowed trail that damages enemies. Move speed reduced by 35%",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 24,
+    "name": "Sanctuary",
+    "description": "Holy ground affects the floor around you, granting immunity and aggro from enemies. ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 25,
+    "name": "Hallowed mist ",
+    "description": "Hallowed mist surrounds you, healing for 1% HP every second. Lose 5% mana per second",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 27,
+    "name": "Blazefang ",
+    "description": "Deals 10% extra damage as fire ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 28,
+    "name": "Dawnrender",
+    "description": "Heals HP for 2% crit damage",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 29,
+    "name": "Fallen Seraph",
+    "description": "Deals damage equal to 10% of enemy max HP. You take 1% damage per hit. ",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 30,
+    "name": "Stormcleaver",
+    "description": "Deals 10% damage to 4 nearby enemies",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 31,
+    "name": "Titanfall",
+    "description": "Every 3rd attack will swing around you instead",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 32,
+    "name": "Grieved Titan",
+    "description": "Attacks deal 50% extra damage below half health. Your HP is locked to 50%",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 33,
+    "name": "Frostspire",
+    "description": "Deals 10% extra damage as frost ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 34,
+    "name": "Astral Conduit",
+    "description": "10% chance to spawn a cosmic orbiting shard",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 35,
+    "name": "Hollow Nebula",
+    "description": "Your spells fire a void bolt with 40% effectiveness. You lose 1% HP permanently. ",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 36,
+    "name": "Soul Reaper ",
+    "description": "Restore 1% HP on kill ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 37,
+    "name": "Borrowed time",
+    "description": "Kills Grant 1% increased attack power and attack speed temporarily. This effect stacks to 20. ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 38,
+    "name": "Sentinel",
+    "description": "20% chance to block full damage",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 39,
+    "name": "Dawnforge",
+    "description": "Creates a healing barrier every 20 seconds",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 40,
+    "name": "Fallen mirror",
+    "description": "Reflect 50% damage taken. You bleed for 2% of damage every second for 10 seconds",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 41,
+    "name": "First ember ",
+    "description": "Spells make enemies take 5% of Max HP as fire damage",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 42,
+    "name": "Fey herald ",
+    "description": "5% chance to summon a fae wisp to fight by your side. No limit on summons",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 43,
+    "name": "Unquenched hunger ",
+    "description": "Doubles soul absorbed. Take 1% damage for every soul absorbed",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 44,
+    "name": "Encroach",
+    "description": "Periodically pulses lightning waves",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 20,
+    "max_value": 100
+  },
+  {
+    "id": 45,
+    "name": "Yrmvikar",
+    "description": "Grants regenerative absorb shield equal to 30% Max HP. ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
+  },
+  {
+    "id": 46,
+    "name": "Forgotten omnilith",
+    "description": "50% increased damage. Your reputation is permanently set to -100, can't be reversed. ",
+    "kind": "cursed",
+    "affected_stat_id": null,
+    "min_value": -60,
+    "max_value": -100
+  },
+  {
+    "id": 47,
+    "name": "Arrows of the first light",
+    "description": "Bow fires light piercing arrows, not requiring physical arrows. ",
+    "kind": "beneficial",
+    "affected_stat_id": null,
+    "min_value": 60,
+    "max_value": 100
   }
 ]
