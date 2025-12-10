@@ -1,102 +1,10 @@
 [
   {
-    "item_id": 23,
-    "enchantment_id": 8
+    "item_id": 17,
+    "enchantment_id": 1
   },
   {
-    "item_id": 24,
-    "enchantment_id": 9
-  },
-  {
-    "item_id": 25,
-    "enchantment_id": 10
-  },
-  {
-    "item_id": 28,
-    "enchantment_id": 11
-  },
-  {
-    "item_id": 29,
-    "enchantment_id": 12
-  },
-  {
-    "item_id": 30,
-    "enchantment_id": 13
-  },
-  {
-    "item_id": 33,
-    "enchantment_id": 14
-  },
-  {
-    "item_id": 34,
-    "enchantment_id": 15
-  },
-  {
-    "item_id": 35,
-    "enchantment_id": 16
-  },
-  {
-    "item_id": 38,
-    "enchantment_id": 17
-  },
-  {
-    "item_id": 39,
-    "enchantment_id": 18
-  },
-  {
-    "item_id": 40,
-    "enchantment_id": 19
-  },
-  {
-    "item_id": 43,
-    "enchantment_id": 20
-  },
-  {
-    "item_id": 44,
-    "enchantment_id": 22
-  },
-  {
-    "item_id": 45,
-    "enchantment_id": 23
-  },
-  {
-    "item_id": 48,
-    "enchantment_id": 27
-  },
-  {
-    "item_id": 49,
-    "enchantment_id": 28
-  },
-  {
-    "item_id": 50,
-    "enchantment_id": 29
-  },
-  {
-    "item_id": 53,
-    "enchantment_id": 30
-  },
-  {
-    "item_id": 54,
-    "enchantment_id": 31
-  },
-  {
-    "item_id": 55,
-    "enchantment_id": 32
-  },
-  {
-    "item_id": 59,
-    "enchantment_id": 34
-  },
-  {
-    "item_id": 60,
-    "enchantment_id": 35
-  },
-  {
-    "item_id": 61,
+    "item_id": 18,
     "enchantment_id": 5
-  },
-  {
-    "item_id": 62,
-    "enchantment_id": 47
   }
 ]

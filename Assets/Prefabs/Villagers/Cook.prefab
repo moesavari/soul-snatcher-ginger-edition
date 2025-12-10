@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: -988887206494673246}
   - component: {fileID: 8078934202703807700}
   - component: {fileID: 4897657401967153162}
-  - component: {fileID: 3238692751019153677}
   m_Layer: 7
   m_Name: Cook
   m_TagString: Villager
@@ -62,11 +61,10 @@ MonoBehaviour:
   _repAmount: 10
   _soulAmount: 1
   _rescueRepBonus: 15
-  _vendorName: GENERAL GOODS
+  _vendorName: 
   _inventory: {fileID: 11400000, guid: 576c9c28bd76bab47ac23bdd5256357a, type: 2}
   _repRules: {fileID: 0}
   _defaultAddQuantity: 1
-  _vendorId: 1
   _openAtNight: 0
   _restockEveryNDays: 1
 --- !u!114 &1177110490301720442
@@ -144,21 +142,6 @@ MonoBehaviour:
   _repAmount: 10
   _soulAmount: 1
   _rescueRepBonus: 15
---- !u!114 &3238692751019153677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5375736781444733887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f072711a40a9d8d42a2aa6b46782f71f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Inventory.VendorRuntime
-  _vendorId: 5
-  _vendorNameOverride: 
-  _stock: []
 --- !u!1 &7847940435159266104
 GameObject:
   m_ObjectHideFlags: 0

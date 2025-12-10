@@ -1,7 +1,25 @@
 [
   {
-    "vendor_id": 6,
-    "item_id": 19,
+    "vendor_id": 1,
+    "item_id": 1,
+    "min_quantity": 1,
+    "max_quantity": 2,
+    "rep_min": -20,
+    "rep_max": 100,
+    "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 2,
+    "min_quantity": 1,
+    "max_quantity": 1,
+    "rep_min": 0,
+    "rep_max": 100,
+    "rarity_boost": 0
+  },
+  {
+    "vendor_id": 1,
+    "item_id": 14,
     "min_quantity": 1,
     "max_quantity": 1,
     "rep_min": -100,
@@ -9,17 +27,8 @@
     "rarity_boost": 0
   },
   {
-    "vendor_id": 5,
-    "item_id": 20,
-    "min_quantity": 1,
-    "max_quantity": 99,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 24,
+    "vendor_id": 1,
+    "item_id": 15,
     "min_quantity": 1,
     "max_quantity": 1,
     "rep_min": -100,
@@ -27,8 +36,8 @@
     "rarity_boost": 0
   },
   {
-    "vendor_id": 7,
-    "item_id": 25,
+    "vendor_id": 1,
+    "item_id": 16,
     "min_quantity": 1,
     "max_quantity": 1,
     "rep_min": -100,
@@ -36,8 +45,8 @@
     "rarity_boost": 0
   },
   {
-    "vendor_id": 7,
-    "item_id": 29,
+    "vendor_id": 1,
+    "item_id": 17,
     "min_quantity": 1,
     "max_quantity": 1,
     "rep_min": -100,
@@ -45,98 +54,8 @@
     "rarity_boost": 0
   },
   {
-    "vendor_id": 7,
-    "item_id": 30,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 33,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 34,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 35,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 39,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 40,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 44,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 45,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 49,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 61,
-    "min_quantity": 1,
-    "max_quantity": 1,
-    "rep_min": -100,
-    "rep_max": 100,
-    "rarity_boost": 0
-  },
-  {
-    "vendor_id": 7,
-    "item_id": 62,
+    "vendor_id": 1,
+    "item_id": 18,
     "min_quantity": 1,
     "max_quantity": 1,
     "rep_min": -100,

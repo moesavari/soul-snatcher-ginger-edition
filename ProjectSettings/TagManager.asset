@@ -2,20 +2,23 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Enemy
+  - Villager
+  - VillagerSpawn
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Character
+  - Player
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Villager
+  - Projectile
+  - Hitbox
+  - Obstacles
   - 
   - 
   - 
@@ -41,3 +44,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 4096561647
+    locked: 0
+  - name: Middleground
+    uniqueID: 1952128549
+    locked: 0
+  - name: Foreground
+    uniqueID: 2604230307
+    locked: 0
+  m_RenderingLayers:
+  - Default
