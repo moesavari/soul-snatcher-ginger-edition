@@ -79,7 +79,7 @@ public class GameManager : MonoSingleton<GameManager>
         _waveManager?.ClearAllSpawns();
 
         yield return new WaitForSeconds(_restartDelaySeconds);
-        
+
         SpawnOrFindPlayer();
         var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
         UnityEngine.SceneManagement.SceneManager.LoadScene(scene.buildIndex);

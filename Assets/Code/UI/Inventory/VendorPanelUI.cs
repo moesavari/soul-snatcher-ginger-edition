@@ -15,8 +15,8 @@ public class VendorPanelUI : MonoBehaviour
     [SerializeField, Min(1)] private int _slotsVisible = 20;
 
     [Header("Refs")]
-    [SerializeField] private Canvas _canvas;             // for screen-point conversion
-    [SerializeField] private ItemContextMenuUI _context; // existing context UI
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private ItemContextMenuUI _context;
 
     private Vendor _vendor;
 
@@ -51,13 +51,9 @@ public class VendorPanelUI : MonoBehaviour
             _vendor.runtimeInventory.OnStockChanged -= RedrawFromVendor;
     }
 
-    // ----------------------------------------------------------------------
-    // Binding
-    // ----------------------------------------------------------------------
-
     public void Bind(Vendor vendor)
     {
-        // Unhook previous vendor
+
         if (_vendor?.runtimeInventory != null)
             _vendor.runtimeInventory.OnStockChanged -= RedrawFromVendor;
 
@@ -81,10 +77,6 @@ public class VendorPanelUI : MonoBehaviour
         DrawEmpty();
     }
 
-    // ----------------------------------------------------------------------
-    // Drawing / population – **only uses runtimeInventory**
-    // ----------------------------------------------------------------------
-
     public void RedrawFromVendor()
     {
         if (_pool == null) return;
@@ -94,11 +86,9 @@ public class VendorPanelUI : MonoBehaviour
 
         int targetCount = Mathf.Min(_slotsVisible, _pool.Cells.Count);
 
-        // Turn on/off cells
         for (int i = 0; i < _pool.Cells.Count; i++)
             _pool.Cells[i].gameObject.SetActive(i < targetCount);
 
-        // Fill visible cells
         for (int i = 0; i < targetCount; i++)
         {
             var cell = _pool.Cells[i];
@@ -121,7 +111,6 @@ public class VendorPanelUI : MonoBehaviour
             var def = s.item;
             var qty = Mathf.Max(0, s.quantity);
 
-            // price (same math as before)
             int basePrice = (int)def.quality * 25 + 10;
             float norm = ReputationSystem.Instance != null
                 ? ReputationSystem.Instance.Normalized
@@ -157,10 +146,6 @@ public class VendorPanelUI : MonoBehaviour
         }
     }
 
-    // ----------------------------------------------------------------------
-    // Panel visibility
-    // ----------------------------------------------------------------------
-
     public void Show(string title = "SHOP")
     {
         if (_title != null) _title.text = title;
@@ -189,10 +174,6 @@ public class VendorPanelUI : MonoBehaviour
         if (next) RedrawFromVendor();
         else _context?.Hide();
     }
-
-    // ----------------------------------------------------------------------
-    // Helpers
-    // ----------------------------------------------------------------------
 
     public void DrawEmpty()
     {

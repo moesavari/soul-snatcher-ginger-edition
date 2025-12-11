@@ -50,7 +50,7 @@ public class VendorInventory : ScriptableObject
                 else
                     stock[i] = entry;
 
-                OnStockChanged?.Invoke(); 
+                OnStockChanged?.Invoke();
                 return true;
             }
         }

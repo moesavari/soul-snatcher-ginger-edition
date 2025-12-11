@@ -7,11 +7,11 @@ public class ReputationMeterController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Slider _slider;
-    [SerializeField] private Image _background;          
-    [SerializeField] private Image _leftOverlay;         
-    [SerializeField] private Image _rightOverlay;        
-    [SerializeField] private RectTransform _handle;      
-    [SerializeField] private Image _centerIcon;          
+    [SerializeField] private Image _background;
+    [SerializeField] private Image _leftOverlay;
+    [SerializeField] private Image _rightOverlay;
+    [SerializeField] private RectTransform _handle;
+    [SerializeField] private Image _centerIcon;
 
     [Header("Tier Sprites (order matches tiers)")]
     [SerializeField] private Sprite[] _tierSprites;
@@ -34,13 +34,13 @@ public class ReputationMeterController : MonoBehaviour
     [SerializeField]
     private Color[] _tierDisabledColors = new Color[]
     {
-        new Color(0.45f,0.10f,0.10f,1f), // Very Bad
-        new Color(0.55f,0.20f,0.15f,1f), // Bad
-        new Color(0.60f,0.45f,0.25f,1f), // Slight Bad
-        new Color(0.35f,0.35f,0.35f,1f), // Neutral
-        new Color(0.45f,0.65f,0.35f,1f), // Slight Good
-        new Color(0.35f,0.75f,0.50f,1f), // Good
-        new Color(0.30f,0.85f,0.60f,1f)  // Very Good
+        new Color(0.45f,0.10f,0.10f,1f),
+        new Color(0.55f,0.20f,0.15f,1f),
+        new Color(0.60f,0.45f,0.25f,1f),
+        new Color(0.35f,0.35f,0.35f,1f),
+        new Color(0.45f,0.65f,0.35f,1f),
+        new Color(0.35f,0.75f,0.50f,1f),
+        new Color(0.30f,0.85f,0.60f,1f)
     };
 
     public float value { get; private set; }
@@ -64,7 +64,7 @@ public class ReputationMeterController : MonoBehaviour
         _slider.minValue = ReputationSystem.MIN_REPUTATION;
         _slider.maxValue = ReputationSystem.MAX_REPUTATION;
 
-        _slider.wholeNumbers = false; 
+        _slider.wholeNumbers = false;
         SetImmediate(0f);
 
         ReputationSystem.Instance.OnReputationChanged += HandleReputationChanged;
@@ -89,7 +89,6 @@ public class ReputationMeterController : MonoBehaviour
         }
     }
 
-    // --- Public API ----------------------------------------------------------
     public void SetImmediate(float v)
     {
         _targetValue = Mathf.Clamp(v, _slider.minValue, _slider.maxValue);
@@ -109,8 +108,6 @@ public class ReputationMeterController : MonoBehaviour
         AnimateTo(Mathf.Lerp(_slider.minValue, _slider.maxValue, n));
     }
 
-    // --- Internals -----------------------------------------------------------
-
     private void HandleReputationChanged(int newRep)
     {
         AnimateTo(newRep);
@@ -127,7 +124,6 @@ public class ReputationMeterController : MonoBehaviour
             _handle.localScale = new Vector3(scale, scale, 1f);
         }
 
-        // Tier logic
         int t = GetTierIndexWithHysteresis(v);
 
         if (t != _lastTier)
@@ -182,7 +178,6 @@ public class ReputationMeterController : MonoBehaviour
         if (_slider == null) return;
         if (t == _lastAppliedDisabledColorTier) return;
 
-        // Clamp tier index to available colors
         int colorIndex = t;
         if (_tierDisabledColors == null || _tierDisabledColors.Length == 0)
         {
@@ -205,9 +200,9 @@ public class ReputationMeterController : MonoBehaviour
             colorIndex = _tierDisabledColors.Length - 1;
         }
 
-        var cb = _slider.colors;               
+        var cb = _slider.colors;
         cb.disabledColor = _tierDisabledColors[colorIndex];
-        _slider.colors = cb;                   
+        _slider.colors = cb;
 
         _lastAppliedDisabledColorTier = t;
     }

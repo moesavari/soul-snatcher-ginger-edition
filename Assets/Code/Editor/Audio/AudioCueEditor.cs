@@ -11,12 +11,10 @@ public class AudioCueEditor : Editor
         var root = new VisualElement();
         InspectorElement.FillDefaultInspector(root, serializedObject, this);
 
-        // spacer above controls
         var spacer = new VisualElement();
         spacer.style.marginTop = 6;
         root.Add(spacer);
 
-        // a row container (no .gap — use margins on children instead)
         var row = new VisualElement();
         row.style.flexDirection = FlexDirection.Row;
         row.style.alignItems = Align.Center;
@@ -42,11 +40,9 @@ public class AudioCueEditor : Editor
         })
         { text = "▶ Test Cue (Play Mode)" };
 
-        // add the button with right margin to simulate gap
         playBtn.style.marginRight = 6;
         row.Add(playBtn);
 
-        // Hint when not in play mode
         if (!Application.isPlaying)
         {
             var help = new HelpBox(

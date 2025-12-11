@@ -43,7 +43,6 @@ public class UIRaycastProbe : MonoBehaviour
         _results.Clear();
         var ped = new PointerEventData(eventSystem) { position = Input.mousePosition };
 
-        // Query all canvases and merge results (Unity sorts per raycaster, so we’ll re-sort globally)
         foreach (var gr in raycasters)
         {
             if (!gr || !gr.isActiveAndEnabled) continue;
@@ -52,9 +51,8 @@ public class UIRaycastProbe : MonoBehaviour
             _results.AddRange(tmp);
         }
 
-        _results.Sort((a, b) => b.sortingOrder.CompareTo(a.sortingOrder)); // top first-ish
+        _results.Sort((a, b) => b.sortingOrder.CompareTo(a.sortingOrder));
 
-        // Build display
         if (_results.Count == 0)
         {
             _headline = "UI: (nothing hit)";
@@ -76,7 +74,6 @@ public class UIRaycastProbe : MonoBehaviour
         }
         _lines = list.ToArray();
 
-        // Log when the topmost changes → usually reveals a blocking panel/image
         if (_results[0].gameObject != _lastTop)
         {
             _lastTop = _results[0].gameObject;

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] private EquipmentSlotType _slot;
-    [SerializeField] private Image _icon;          
-    [SerializeField] private Sprite _emptyFrame;   
+    [SerializeField] private Image _icon;
+    [SerializeField] private Sprite _emptyFrame;
 
     [SerializeField] private Inventory _inventory;
     [SerializeField] private Equipment _equipment;
@@ -20,7 +20,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
 
     public EquipmentSlotType slot => _slot;
 
-    private void HandleEquipmentChanged()  
+    private void HandleEquipmentChanged()
     {
         Refresh();
     }
@@ -32,10 +32,10 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
 
     public void Bind(Equipment eq, EquipmentUI sheet, Inventory inv, ItemTooltipUI tip, ItemContextMenuUI ctx)
     {
-        _equipment = eq; 
+        _equipment = eq;
         _inventory = inv;
         _tooltip = tip;
-        _context = ctx; 
+        _context = ctx;
         _sheet = sheet;
 
         if (!_icon)
@@ -112,7 +112,6 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
         _icon.sprite = sprite;
     }
 
-    // ---------- UI Events ----------
     public void OnPointerEnter(PointerEventData e)
     {
         var def = _equipment ? _equipment.GetEquipped(_slot) : null;
@@ -138,7 +137,7 @@ public class EquipmentSlotWidget : MonoBehaviour, IPointerEnterHandler, IPointer
                     _slot,
                     def,
                     e.position,
-                    a => OnContextAction(a.ToString(), _slot, def) 
+                    a => OnContextAction(a.ToString(), _slot, def)
                 ); break;
 
             case PointerEventData.InputButton.Right:

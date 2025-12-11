@@ -6,11 +6,11 @@ using UnityEngine.EventSystems;
 [DefaultExecutionOrder(-2000)]
 public class InputManager : MonoSingleton<InputManager>
 {
-    // ====== EVENTS ======
+
     public static event Action<Vector2> Move;
     public static event Action MeleePressed;
     public static event Action RangedPressed;
-    public static event Action<int> QuickbarPressed;   
+    public static event Action<int> QuickbarPressed;
     public static event Action EscapePressed;
     public static event Action OnBindingsChanged;
     public static event Action InteractPressed;
@@ -29,7 +29,6 @@ public class InputManager : MonoSingleton<InputManager>
         InputAction.ToggleEquipment
     };
 
-    // ====== BINDINGS ======
     public enum InputAction
     {
         ToggleEquipment, ToggleInventory,
@@ -77,7 +76,6 @@ public class InputManager : MonoSingleton<InputManager>
 
     private const string PREFS_KEY = "InputBindings";
 
-    // ---------- lifecycle ----------
     protected override void Awake()
     {
         base.Awake();
@@ -94,7 +92,6 @@ public class InputManager : MonoSingleton<InputManager>
         ReadUI();
     }
 
-    // ---------- readers ----------
     private void ReadMovement()
     {
         float h = _useRawAxes ? Input.GetAxisRaw(_horizontalAxis) : Input.GetAxis(_horizontalAxis);
@@ -157,7 +154,6 @@ public class InputManager : MonoSingleton<InputManager>
             || (b.secondary != KeyCode.None && Input.GetKeyDown(b.secondary));
     }
 
-
     private static bool IsPointerOverUI()
     {
         var es = EventSystem.current;
@@ -166,7 +162,6 @@ public class InputManager : MonoSingleton<InputManager>
         return es.IsPointerOverGameObject();
     }
 
-    // ---------- binding API ----------
     public static KeyCode GetPrimary(InputAction a)     => Instance._bindings[a].primary;
     public static KeyCode GetSecondary(InputAction a)   => Instance._bindings[a].secondary;
 
@@ -208,7 +203,6 @@ public class InputManager : MonoSingleton<InputManager>
     public static void PushLock() => _lockCount++;
     public static void PopLock() => _lockCount = Mathf.Max(0, _lockCount - 1);
 
-    // ---------- persistence ----------
     [Serializable] private class SaveBlob { public List<Binding> list = new List<Binding>(); }
 
     private void LoadBindings()
@@ -244,11 +238,9 @@ public class InputManager : MonoSingleton<InputManager>
                 _bindings[def.action] = new Binding(def.action, def.primary, def.secondary);
         }
 
-        // Always backfill and persist the repaired map
         EnsureAllBindingsPresent();
         SaveBindings();
     }
-
 
     private void SaveBindings()
     {
@@ -259,7 +251,6 @@ public class InputManager : MonoSingleton<InputManager>
         PlayerPrefs.Save();
     }
 
-    // --- DIAGNOSTICS ---
     public static void LogBindings(string label = "Bindings")
     {
         if (Instance == null) { DebugManager.LogWarning("Instance is null"); return; }
@@ -276,7 +267,6 @@ public class InputManager : MonoSingleton<InputManager>
         DebugManager.Log(sb.ToString());
     }
 
-    // Backfill any missing keys (e.g. new actions added after the blob was saved)
     private void EnsureAllBindingsPresent()
     {
         foreach (var def in _defaults)
@@ -298,8 +288,6 @@ public class InputManager : MonoSingleton<InputManager>
         if (changed) SaveBindings();
     }
 
-
-    // Force a reload from PlayerPrefs at runtime (for Settings/Debug)
     public static void ForceReload()
     {
         if (Instance == null) return;

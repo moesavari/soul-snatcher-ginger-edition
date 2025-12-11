@@ -10,15 +10,15 @@ public class Villager : MonoBehaviour
     [SerializeField] private float _wanderRadius = 1.5f;
 
     [Header("Night Behavior")]
-    [SerializeField] private float _panicRadius = 6f;          // if zombie closer than this → panic
-    [SerializeField] private float _panicSpeedMult = 1.6f;     // faster when panicking
-    [SerializeField] private float _emergeScatter = 1.0f;      // when leaving hide spot at day
+    [SerializeField] private float _panicRadius = 6f;
+    [SerializeField] private float _panicSpeedMult = 1.6f;
+    [SerializeField] private float _emergeScatter = 1.0f;
     [SerializeField] private LayerMask _zombieMask;
 
     [Header("Player Interaction Rewards")]
-    [SerializeField] private int _repAmount = 10;              // rescue reward (positive)
-    [SerializeField] private int _soulAmount = 1;              // siphon reward (souls)
-    [SerializeField] private int _rescueRepBonus = 15;         // extra on rescue
+    [SerializeField] private int _repAmount = 10;
+    [SerializeField] private int _soulAmount = 1;
+    [SerializeField] private int _rescueRepBonus = 15;
 
     protected virtual bool shouldWanderDuringDay => true;
 
@@ -38,7 +38,7 @@ public class Villager : MonoBehaviour
     private Vector3 _wanderTarget;
 
     private ContactFilter2D _zombieFilter;
-    
+
     protected virtual void Awake()
     {
         _startPos = transform.position;
@@ -50,8 +50,8 @@ public class Villager : MonoBehaviour
         _zombieFilter.useLayerMask = true;
         _zombieFilter.useTriggers = true;
 
-        GameEvents.DayStarted += OnDay;      
-        GameEvents.NightStarted += OnNight; 
+        GameEvents.DayStarted += OnDay;
+        GameEvents.NightStarted += OnNight;
     }
 
     private void OnDestroy()
@@ -62,23 +62,21 @@ public class Villager : MonoBehaviour
 
     protected virtual void Update()
     {
-        // Decide target based on state
+
         if (_isNight)
         {
             Vector3 dest = (_hideSpot != null ? _hideSpot.position : _startPos);
 
-            // Panic check: any zombie within radius?
             _isPanicking = ZombieNearby(_panicRadius);
             _currentSpeed = _stats.MoveSpeed * (_isPanicking ? _panicSpeedMult : 1f);
 
-            // Move toward hide, mark hidden if close
             MoveTo(dest, _currentSpeed);
             if ((transform.position - dest).sqrMagnitude <= 0.08f)
                 _isHiding = true;
         }
         else
         {
-            // Daytime: wander
+
             if (!shouldWanderDuringDay) return;
 
             if ((transform.position - _wanderTarget).sqrMagnitude < 0.05f) PickNewWanderTarget();
@@ -140,7 +138,7 @@ public class Villager : MonoBehaviour
         if (!_isAlive) return;
 
         ReputationSystem.Instance.AddReputation(_rescueRepBonus);
-        // Optional: small heal, item, or VFX
+
     }
 
     private void MoveTo(Vector3 dest, float speed)

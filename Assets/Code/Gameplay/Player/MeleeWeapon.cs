@@ -5,20 +5,20 @@ using UnityEngine;
 public class MeleeWeapon : MonoBehaviour
 {
     [Header("Swing")]
-    [SerializeField] private float _swingAngle = 100f;  
+    [SerializeField] private float _swingAngle = 100f;
     [SerializeField] private float _swingDuration = 0.18f;
-    [SerializeField] private float _cooldown = 0.45f;    
+    [SerializeField] private float _cooldown = 0.45f;
     [SerializeField] private float _recoverTime = 0.08f;
 
     [Header("Arc Sampling")]
     [SerializeField] private float _range = 1.2f;
-    [SerializeField] private float _arcRadius = 0.85f;     
-    [SerializeField] private int _samples = 5;             
-    [SerializeField] private LayerMask _hitMask;           
+    [SerializeField] private float _arcRadius = 0.85f;
+    [SerializeField] private int _samples = 5;
+    [SerializeField] private LayerMask _hitMask;
 
     [Header("Damage / Knockback")]
-    [SerializeField] private float _knockback = 6f;        
-    [SerializeField] private float _stunTime = 0.08f;      
+    [SerializeField] private float _knockback = 6f;
+    [SerializeField] private float _stunTime = 0.08f;
     [SerializeField] private string _ownerTag = "Player";
 
     [Header("Stat References")]
@@ -26,8 +26,8 @@ public class MeleeWeapon : MonoBehaviour
     [SerializeField] private int _power = 10;
 
     [Header("Optional")]
-    [SerializeField] private MouseFacing2D _facing;        
-    [SerializeField] private Animator _anim;               
+    [SerializeField] private MouseFacing2D _facing;
+    [SerializeField] private Animator _anim;
     [Tooltip("Optional sprite root (e.g., sword). If null, we'll rotate this Transform.")]
     [SerializeField] private Transform _weaponVisual;
     [SerializeField] private bool _hideWhenIdle = true;
@@ -42,7 +42,6 @@ public class MeleeWeapon : MonoBehaviour
     private bool _filterInit;
     private Quaternion _baseLocalRot;
 
-    // GC-friendly overlap buffer
     private const int MaxHits = 16;
     private readonly Collider2D[] _hitBuf = new Collider2D[MaxHits];
     private Renderer[] _visualRenderers;
@@ -81,15 +80,13 @@ public class MeleeWeapon : MonoBehaviour
         if (_attacking || _cooldownTimer > 0f) return;
         _cooldownTimer = _cooldown + _recoverTime;
 
-        //if (_anim) _anim.SetTrigger("Melee"); 
-
         StartCoroutine(SwingRoutine());
     }
 
     private int GetFacingSign()
     {
         if (_facing != null)
-            return (_facing.AimDir.x >= 0f) ? 1 : -1;  
+            return (_facing.AimDir.x >= 0f) ? 1 : -1;
 
         return (pivot.right.x >= 0f) ? 1 : -1;
     }
@@ -112,8 +109,8 @@ public class MeleeWeapon : MonoBehaviour
         if (hadFacing) _facing.SetAimLocked(true);
 
         float half = _swingAngle * 0.5f;
-        float start = +half; 
-        float end = -half; 
+        float start = +half;
+        float end = -half;
 
         int dirSign = GetFacingSign();
 
@@ -149,7 +146,7 @@ public class MeleeWeapon : MonoBehaviour
         {
             useLayerMask = true,
             layerMask = _hitMask,
-            useTriggers = true 
+            useTriggers = true
         };
         _filterInit = true;
     }
@@ -183,7 +180,6 @@ public class MeleeWeapon : MonoBehaviour
                 target.TakeDamage(damage);
             }
 
-            // Knockback
             var kb = c.GetComponentInParent<KnockbackReceiver>();
             Vector2 dir = ((Vector2)c.transform.position - (Vector2)pivot.position).normalized;
             if (kb != null)
@@ -208,12 +204,11 @@ public class MeleeWeapon : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         var p = pivot ? pivot : transform;
-        // arc center marker
+
         Gizmos.color = Color.yellow;
         Vector3 center = p.position + p.right * _range;
         Gizmos.DrawWireSphere(center, _arcRadius);
 
-        // rough arc visualization
         float half = _swingAngle * 0.5f;
         UnityEditor.Handles.color = new Color(1f, 0.9f, 0.1f, 0.25f);
         UnityEditor.Handles.DrawSolidArc(p.position, Vector3.forward,

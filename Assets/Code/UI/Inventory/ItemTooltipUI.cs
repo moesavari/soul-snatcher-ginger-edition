@@ -40,7 +40,6 @@ public class ItemTooltipUI : MonoBehaviour
         if (_followMouse && _visible) Position(Input.mousePosition);
     }
 
-
     private void LateUpdate()
     {
         if (_visible && _ownerWidget != null && !_ownerWidget.gameObject.activeInHierarchy)
@@ -122,37 +121,32 @@ public class ItemTooltipUI : MonoBehaviour
 
         var sb = new StringBuilder(256);
 
-        // 1) Description (top)
         if (!string.IsNullOrWhiteSpace(def.description))
             sb.AppendLine(def.description.Trim());
 
-        // 2) Early out if no gear info to show
         bool hasStats = def.stats != null && def.stats.Count > 0;
         bool isGear = def.kind == ItemKind.Weapon || def.kind == ItemKind.Armor || def.kind == ItemKind.Accessory;
 
         if (!isGear && !hasStats && !def.hasEnchantment)
             return sb.ToString();
 
-        // Spacer between description and the gear block
         if (sb.Length > 0) sb.AppendLine();
 
-        // 3) Gear header row (optional but helpful context)
         if (isGear)
         {
-            // Quality • Slot • Two-Handed
+
             sb.Append("<b>")
               .Append(def.quality);
 
             if (def.equipSlot != EquipmentSlotType.None)
-                sb.Append(" • ").Append(def.equipSlot);
+                sb.Append("  ").Append(def.equipSlot);
 
             if (def.twoHanded)
-                sb.Append(" • Two-Handed");
+                sb.Append("  Two-Handed");
 
             sb.AppendLine("</b>");
         }
 
-        // 4) Stats list
         if (hasStats)
         {
             for (int i = 0; i < def.stats.Count; i++)
@@ -160,15 +154,13 @@ public class ItemTooltipUI : MonoBehaviour
                 var s = def.stats[i];
                 if (s == null) continue;
 
-                // % vs flat formatting
                 bool asPercent = s.statType == StatType.AttackSpeed
                               || s.statType == StatType.CritChance
                               || s.statType == StatType.MoveSpeed
                               || s.statType == StatType.CooldownReduction;
 
-                sb.Append("• ");
+                sb.Append(" ");
 
-                // Friendly names (customize to taste)
                 string statName = s.statType switch
                 {
                     StatType.AttackPower => "Attack Power",
@@ -189,7 +181,6 @@ public class ItemTooltipUI : MonoBehaviour
             }
         }
 
-        // 5) Enchantment (Rare optional, Legendary guaranteed by editor rules)
         if (def.hasEnchantment && !string.IsNullOrWhiteSpace(def.enchantmentDescription))
         {
             sb.AppendLine()

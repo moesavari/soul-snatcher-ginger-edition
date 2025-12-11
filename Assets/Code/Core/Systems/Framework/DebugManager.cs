@@ -2,15 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Centralized logging with context prefixes, duplicate protection,
-/// and a small in-memory ring buffer of recent logs.
-/// </summary>
 public static class DebugManager
 {
     public static bool useSoftResetOnLose = false;
 
-    // ---------- Public API ----------
     public enum LogLevel { Info, Warning, Error }
 
     public static IReadOnlyList<LogEntry> recent => _buffer;
@@ -74,7 +69,6 @@ public static class DebugManager
 
     public static void Clear() { _buffer.Clear(); }
 
-    // ---------- Internals ----------
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
     private static void Init()
     {
@@ -105,11 +99,10 @@ public static class DebugManager
     }
     public static void TriggerSoftReset()
     {
-        // TODO: implement your reset-to-day/start logic here
+
         Debug.Log("TriggerSoftReset called");
     }
 
-    // ---- Ring buffer (lightweight) ----
     private static void AddToBuffer(LogLevel level, string message, UnityEngine.Object context, string stack)
     {
         var entry = new LogEntry
@@ -127,7 +120,6 @@ public static class DebugManager
         _buffer.Add(entry);
     }
 
-    // ---- One-frame duplicate guard (cheap & cheerful) ----
     private static bool IsDuplicate(string msg, UnityEngine.Object ctx)
     {
         int h = (msg?.GetHashCode() ?? 0) ^ (ctx ? ctx.GetInstanceID() : 0);
@@ -137,7 +129,6 @@ public static class DebugManager
         return false;
     }
 
-    // ---------- State ----------
     private static bool _subscribed;
     private static readonly List<LogEntry> _buffer = new List<LogEntry>(128);
     private const int _maxEntries = 256;

@@ -36,14 +36,14 @@ public class VillagerInteraction : MonoBehaviour
     private void Update()
     {
         _playerInRange = Physics2D.OverlapCircle(transform.position, _interactRadius, _playerMask) != null;
-        if (_promptRoot) _promptRoot.SetActive(_playerInRange && _villager.isAlive && !_villager.isHiding); 
+        if (_promptRoot) _promptRoot.SetActive(_playerInRange && _villager.isAlive && !_villager.isHiding);
     }
 
     private bool CanAct() => _playerInRange && _villager.isAlive && Time.time >= _cooldownUntil && !_villager.isHiding;
 
     private void OnRescuePressed()
     {
-        if (GetComponent<Vendor>()) return; 
+        if (GetComponent<Vendor>()) return;
 
         if (!_playerInRange) return;
         if (_villager.isHiding) return;
@@ -53,10 +53,10 @@ public class VillagerInteraction : MonoBehaviour
 
     private void OnSiphonPressed()
     {
-        if (GetComponent<Vendor>()) return;   
+        if (GetComponent<Vendor>()) return;
 
         if (!_playerInRange) return;
-        if (_villager.isHiding) return;          
+        if (_villager.isHiding) return;
         _villager.OnSoulAbsorb();
         _cooldownUntil = Time.time + _interactCooldown;
     }

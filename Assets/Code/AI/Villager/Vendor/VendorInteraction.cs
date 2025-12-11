@@ -27,7 +27,6 @@ public class VendorInteraction : MonoBehaviour
         if (Time.time < _cooldownUntil) return;
         if (!_vendor || !_vendor.isAlive || _vendor.isHiding) return;
 
-        // Optional: require player to be near (uses same radius as villagers)
         var pc = PlayerContext.Instance?.facade;
         if (pc)
         {

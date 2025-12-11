@@ -28,7 +28,7 @@ public class ItemContextMenuUI : MonoBehaviour
     [SerializeField] private bool _followMouse = false;
     [SerializeField] private Vector2 _mouseOffset = new Vector2(24f, -24f);
     [SerializeField] private Canvas _canvas;
-    [SerializeField] private Vector2 _screenPadding = new Vector2(8f, 8f); // NEW: keep popup inside view
+    [SerializeField] private Vector2 _screenPadding = new Vector2(8f, 8f);
 
     private RectTransform _rt;
     private ItemDef _def;
@@ -82,7 +82,6 @@ public class ItemContextMenuUI : MonoBehaviour
         PositionAt(screenPos);
     }
 
-    // ---------------- INVENTORY (no shop) ----------------
     public void ShowInventory(ItemDef item, bool equipped, Vector2 screenPos)
     {
         if (!item) { Hide(); return; }
@@ -102,7 +101,7 @@ public class ItemContextMenuUI : MonoBehaviour
         if (isConsumable) _useBtn.onClick.AddListener(() => { PlayerContext.Instance?.facade?.inventory?.TryRemove(item, 1); Hide(); });
         if (item.stackable) _splitBtn.onClick.AddListener(() =>
         {
-            _quantity.Open(Input.mousePosition, 99, amt => { /* internal split if needed */ }, 1, 1);
+            _quantity.Open(Input.mousePosition, 99, amt => {  }, 1, 1);
             Hide();
         });
         _destroyBtn.onClick.AddListener(() => { PlayerContext.Instance?.facade?.inventory?.TryRemove(item, 1); Hide(); });
@@ -116,7 +115,6 @@ public class ItemContextMenuUI : MonoBehaviour
         if (!item) { Hide(); return; }
         if (_title) _title.text = item.displayName;
 
-        // Reset buttons
         Set(_equipBtn, false);
         Set(_splitBtn, false);
         Set(_useBtn, false);
@@ -130,7 +128,6 @@ public class ItemContextMenuUI : MonoBehaviour
             Hide();
         });
 
-        // If shop is open, allow selling equipped item
         bool shopOpen = ShopController.IsReady && ShopController.Instance.activeVendor != null;
         if (shopOpen)
         {
@@ -154,7 +151,6 @@ public class ItemContextMenuUI : MonoBehaviour
         OpenAt(screenPos);
     }
 
-    // ---------------- SHOP: BUY ----------------
     public void ShowShopBuy(ItemDef item, int maxQty, int priceEach, Vector2 screenPos)
     {
         if (!item) { Hide(); return; }
@@ -178,7 +174,7 @@ public class ItemContextMenuUI : MonoBehaviour
         {
             _useBtn.onClick.AddListener(() =>
             {
-                // Buy 1 via controller; panel will redraw through controller events.
+
                 ShopController.Instance?.TryBuy(item, 1);
                 Hide();
             });
@@ -189,7 +185,6 @@ public class ItemContextMenuUI : MonoBehaviour
             {
                 int clampedMax = Mathf.Max(1, maxQty);
 
-                // If we know the price, clamp by what the player can afford
                 var wallet = CurrencyWallet.Instance;
                 if (wallet != null && priceEach > 0)
                 {
@@ -197,7 +192,6 @@ public class ItemContextMenuUI : MonoBehaviour
                     clampedMax = Mathf.Clamp(maxAffordable, 0, maxQty);
                 }
 
-                // If they can’t afford even 1, don’t bother opening the prompt
                 if (clampedMax <= 0)
                 {
                     Debug.Log("Not enough gold to buy any of this item.");
@@ -223,7 +217,6 @@ public class ItemContextMenuUI : MonoBehaviour
         OpenAt(screenPos);
     }
 
-    // ---------------- SHOP: SELL ----------------
     public void ShowShopSell(ItemDef item, Vector2 screenPos, int slotIndex, int stackCount)
     {
         if (!item) { Hide(); return; }
@@ -237,7 +230,6 @@ public class ItemContextMenuUI : MonoBehaviour
         Set(_useBtn, !stack, "Sell");
         Set(_splitBtn, stack, "Sell Amount");
 
-        // Use the clicked stack's amount, not total player quantity
         int maxQty = Mathf.Max(1, stackCount);
         int sellEach = GetSellPriceEach(item);
 
@@ -274,9 +266,6 @@ public class ItemContextMenuUI : MonoBehaviour
         OpenAt(screenPos);
     }
 
-
-    // ---- helpers ----
-
     private int GetPlayerQuantity(ItemDef item)
     {
         var inv = PlayerContext.Instance?.facade?.inventory;
@@ -304,22 +293,18 @@ public class ItemContextMenuUI : MonoBehaviour
         return Mathf.Max(1, Mathf.RoundToInt(buyEach * 0.5f));
     }
 
-    // ---- positioning (CLAMPED to canvas) ----
     private void PositionAt(Vector2 screenPos)
     {
         if (_rt == null || _canvas == null) return;
 
         var canvasRT = _canvas.transform as RectTransform;
 
-        // Use the given screenPos (or mouse if follow enabled), then add offset
         var sp = _followMouse ? (Vector2)Input.mousePosition : screenPos;
         sp += _mouseOffset;
 
-        // Convert to canvas-local position
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRT, sp, _canvas.worldCamera, out var local);
 
-        // CLAMP: keep the popup fully inside the canvas rect
         var panelHalf = _rt.rect.size * 0.5f;
         var cRect = canvasRT.rect;
 

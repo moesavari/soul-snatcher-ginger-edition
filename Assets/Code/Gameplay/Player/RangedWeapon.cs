@@ -18,7 +18,7 @@ public class RangedWeapon : MonoBehaviour
     private float _shootRootTimer;
 
     [Header("Stat References")]
-    [SerializeField] private Stats _owner; 
+    [SerializeField] private Stats _owner;
     [SerializeField] private int _power = 8;
 
     public bool isShooting => _shootRootTimer > 0f;
@@ -44,7 +44,6 @@ public class RangedWeapon : MonoBehaviour
         if (_timer > 0f) return;
         _timer = _cooldown;
 
-        // NEW: brief lock + root window
         _shootRootTimer = _shootRootSeconds;
         if (_facing != null) _facing.SetAimLocked(true);
         if (_shootRootSeconds > 0f) Invoke(nameof(ReleaseAimLock), _shootRootSeconds);
@@ -67,7 +66,6 @@ public class RangedWeapon : MonoBehaviour
             rb.linearVelocity = dir * _speed; rb.WakeUp();
         }
 
-        //_anim?.SetTrigger("Bow");
     }
 
     private void ReleaseAimLock()

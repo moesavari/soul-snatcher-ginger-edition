@@ -8,31 +8,23 @@ public class CanvasGroupFader : MonoBehaviour
 
     private Coroutine _co;
 
-    // Instance API (used by your UI windows)
     public void Fade(bool show)
     {
         if (_co != null) StopCoroutine(_co);
         _co = StartCoroutine(FadeCo(_group, show ? 0f : 1f, show ? 1f : 0f, _duration, show, show));
     }
 
-    // ------------------------------
-    // Static overloads (compat layer)
-    // ------------------------------
-
-    // Matches calls like: CanvasGroupFader.Fade(group, from, to, duration)
     public static Coroutine Fade(CanvasGroup group, float from, float to, float duration)
     {
         return Runner.Run(group, from, to, duration, to > from, to > from);
     }
 
-    // Slightly higher-level: specify end alpha + duration
     public static Coroutine FadeTo(CanvasGroup group, float to, float duration)
     {
         float from = group ? group.alpha : 0f;
         return Runner.Run(group, from, to, duration, to > from, to > from);
     }
 
-    // Instance -> static bridge if someone passes an instance
     public static Coroutine Fade(CanvasGroupFader fader, bool show)
     {
         if (!fader) return null;
@@ -41,7 +33,6 @@ public class CanvasGroupFader : MonoBehaviour
         return fader._co;
     }
 
-    // Shared coroutine
     private static IEnumerator FadeCo(CanvasGroup group, float from, float to, float duration, bool blocks, bool interact)
     {
         if (!group) yield break;

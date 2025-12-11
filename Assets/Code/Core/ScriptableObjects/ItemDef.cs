@@ -22,7 +22,6 @@ public enum StatType
     CooldownReduction
 }
 
-
 [System.Serializable]
 public class GearStat
 {

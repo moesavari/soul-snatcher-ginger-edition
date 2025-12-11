@@ -2,10 +2,7 @@ using UnityEngine;
 
 public static class ComponentUtil
 {
-    /// <summary>
-    /// Cache a required component on the same GameObject.
-    /// Logs a clear warning during play if missing.
-    /// </summary>
+
     public static T Require<T>(this Component c) where T : Component
     {
         if (c == null)
@@ -20,9 +17,6 @@ public static class ComponentUtil
         return t;
     }
 
-    /// <summary>
-    /// Gets a component somewhere under this object (once). Use for fixed child deps.
-    /// </summary>
     public static T RequireInChildren<T>(this Component c, bool includeInactive = false) where T : Component
     {
         var t = c.GetComponentInChildren<T>(includeInactive);
@@ -31,9 +25,6 @@ public static class ComponentUtil
         return t;
     }
 
-    /// <summary>
-    /// Gets a component in parent chain (once).
-    /// </summary>
     public static T RequireInParent<T>(this Component c) where T : Component
     {
         var t = c.GetComponentInParent<T>();

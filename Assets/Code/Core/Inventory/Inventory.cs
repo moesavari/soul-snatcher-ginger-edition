@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 
 namespace Game.Core.Inventory
-{ 
+{
     public class Inventory : MonoBehaviour
     {
         [SerializeField] private int _slots = 12;
@@ -20,14 +20,14 @@ namespace Game.Core.Inventory
         private void Awake()
         {
             if (_contents.Count < _slots)
-                for (int i = _contents.Count; i < _slots; i++) 
+                for (int i = _contents.Count; i < _slots; i++)
                     _contents.Add(new ItemStack());
         }
 
         private void OnEnable()
         {
             if (_goldText) _goldText.text = CurrencyWallet.Instance ? CurrencyWallet.Instance.gold.ToString() : "0";
-                
+
             if (CurrencyWallet.Instance != null) CurrencyWallet.Instance.OnGoldChanged += OnGoldChanged;
         }
 
@@ -128,7 +128,6 @@ namespace Game.Core.Inventory
             FireRemoved(new ItemStack { def = def, amount = amount });
             return true;
         }
-
 
         public bool Has(ItemDef def, int amount)
         {

@@ -12,8 +12,8 @@ public class WaveManager : MonoBehaviour
 
     [Header("Pacing")]
     [SerializeField] private int _maxAlive = 35;
-    [SerializeField] private float _betweenWavesGrace = 12f;  // max seconds to wait for cleanup before next wave
-    [SerializeField] private float _mixStaggerMs = 150f;      // small initial offsets between entry streams
+    [SerializeField] private float _betweenWavesGrace = 12f;
+    [SerializeField] private float _mixStaggerMs = 150f;
 
     [Header("Testing")]
     [SerializeField] private bool _autoStartOnPlay = false;
@@ -82,7 +82,7 @@ public class WaveManager : MonoBehaviour
         _currentWaveIndex = 0;
         _nightActive = true;
         _runner = StartCoroutine(RunNight());
-        
+
         if (_logDebug) DebugManager.Log("Night started.", this);
     }
 
@@ -113,7 +113,6 @@ public class WaveManager : MonoBehaviour
 
             if (wave.endDelay > 0f) yield return new WaitForSeconds(wave.endDelay);
 
-            // Cleanup window: wait until field is mostly clear or we time out
             float t0 = Time.time;
             int target = Mathf.Min(4, Mathf.Max(0, AdjustedMaxAlive / 5));
             while (_alive > target && (Time.time - t0) < _betweenWavesGrace)
@@ -121,7 +120,7 @@ public class WaveManager : MonoBehaviour
         }
 
         if (_logDebug) DebugManager.Log("All waves dispatched. Waiting for last enemies to die...", this);
-        // If you want to require a full clear before declaring success, uncomment:
+
         while (_alive > 0) yield return null;
 
         _runner = null;
@@ -134,7 +133,6 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    // NRE-proof cap (extend later if you add per-wave overrides)
     private int AdjustedMaxAlive
     {
         get
@@ -200,7 +198,6 @@ public class WaveManager : MonoBehaviour
 
                 var go = Instantiate(entry.prefab, spawnPos, p.rotation);
 
-                // Track alive reliably via DeathRelay
                 var relay = go.GetComponent<DeathRelay>() ?? go.AddComponent<DeathRelay>();
                 relay.Init(this);
                 _tracked.Add(relay);
@@ -223,7 +220,7 @@ public class WaveManager : MonoBehaviour
         StopAllCoroutines();
         var snapshot = new List<DeathRelay>(_tracked);
         foreach (var r in snapshot)
-            if (r && r.gameObject) r.gameObject.SetActive(false);   // fixed: '&&' (not '&')
+            if (r && r.gameObject) r.gameObject.SetActive(false);
         _tracked.Clear();
         _alive = 0;
     }
@@ -250,9 +247,6 @@ public class WaveManager : MonoBehaviour
     }
 }
 
-/// <summary>
-/// Attached to each spawned enemy to reliably decrement alive on Disable/Destroy (pooling-friendly).
-/// </summary>
 public class DeathRelay : MonoBehaviour
 {
     [SerializeField] private bool _logDebug = false;

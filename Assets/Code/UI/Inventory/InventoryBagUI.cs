@@ -96,7 +96,7 @@ public class InventoryBagUI : MonoBehaviour
 
     private void OnEscape()
     {
-        if (_root && _root.activeSelf) { _root.SetActive(false); _context?.Hide(); } 
+        if (_root && _root.activeSelf) { _root.SetActive(false); _context?.Hide(); }
     }
 
     private void OnCellClicked(int index, ItemDef def, int amount, Vector2 screenPos)
@@ -135,7 +135,7 @@ public class InventoryBagUI : MonoBehaviour
 
     public void Show() { if (_root) _root.SetActive(true); }
     public void Hide() { if (_root) _root.SetActive(false); _context.Hide(); }
-    public void Toggle() 
+    public void Toggle()
     {
         if (!_root) return;
 

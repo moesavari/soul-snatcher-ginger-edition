@@ -49,7 +49,6 @@ public static class CreateItemDefsFromSprites
             def.displayName = ToDisplayName(cleanName);
             def.icon = sp;
 
-            // Guess fields from filename/path
             Guess(def, sp);
 
             AssetDatabase.CreateAsset(def, assetPath);
@@ -70,14 +69,12 @@ public static class CreateItemDefsFromSprites
         return char.ToUpper(s[0]) + s.Substring(1);
     }
 
-    // Simple keyword-based guesser. Tweak to your naming.
     private static void Guess(ItemDef def, Sprite sp)
     {
         var path = AssetDatabase.GetAssetPath(sp).ToLowerInvariant();
         var name = (sp.name ?? "").ToLowerInvariant();
         string s = path + " " + name;
 
-        // Consumables first (stackables)
         if (HasAny(s, "potion", "elixir", "vial", "flask", "food", "meat", "bread", "apple", "bandage"))
         {
             def.kind = ItemKind.Consumable;
@@ -87,7 +84,6 @@ public static class CreateItemDefsFromSprites
             return;
         }
 
-        // Ammo/misc stackables
         if (HasAny(s, "arrow", "bolt", "bomb", "shuriken"))
         {
             def.kind = ItemKind.Consumable;
@@ -97,7 +93,6 @@ public static class CreateItemDefsFromSprites
             return;
         }
 
-        // Weapons
         if (HasAny(s, "sword", "blade", "katana", "sabre", "saber"))
         {
             def.kind = ItemKind.Weapon;
@@ -145,7 +140,6 @@ public static class CreateItemDefsFromSprites
             return;
         }
 
-        // Armor
         if (HasAny(s, "helm", "helmet", "hood", "cap"))
         {
             def.kind = ItemKind.Armor;
@@ -171,7 +165,6 @@ public static class CreateItemDefsFromSprites
             return;
         }
 
-        // Accessories
         if (HasAny(s, "amulet", "necklace", "talisman"))
         {
             def.kind = ItemKind.Accessory;
@@ -185,7 +178,6 @@ public static class CreateItemDefsFromSprites
             return;
         }
 
-        // Fallback
         def.kind = ItemKind.Other;
         def.equipSlot = EquipmentSlotType.None;
     }

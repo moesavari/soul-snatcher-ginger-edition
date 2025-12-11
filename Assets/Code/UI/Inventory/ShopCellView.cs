@@ -50,7 +50,6 @@ public class ShopCellView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
     }
 
-    // Tooltip wiring (Shop panel)
     public void OnPointerEnter(PointerEventData e)
     {
         if (_def) _tooltip?.ShowFrom(UIPanelID.Shop, this, _def, e.position);

@@ -2,14 +2,13 @@
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-/// Simple on-screen dev overlay with handy buttons.
-/// Shows only in Editor or Development builds.
+
 [DefaultExecutionOrder(10000)]
 public class DebugOverlay : MonoBehaviour
 {
     [Header("UI Panels (optional)")]
-    [SerializeField] private GameObject equipmentPanel;   // InventoryHUD/EquipmentPanel
-    [SerializeField] private GameObject inventoryPanel;   // InventoryHUD/InventoryPanel
+    [SerializeField] private GameObject equipmentPanel;
+    [SerializeField] private GameObject inventoryPanel;
 
     [Header("Overlay")]
     [SerializeField] private bool startVisible = true;
@@ -17,14 +16,13 @@ public class DebugOverlay : MonoBehaviour
     [SerializeField] private float width = 300f;
 
     [Header("Gameplay Refs")]
-    [SerializeField] private ReputationMeterController _reputation; // drag if you want; otherwise auto-find
+    [SerializeField] private ReputationMeterController _reputation;
 
     private bool _visible;
     private Rect _rect;
 
-    // Reputation debug input
-    [SerializeField] private string _repInput = "0";  // textfield contents
-    [SerializeField] private float _repStep = 10f;    // quick step
+    [SerializeField] private string _repInput = "0";
+    [SerializeField] private float _repStep = 10f;
 
     private void Awake()
     {
@@ -42,7 +40,7 @@ public class DebugOverlay : MonoBehaviour
 
     private void OnGUI()
     {
-        // Tiny reopen button when hidden
+
         if (!_visible)
         {
             var btnRect = new Rect(10, 10, 70, 22);
@@ -50,7 +48,6 @@ public class DebugOverlay : MonoBehaviour
             return;
         }
 
-        // window height grows with content; passing 0 lets GUILayout calculate it
         _rect = GUILayout.Window(GetInstanceID(), _rect, DrawWindow, "Debug Overlay");
     }
 
@@ -58,7 +55,6 @@ public class DebugOverlay : MonoBehaviour
     {
         GUILayout.Space(4);
 
-        // --- Reputation ------------------------------------------------------
         GUILayout.Label("<b>Reputation</b>", Rich());
         if (_reputation == null)
         {
@@ -102,7 +98,7 @@ public class DebugOverlay : MonoBehaviour
             }
             if (GUILayout.Button("Snap Current", GUILayout.Width(100)))
             {
-                // read back current displayed value from controller if you want to sync the field
+
                 _repInput = (_reputation != null ? _reputation.value.ToString("0.##") : _repInput);
             }
             GUILayout.EndHorizontal();
@@ -110,7 +106,6 @@ public class DebugOverlay : MonoBehaviour
 
         GUILayout.Space(8);
 
-        // --- Panels ----------------------------------------------------------
         GUILayout.Label("<b>Panels</b>", Rich());
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Toggle Equipment")) Toggle(equipmentPanel);
@@ -124,7 +119,6 @@ public class DebugOverlay : MonoBehaviour
 
         GUILayout.Space(6);
 
-        // --- Input Bindings --------------------------------------------------
         GUILayout.Label("<b>Input Bindings</b>", Rich());
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Reset to Defaults"))
@@ -141,7 +135,6 @@ public class DebugOverlay : MonoBehaviour
 
         GUILayout.Space(6);
 
-        // --- PlayerPrefs -----------------------------------------------------
         GUILayout.Label("<b>PlayerPrefs</b>", Rich());
         if (GUILayout.Button("Delete ALL PlayerPrefs"))
         {
@@ -152,7 +145,6 @@ public class DebugOverlay : MonoBehaviour
 
         GUILayout.Space(6);
 
-        // --- Scene -----------------------------------------------------------
         GUILayout.Label("<b>Scene</b>", Rich());
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Reload Scene"))
@@ -165,7 +157,6 @@ public class DebugOverlay : MonoBehaviour
 
         GUILayout.Space(6);
 
-        // --- Input Debug -----------------------------------------------------
         GUILayout.Label("<b>Input Debug</b>", Rich());
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Log Bindings")) InputManager.LogBindings();
@@ -175,7 +166,6 @@ public class DebugOverlay : MonoBehaviour
         GUI.DragWindow(new Rect(0, 0, 10000, 20));
     }
 
-    // helpers -----------------------------------------------------------------
     private static float ParseOrZero(string s)
     {
         return float.TryParse(s, out var v) ? v : 0f;

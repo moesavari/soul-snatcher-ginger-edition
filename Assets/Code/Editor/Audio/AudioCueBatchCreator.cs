@@ -24,7 +24,7 @@ public class AudioCueBatchCreator : EditorWindow
         };
         objField.RegisterValueChangedCallback(_ =>
         {
-            // not used; we’ll rely on selection below
+
         });
         root.Add(new Label("Tip: select multiple AudioClips in Project and click 'Use Selection'."));
         root.Add(objField);

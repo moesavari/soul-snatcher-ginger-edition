@@ -1,4 +1,4 @@
-﻿// Assets/Code/Editor/NightSpawnBalancer.cs
+﻿
 using UnityEditor;
 using UnityEngine;
 using System;
@@ -14,35 +14,31 @@ public class NightSpawnBalancer : EditorWindow
     {
         public string name = "Walker";
         public GameObject prefab;
-        [Range(0f, 1f)] public float weight = 0.5f; // used in Weights mode
-        public float cost = 1f;                     // used in ThreatBudget mode
-        public int minPerWave = 0;                  // optional floor
-        public int maxPerWave = 9999;               // optional cap
+        [Range(0f, 1f)] public float weight = 0.5f;
+        public float cost = 1f;
+        public int minPerWave = 0;
+        public int maxPerWave = 9999;
         public bool enabled = true;
     }
 
     [MenuItem("Tools/Balance/Night Spawn Balancer")]
     public static void ShowWindow() => GetWindow<NightSpawnBalancer>("Night Spawn Balancer");
 
-    // ---------- Cycle ----------
     [Header("Cycle")]
     [SerializeField] private float _dayLength = 105f;
     [SerializeField] private float _nightLength = 150f;
-    [SerializeField] private float _cleanupBuffer = 45f; // time at end of night with no new spawns
+    [SerializeField] private float _cleanupBuffer = 45f;
 
-    // ---------- Waves ----------
     [SerializeField] private int _waves = 3;
     [SerializeField]
     private AnimationCurve _waveDistribution = new AnimationCurve(
         new Keyframe(0f, 1f), new Keyframe(0.5f, 1.2f), new Keyframe(1f, 0.8f)
-    ); // normalized to weights per wave
+    );
 
-    // ---------- Totals ----------
     [SerializeField] private int _totalEnemies = 60;
 
-    // ---------- Composition ----------
     [SerializeField] private CompositionMode _mode = CompositionMode.Weights;
-    [SerializeField] private float _threatPerEnemy = 1.0f; // only for ThreatBudget (per-wave budget = EnemiesInWave * this)
+    [SerializeField] private float _threatPerEnemy = 1.0f;
     [SerializeField]
     private List<EnemyType> _types = new()
     {
@@ -51,19 +47,16 @@ public class NightSpawnBalancer : EditorWindow
         new EnemyType{ name="Brute",  weight=0.15f, cost=3f, enabled=true },
     };
 
-    // ---------- Constraints ----------
     [SerializeField] private float _minInterval = 0.25f;
     [SerializeField] private float _maxInterval = 8f;
 
-    // ---------- Computed ----------
     private float _spawnWindow => Mathf.Max(0f, _nightLength - _cleanupBuffer);
     private float[] _waveEnemyCounts = Array.Empty<float>();
     private float[] _waveStart = Array.Empty<float>();
     private float[] _waveEnd = Array.Empty<float>();
 
-    // Per wave, per type
-    private Dictionary<int, Dictionary<int, int>> _counts = new();       // wave -> (typeIdx -> count)
-    private Dictionary<int, Dictionary<int, float>> _intervals = new();  // wave -> (typeIdx -> interval)
+    private Dictionary<int, Dictionary<int, int>> _counts = new();
+    private Dictionary<int, Dictionary<int, float>> _intervals = new();
 
     private Vector2 _scroll;
 
@@ -183,8 +176,6 @@ public class NightSpawnBalancer : EditorWindow
             EditorGUIUtility.systemCopyBuffer = BuildSummaryText();
     }
 
-    // ================= CALCULATION =================
-
     private void Calculate()
     {
         var activeTypes = _types.Select((t, idx) => (t, idx)).Where(p => p.t.enabled).ToList();
@@ -195,7 +186,6 @@ public class NightSpawnBalancer : EditorWindow
             return;
         }
 
-        // 1) Wave weights from curve (normalize)
         float[] wweights = new float[_waves];
         float step = (_waves == 1) ? 1f : 1f / (_waves - 1);
         float sum = 0f;
@@ -207,11 +197,9 @@ public class NightSpawnBalancer : EditorWindow
         }
         for (int i = 0; i < _waves; i++) wweights[i] /= sum;
 
-        // 2) Enemies per wave (float for precision; integer rounding later)
         _waveEnemyCounts = new float[_waves];
         for (int i = 0; i < _waves; i++) _waveEnemyCounts[i] = _totalEnemies * wweights[i];
 
-        // 3) Allocate time slices across the spawn window
         _waveStart = new float[_waves];
         _waveEnd = new float[_waves];
         float cursor = 0f;
@@ -225,7 +213,6 @@ public class NightSpawnBalancer : EditorWindow
 
         _counts.Clear(); _intervals.Clear();
 
-        // 4) For each wave, compute per-type counts and per-type intervals
         for (int w = 0; w < _waves; w++)
         {
             int Ei = Mathf.Max(0, Mathf.RoundToInt(_waveEnemyCounts[w]));
@@ -236,25 +223,24 @@ public class NightSpawnBalancer : EditorWindow
 
             if (_mode == CompositionMode.Weights)
             {
-                // Normalize weights of enabled types
+
                 float sumWeights = activeTypes.Sum(p => Mathf.Max(0f, p.t.weight));
-                // If all zero, evenly split
+
                 if (sumWeights <= 0f) sumWeights = activeTypes.Count;
                 var provisional = activeTypes.ToDictionary(p => p.idx, p => (float)Ei * (Mathf.Max(0f, p.t.weight) / sumWeights));
                 counts = LargestRemainderRound(provisional, Ei, activeTypes);
                 EnforceMinMax(counts, Ei, activeTypes);
             }
-            else // ThreatBudget
+            else
             {
                 float budget = Mathf.Max(MinBudget(Ei, activeTypes), Ei * _threatPerEnemy);
                 counts = ComposeByBudgetGreedy(Ei, budget, activeTypes);
                 EnforceMinMax(counts, Ei, activeTypes);
 
-                // If constraints distorted the budget too far, gently normalize to exact Ei
                 int totalNow = counts.Values.Sum();
                 if (totalNow != Ei)
                 {
-                    // Adjust using weights derived from 1/cost (favor cheaper when we need more; favor expensive when we need less)
+
                     var adjWeights = activeTypes.ToDictionary(p => p.idx, p => 1f / Mathf.Max(0.001f, p.t.cost));
                     counts = RebalanceToTotal(counts, Ei, adjWeights, activeTypes);
                 }
@@ -262,7 +248,6 @@ public class NightSpawnBalancer : EditorWindow
 
             _counts[w] = counts;
 
-            // Intervals: each entry should finish within Ti -> interval_j = Ti / count_j
             var imap = new Dictionary<int, float>();
             foreach (var kv in counts)
             {
@@ -286,14 +271,14 @@ public class NightSpawnBalancer : EditorWindow
             .Select(kv => kv.Key)
             .ToList();
         for (int i = 0; i < remainder && i < order.Count; i++) floor[order[i]]++;
-        // Ensure only active keys exist
+
         var allowed = new HashSet<int>(activeTypes.Select(p => p.idx));
         return floor.Where(kv => allowed.Contains(kv.Key)).ToDictionary(kv => kv.Key, kv => kv.Value);
     }
 
     private static void EnforceMinMax(Dictionary<int, int> counts, int Ei, List<(EnemyType t, int idx)> activeTypes)
     {
-        // Clamp to per-type min/max, then re-normalize back to Ei if needed
+
         foreach (var p in activeTypes)
         {
             if (!counts.ContainsKey(p.idx)) counts[p.idx] = 0;
@@ -302,7 +287,6 @@ public class NightSpawnBalancer : EditorWindow
         int delta = Ei - counts.Values.Sum();
         if (delta == 0) return;
 
-        // Distribute deficit/excess by preferring cheapest types for positive delta and most expensive for negative
         var ordered = (delta > 0)
             ? activeTypes.OrderBy(p => p.t.cost).Select(p => p.idx).ToList()
             : activeTypes.OrderByDescending(p => p.t.cost).Select(p => p.idx).ToList();
@@ -334,15 +318,15 @@ public class NightSpawnBalancer : EditorWindow
 
     private static Dictionary<int, int> ComposeByBudgetGreedy(int Ei, float budget, List<(EnemyType t, int idx)> active)
     {
-        // Greedy: repeatedly add the type whose cost keeps us closest to the remaining per-unit budget
+
         var counts = active.ToDictionary(p => p.idx, p => 0);
         float remaining = Mathf.Max(MinBudget(Ei, active), budget);
 
         for (int k = 0; k < Ei; k++)
         {
-            // remaining "ideal" cost per remaining unit
+
             float ideal = remaining / Mathf.Max(1, (Ei - k));
-            // choose type with cost closest to ideal, tie-break by higher cost (adds drama)
+
             var pick = active
                 .OrderBy(p => Mathf.Abs(p.t.cost - ideal))
                 .ThenByDescending(p => p.t.cost)
@@ -358,13 +342,12 @@ public class NightSpawnBalancer : EditorWindow
         Dictionary<int, int> counts, int targetTotal,
         Dictionary<int, float> prefWeights, List<(EnemyType t, int idx)> active)
     {
-        // Ensure all active present
+
         foreach (var p in active) if (!counts.ContainsKey(p.idx)) counts[p.idx] = 0;
 
         int delta = targetTotal - counts.Values.Sum();
         if (delta == 0) return counts;
 
-        // Normalize weights
         float sumW = prefWeights.Values.Sum();
         if (sumW <= 0f) sumW = prefWeights.Count;
         var order = prefWeights.OrderByDescending(kv => kv.Value / sumW).Select(kv => kv.Key).ToList();
@@ -389,11 +372,9 @@ public class NightSpawnBalancer : EditorWindow
         return counts;
     }
 
-    // ================= EXPORT =================
-
     private void ExportNightPreset()
     {
-        Calculate(); // ensure data fresh
+        Calculate();
 
         if (_waveEnemyCounts.Length == 0)
         {
@@ -408,7 +389,6 @@ public class NightSpawnBalancer : EditorWindow
 
         var preset = ScriptableObject.CreateInstance<NightPreset>();
 
-        // Build waves
         var waves = new List<NightPreset.Wave>();
         for (int w = 0; w < _waves; w++)
         {
@@ -443,7 +423,6 @@ public class NightSpawnBalancer : EditorWindow
             waves.Add(wave);
         }
 
-        // Reflect into private fields (NightPreset exposes public getters)
         var wavesField = typeof(NightPreset).GetField("_waves", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         wavesField?.SetValue(preset, waves);
 

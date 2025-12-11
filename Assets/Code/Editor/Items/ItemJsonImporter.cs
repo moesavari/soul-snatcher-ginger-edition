@@ -8,13 +8,7 @@ using UnityEngine;
 
 namespace Game.EditorTools.Items
 {
-    /// <summary>
-    /// Imports ItemDefs from the tools/exported items.json file.
-    /// Usage:
-    /// 1) In the Project window, select the items.json TextAsset that was exported by the tools backend.
-    /// 2) Run "Tools/SoulSnatched/Import Items From Selected JSON".
-    /// 3) All existing ItemDef assets in Assets/Game/Items/Defs will be deleted and rebuilt.
-    /// </summary>
+
     public static class ItemJsonImporter
     {
         private const string ItemDefsFolder = "Assets/Game/Items/Defs";
@@ -24,8 +18,8 @@ namespace Game.EditorTools.Items
         [Serializable]
         private class ImportItemStat
         {
-            [JsonProperty("id")] public string id;        
-            [JsonProperty("name")] public string name;    
+            [JsonProperty("id")] public string id;
+            [JsonProperty("name")] public string name;
             [JsonProperty("value")] public int value;
         }
 
@@ -48,12 +42,12 @@ namespace Game.EditorTools.Items
             [JsonProperty("name")] public string name;
             [JsonProperty("description")] public string description;
             [JsonProperty("rarity_id")] public int rarityId;
-            [JsonProperty("type")] public string type;           
-            [JsonProperty("armor_slot")] public string armorSlot; 
-            [JsonProperty("weapon_type")] public string weaponType; 
+            [JsonProperty("type")] public string type;
+            [JsonProperty("armor_slot")] public string armorSlot;
+            [JsonProperty("weapon_type")] public string weaponType;
             [JsonProperty("value")] public int value;
             [JsonProperty("max_stack")] public int maxStack;
-            [JsonProperty("icon_id")] public string iconId;      
+            [JsonProperty("icon_id")] public string iconId;
             [JsonProperty("base_item_id")] public int? baseItemId;
             [JsonProperty("stats")] public List<ImportItemStat> stats;
             [JsonProperty("enchantments")] public List<ImportItemEnchantment> enchantments;
@@ -118,8 +112,6 @@ namespace Game.EditorTools.Items
             TryPopulateRegistry(createdDefs);
         }
 
-        // --- Folder / nuke helpers ---------------------------------------------------
-
         private static void EnsureItemDefsFolder()
         {
             if (AssetDatabase.IsValidFolder(ItemDefsFolder))
@@ -148,8 +140,6 @@ namespace Game.EditorTools.Items
             if (guids.Length > 0)
                 Debug.Log($"[ItemImporter] Deleted {guids.Length} existing ItemDef assets.");
         }
-
-        // --- ItemDef creation --------------------------------------------------------
 
         private static ItemDef CreateItemDef(ImportItem item)
         {

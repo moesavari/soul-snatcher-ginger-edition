@@ -60,7 +60,6 @@ public class PlayerController : MonoBehaviour
 
     public void SetMoveInput(Vector2 v) { _moveInput = v; }
 
-    // Call this externally when taking damage
     public void TakeDamage(int amount)
     {
         if (isDead) return;

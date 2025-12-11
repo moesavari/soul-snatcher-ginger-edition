@@ -6,7 +6,6 @@ public class ItemDefRegistry : MonoSingleton<ItemDefRegistry>
     [SerializeField] private List<ItemDef> _itemDefs = new();
     public List<ItemDef> allDefs => _itemDefs;
 
-
     private Dictionary<string, ItemDef> _byCode = new();
     public IReadOnlyDictionary<string, ItemDef> byCode => _byCode;
 

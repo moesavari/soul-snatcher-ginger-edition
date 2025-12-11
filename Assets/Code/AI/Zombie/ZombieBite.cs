@@ -7,7 +7,7 @@ public class ZombieBite : MonoBehaviour
     [Header("Base Values")]
     [SerializeField] private int _damagePerTick = 1;
     [SerializeField] private float _tickInterval = 0.6f;
-    [SerializeField] private string _targetTag = "Player"; 
+    [SerializeField] private string _targetTag = "Player";
 
     [Header("Enrage/Burn")]
     [SerializeField] private float _enrageDamageMult = 1.25f;
@@ -20,7 +20,6 @@ public class ZombieBite : MonoBehaviour
     private int _baseDamagePerTick;
     private float _baseTickInterval;
 
-    // Link the attacker! (The zombie's Stats component)
     private Stats _ownerStats;
 
     public void SetOwner(Stats owner) => _ownerStats = owner;

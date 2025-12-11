@@ -7,7 +7,7 @@ public class DeathFeedback : MonoBehaviour
     [SerializeField] private float _vfxLifetime = 1.5f;
     [SerializeField] private AudioCue _deathCue;
     [SerializeField] private bool _attachToBody = false;
-    
+
     private Stats _stats;
 
     private void Awake()

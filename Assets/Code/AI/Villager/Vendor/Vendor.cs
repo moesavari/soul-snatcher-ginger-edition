@@ -39,7 +39,7 @@ public class Vendor : Villager
 
         if (_vendorId <= 0 || !ItemDatabaseRuntime.IsReady || !ItemDefRegistry.IsReady)
         {
-            // Fallback: old behaviour
+
             _runtimeInventory = Instantiate(_inventory);
             Debug.Log($"[Vendor] '{_vendorName}' using legacy inventory (vendorId={_vendorId}).");
         }
@@ -50,7 +50,6 @@ public class Vendor : Villager
 
         ReputationSystem.Instance.OnReputationChanged += OnRepChanged;
     }
-
 
     private void OnEnable()
     {
@@ -110,7 +109,7 @@ public class Vendor : Villager
 
     private void ApplyRepRules(int rep)
     {
-        if(_repRules == null) return;   
+        if(_repRules == null) return;
 
         var r = _repRules.GetRangeFor(rep);
         if(r == null) return;
@@ -156,7 +155,6 @@ public class Vendor : Villager
         {
             if (!db.TryGetItem(s.itemId, out var itemJson)) continue;
 
-            // For now we use iconId as the itemCode
             if (!registry.TryGet(itemJson.iconId, out var def))
             {
                 Debug.LogWarning($"[Vendor] No ItemDef for code '{itemJson.iconId}' (vendorId={_vendorId}).");

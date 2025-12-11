@@ -28,7 +28,6 @@ public static class MissingScriptsScanner
         DebugManager.Log($"[MissingScripts] Scan complete. Missing components found: {count}");
     }
 
-
     [MenuItem("Tools/Diagnostics/Remove Missing Scripts In Selection")]
     private static void RemoveMissingInSelection()
     {

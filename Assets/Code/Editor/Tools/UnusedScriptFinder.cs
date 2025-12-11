@@ -1,4 +1,3 @@
-// Code/Editor/Tools/UnusedScriptFinder.cs
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -12,7 +11,7 @@ public class UnusedScriptFinder : EditorWindow
 
     private Vector2 _scroll;
     private bool _searched;
-    private bool _includeEditorScripts; // optional toggle
+    private bool _includeEditorScripts;
     private List<string> _unusedScriptPaths = new();
     private HashSet<int> _selected = new();
 
@@ -108,50 +107,45 @@ public class UnusedScriptFinder : EditorWindow
             AssetDatabase.Refresh();
         }
 
-        // refresh results view
         _unusedScriptPaths = FindUnusedMonoBehaviours();
         _selected.Clear();
     }
 
     private List<string> FindUnusedMonoBehaviours()
     {
-        // 1) Collect all MonoScripts under Assets/Code (optionally excluding /Editor)
+
         var allScriptGuids = AssetDatabase.FindAssets("t:MonoScript", new[] { RootFolder });
         var allScriptPaths = allScriptGuids
             .Select(AssetDatabase.GUIDToAssetPath)
             .Where(p => _includeEditorScripts || !IsEditorPath(p))
             .ToList();
 
-        // Build map: scriptPath -> (guid, class)
         var candidates = new List<(string path, string guid, System.Type klass)>();
         foreach (var path in allScriptPaths)
         {
             var ms = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
             if (!ms) continue;
             var klass = ms.GetClass();
-            if (klass == null) continue;                          // no compiled type yet
-            if (!typeof(MonoBehaviour).IsAssignableFrom(klass)) continue; // only MonoBehaviours can sit on prefabs/scenes
-            if (klass.IsAbstract) continue;                       // abstract cannot be attached
+            if (klass == null) continue;
+            if (!typeof(MonoBehaviour).IsAssignableFrom(klass)) continue;
+            if (klass.IsAbstract) continue;
             if (IsEditorType(klass) && !_includeEditorScripts) continue;
 
             var guid = AssetDatabase.AssetPathToGUID(path);
             candidates.Add((path, guid, klass));
         }
 
-        // Early out: if no candidates, nothing to do
         if (candidates.Count == 0) return new List<string>();
 
-        // 2) Gather all prefab + scene assets in project and compute dependencies (by GUID) once
         var prefabGuids = AssetDatabase.FindAssets("t:Prefab");
         var sceneGuids = AssetDatabase.FindAssets("t:Scene");
         var assetPaths = prefabGuids.Concat(sceneGuids).Select(AssetDatabase.GUIDToAssetPath).ToList();
 
-        // Build a set of script GUIDs that are referenced by any prefab/scene
         var referencedGuids = new HashSet<string>();
         for (int i = 0; i < assetPaths.Count; i++)
         {
             string aPath = assetPaths[i];
-            // robust: use dependencies so it works with binary or text serialization
+
             var deps = AssetDatabase.GetDependencies(aPath, true);
             foreach (var d in deps)
             {
@@ -164,7 +158,6 @@ public class UnusedScriptFinder : EditorWindow
             }
         }
 
-        // 3) Anything not referenced by any prefab/scene is considered "unused" per your rule
         var unused = candidates
             .Where(c => !referencedGuids.Contains(c.guid))
             .Select(c => c.path)
@@ -180,8 +173,7 @@ public class UnusedScriptFinder : EditorWindow
 
     private static bool IsEditorType(System.Type t)
     {
-        // quick heuristic: EditorWindow & UnityEditor.* derive from ScriptableObject; we only gathered MonoBehaviours,
-        // but someone might put an editor MonoBehaviour under Editor. This check keeps things tidy.
+
         return t.Namespace != null && t.Namespace.StartsWith("UnityEditor", System.StringComparison.Ordinal);
     }
 }

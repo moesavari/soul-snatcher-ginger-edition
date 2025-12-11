@@ -25,20 +25,17 @@ public class UIRaycastAudit : MonoBehaviour
         if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && !canvas.worldCamera)
             DebugManager.LogWarning("Canvas needs an Event Camera (ScreenSpace-Camera/WorldSpace). Assign Main Camera.", this);
 
-        // Check CanvasGroups that kill raycasts
         foreach (var cg in canvas.GetComponentsInChildren<CanvasGroup>(true))
         {
             if (!cg.blocksRaycasts)
                 DebugManager.LogWarning($"CanvasGroup blocksRaycasts=FALSE at {cg.name} (children won't receive pointer).", this);
         }
 
-        // Check typical slot images/buttons
         var images = canvas.GetComponentsInChildren<Image>(true);
         int off = images.Count(i => i.raycastTarget == false);
         int on = images.Length - off;
         DebugManager.Log($"Images: {images.Length} total | raycastTarget ON={on}, OFF={off}", this);
 
-        // Print first few likely slot buttons with raycastTarget state
         var buttons = canvas.GetComponentsInChildren<Button>(true);
         foreach (var b in buttons.Take(10))
         {

@@ -158,7 +158,7 @@ public class ShopController : MonoSingleton<ShopController>
                 CurrencyWallet.Instance.AddGold(each * (qty - i));
                 return false;
             }
-            
+
             inv.TryAdd(item, 1, out _);
         }
 
@@ -203,7 +203,6 @@ public class ShopController : MonoSingleton<ShopController>
         var inv = PlayerContext.Instance?.facade?.inventory;
         if (inv == null) return false;
 
-        // Only sell from the clicked slot
         if (!inv.TryRemoveAt(slotIndex, item, qty)) return false;
 
         float vendorRepMult = _activeVendor.currentRepPriceMult;
@@ -227,7 +226,6 @@ public class ShopController : MonoSingleton<ShopController>
         return true;
     }
 
-
     public bool TryBuyBack(ItemDef item)
     {
         if(!_buybackItems.Contains(item)) return false;
@@ -241,7 +239,7 @@ public class ShopController : MonoSingleton<ShopController>
 
         var list = new List<ItemDef>(_buybackItems);
         list.Remove(item);
-        
+
         _buybackItems.Clear();
         foreach (var it in list) _buybackItems.Enqueue(it);
 

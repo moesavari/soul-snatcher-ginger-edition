@@ -9,7 +9,6 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
 
     public static bool IsReady => _instance != null;
 
-    /// <summary>Return instance or log a precise error with the caller name.</summary>
     protected static T Require(object caller)
     {
         if (_instance != null) return _instance;

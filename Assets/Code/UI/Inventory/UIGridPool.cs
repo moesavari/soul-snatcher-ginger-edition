@@ -21,7 +21,6 @@ public class UIGridPool<TCell> : MonoBehaviour where TCell : Component
             return;
         }
 
-        // Make sure template is active for cloning then hide it
         bool prevActive = _template.gameObject.activeSelf;
         _template.gameObject.SetActive(true);
 
@@ -33,7 +32,7 @@ public class UIGridPool<TCell> : MonoBehaviour where TCell : Component
         }
 
         _template.gameObject.SetActive(prevActive);
-        _template.gameObject.SetActive(false); // keep the template itself hidden
+        _template.gameObject.SetActive(false);
     }
 
     public void ForEach(Action<TCell, int> action)

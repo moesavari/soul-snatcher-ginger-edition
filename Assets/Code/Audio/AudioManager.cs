@@ -24,7 +24,7 @@ public class AudioManager : MonoSingleton<AudioManager>
     [SerializeField] private string _footstepsParam = "FootstepsVol";
 
     [Header("Music")]
-    [SerializeField] private int _musicSources = 2;      // for crossfades
+    [SerializeField] private int _musicSources = 2;
     [SerializeField] private float _defaultMusicFade = 0.8f;
 
     [Header("Ducking")]
@@ -32,20 +32,17 @@ public class AudioManager : MonoSingleton<AudioManager>
     [SerializeField] private float _duckAmountDb = -10f;
     [SerializeField] private float _duckFadeSeconds = 0.15f;
 
-    // Active spawned sources by channel (to allow StopChannel & cleanup of loops)
     private readonly Dictionary<AudioChannel, List<AudioSource>> _active = new();
 
-    // Music (created lazily on first PlayMusic)
     private AudioSource[] _musicSrc;
     private int _activeMusicIndex;
     private Coroutine _musicFadeRoutine;
 
     private int _activeVoices;
     private readonly Dictionary<string, float> _cooldownUntilTime = new();
-    private readonly Dictionary<AudioCue, float> _cueUntil = new();       
+    private readonly Dictionary<AudioCue, float> _cueUntil = new();
     private readonly Dictionary<AudioCue, List<AudioSource>> _cueSources = new();
 
-    // PlayerPrefs keys (volumes)
     private const string _ppMaster = "vol_master";
     private const string _ppMusic = "vol_music";
     private const string _ppSFX = "vol_sfx";
@@ -61,7 +58,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         _activeMusicIndex = 0;
     }
 
-    // ---------- Public Volume API (dB) ----------
     public void SetMasterVolumeDb(float db) => SetMixerDb(_masterParam, db, _ppMaster);
     public void SetMusicVolumeDb(float db) => SetMixerDb(_musicParam, db, _ppMusic);
     public void SetSFXVolumeDb(float db) => SetMixerDb(_sfxParam, db, _ppSFX);
@@ -77,7 +73,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         return 0f;
     }
 
-    // ---------- Music ----------
     public void PlayMusic(AudioClip clip, float fadeSeconds = -1f)
     {
         if (clip == null) { DebugManager.LogWarning("PlayMusic null.", this); return; }
@@ -112,7 +107,6 @@ public class AudioManager : MonoSingleton<AudioManager>
     public void PauseMusic() { if (_musicSrc != null) _musicSrc[_activeMusicIndex].Pause(); }
     public void ResumeMusic() { if (_musicSrc != null) _musicSrc[_activeMusicIndex].UnPause(); }
 
-    // ---------- One‑shot & looped playback (spawn → play → destroy) ----------
     public AudioSource Play(AudioClip clip, AudioChannel channel, float volume = 1f, float pitch = 1f, bool loop = false)
     {
         if (clip == null) { DebugManager.LogWarning("Play null clip.", this); return null; }
@@ -149,13 +143,12 @@ public class AudioManager : MonoSingleton<AudioManager>
     public AudioSource PlayCue(AudioCue cue, Vector3? worldPos = null, Transform attachTo = null)
     {
         if (cue == null) { DebugManager.LogWarning("PlayCue null.", this); return null; }
-        
+
         if (IsCuePlaying(cue)) return null;
 
         var clip = PickClip(cue.clips);
         if (clip == null) { DebugManager.LogWarning("AudioCue has no clips.", this); return null; }
 
-        // cooldown per cue (by name or you can expose a key on the SO)
         string key = cue.name;
         if (cue.cooldownSeconds > 0f)
         {
@@ -191,7 +184,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         list.Clear();
     }
 
-    // ---------- Voice ducking ----------
     public AudioSource PlayVoice(AudioClip clip, float volume = 1f, float pitch = 1f, bool loop = false)
     {
         var src = Play(clip, AudioChannel.Voice, volume, pitch, loop);
@@ -212,7 +204,6 @@ public class AudioManager : MonoSingleton<AudioManager>
             StartCoroutine(SetMixerDbOverTime(_musicParam, 0f, _duckFadeSeconds));
     }
 
-    // ---------- Internals ----------
     private AudioSource CreateSource(AudioChannel channel)
     {
         var go = new GameObject($"Audio_{channel}");
@@ -232,7 +223,7 @@ public class AudioManager : MonoSingleton<AudioManager>
 
     private void TrackLifetime(AudioChannel channel, AudioSource src)
     {
-        if (src.loop) return; // caller stops/destroys loops explicitly
+        if (src.loop) return;
         StartCoroutine(DestroyWhenFinished(channel, src));
     }
 
@@ -242,7 +233,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         var clip = src.clip;
         if (clip == null) { RemoveAndDestroy(channel, src); yield break; }
 
-        // pitch-aware wait
         float t = clip.length / Mathf.Max(0.01f, src.pitch);
         yield return new WaitForSecondsRealtime(t + 0.05f);
         RemoveAndDestroy(channel, src);
@@ -385,10 +375,9 @@ public class AudioManager : MonoSingleton<AudioManager>
     public bool IsCuePlaying(AudioCue cue)
     {
         if (!cue) return false;
-        // If we have an active source, or the time-gate hasn't expired yet, treat as 'playing'
+
         if (_cueUntil.TryGetValue(cue, out var until) && until > Time.unscaledTime) return true;
 
-        // Also check if any tracked source is still alive & playing
         if (_cueSources.TryGetValue(cue, out var list))
         {
             for (int i = list.Count - 1; i >= 0; i--)
@@ -396,7 +385,7 @@ public class AudioManager : MonoSingleton<AudioManager>
                 var s = list[i];
                 if (!s) { list.RemoveAt(i); continue; }
                 if (s.isPlaying) return true;
-                // not playing anymore → cleanup
+
                 list.RemoveAt(i);
                 Destroy(s.gameObject);
             }
@@ -408,7 +397,6 @@ public class AudioManager : MonoSingleton<AudioManager>
     {
         if (!cue || !clip || !src) return;
 
-        // Track active source
         if (!_cueSources.TryGetValue(cue, out var list))
         {
             list = new List<AudioSource>(2);
@@ -416,7 +404,6 @@ public class AudioManager : MonoSingleton<AudioManager>
         }
         list.Add(src);
 
-        // Time-gate estimate (pitch aware). Loops are “locked” until stopped.
         if (!cue.loop)
         {
             var dur = clip.length / Mathf.Max(0.01f, pitch);
@@ -425,25 +412,23 @@ public class AudioManager : MonoSingleton<AudioManager>
         }
         else
         {
-            // looped → remain locked until explicitly stopped
+
             _cueUntil[cue] = float.PositiveInfinity;
-            StartCoroutine(ClearCueWhenAudioStops(cue, src)); // clears when you stop the source
+            StartCoroutine(ClearCueWhenAudioStops(cue, src));
         }
     }
 
     private IEnumerator ClearCueWhenAudioStops(AudioCue cue, AudioSource src)
     {
-        // Wait while that source is alive & playing
+
         while (src && src.isPlaying) yield return null;
 
-        // Remove this source from the cue list
         if (_cueSources.TryGetValue(cue, out var list))
         {
             list.Remove(src);
             if (list.Count == 0) _cueSources.Remove(cue);
         }
 
-        // If no other sources for this cue remain, clear the lock
         if (!_cueSources.ContainsKey(cue))
             _cueUntil.Remove(cue);
     }

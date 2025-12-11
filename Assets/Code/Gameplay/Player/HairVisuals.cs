@@ -20,6 +20,9 @@ public class HairVisuals : MonoBehaviour
 
     public event System.Action<int> OnHairStageChanged;
     public int CurrentStage => _lastStage;
+    public GenderType genderType => _gender;
+
+    public int hairStage => CurrentStage;
 
     private void Awake()
     {
@@ -112,7 +115,7 @@ public class HairVisuals : MonoBehaviour
     private void ResolveActiveProfile()
     {
         _activeProfile = _gender switch
-        { 
+        {
             GenderType.Male     => _maleProfile,
             GenderType.Female   => _femaleProfile,
             _                   => null

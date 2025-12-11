@@ -9,7 +9,7 @@ public class EquipmentDebugEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        // Draw the normal Equipment inspector first.
+
         base.OnInspectorGUI();
 
         EditorGUILayout.Space(8);

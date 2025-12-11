@@ -31,7 +31,6 @@ public class NightDirector : MonoSingleton<NightDirector>
 
     private void OnDayStarted()
     {
-        // TODO: progress to next night after a successful night
-        // _nightIndex = Mathf.Min(_nightIndex + 1, _nights.Length - 1);
+
     }
 }

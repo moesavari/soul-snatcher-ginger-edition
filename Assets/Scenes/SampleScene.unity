@@ -2112,12 +2112,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSheetUI
   _root: {fileID: 1927291435}
-  _paperdoll: {fileID: 1618276275}
-  _playerHair: {fileID: 0}
   _inventory: {fileID: 0}
   _equipment: {fileID: 0}
   _tooltip: {fileID: 965828261}
   _context: {fileID: 1815301369}
+  _paperdoll: {fileID: 1618276275}
+  _playerHair: {fileID: 0}
 --- !u!114 &242509766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5653,7 +5653,6 @@ MonoBehaviour:
   _persistAcrossScenes: 1
   _dayDurationSeconds: 15
   _nightDurationSeconds: 180
-  _dayStartAudioCue: {fileID: 11400000, guid: 2c9019beb84d99f48811d7da668ab195, type: 2}
   _nightSpawnDelay: 5
   _nightStartAudioCue: {fileID: 11400000, guid: b934370479e15b94b9cd6ed6dd645789, type: 2}
   _startAtNight: 0
@@ -10439,7 +10438,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1618276271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfc4edd1797eafc4dae421e9d058d785, type: 3}
+  m_Script: {fileID: 11500000, guid: 14194a5669f42f84781e58afb30388b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentPaperdollUI
   _image: {fileID: 1618276273}

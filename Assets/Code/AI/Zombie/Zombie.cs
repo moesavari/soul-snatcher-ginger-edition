@@ -5,15 +5,15 @@
 public class Zombie : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float _stopDistance = 0.5f;    // prevents body overlap with player
-    [SerializeField] private float _accel = 12f;            // smoothing toward desired velocity
+    [SerializeField] private float _stopDistance = 0.5f;
+    [SerializeField] private float _accel = 12f;
 
     [Header("Targeting")]
     [SerializeField] private Transform _primaryTarget;
 
     [Header("Visuals")]
-    [SerializeField] private SpriteRenderer _visual;        // assign the visible SR (child "Visual")
-    [SerializeField] private Transform _biteRig;            // child that rotates; bite hitbox sits under here (local +X forward)
+    [SerializeField] private SpriteRenderer _visual;
+    [SerializeField] private Transform _biteRig;
 
     [Header("AudioCues")]
     [SerializeField] private AudioCue _spawnCue;
@@ -70,8 +70,8 @@ public class Zombie : MonoBehaviour
         {
             useLayerMask = true,
             layerMask = _zombieMask,
-            useTriggers = _includeTriggers, 
-            useDepth = false                 
+            useTriggers = _includeTriggers,
+            useDepth = false
         };
 
         _deathNotified = false;
@@ -114,18 +114,15 @@ public class Zombie : MonoBehaviour
         Vector2 toTarget = (Vector2)target.position - pos;
         float dist = toTarget.magnitude;
 
-        // Face + aim bite rig
         if (_visual != null) _visual.flipX = (toTarget.x < 0f);
         if (_biteRig != null && toTarget.sqrMagnitude > 0.0001f)
             _biteRig.right = toTarget.normalized;
 
         Vector2 desired = (dist > _stopDistance) ? toTarget.normalized * _stats.MoveSpeed : Vector2.zero;
 
-        // Pause movement if biting
         if (_zombieBite != null && _zombieBite.IsBiting) desired = Vector2.zero;
 
-        // Soft separation (GC-free)
-        ContactFilter2D filter = _filter; // struct copy; _filter set up once
+        ContactFilter2D filter = _filter;
 
         int count = Physics2D.OverlapCircle(pos, _separationRadius, filter, _overlapBuffer);
 
@@ -140,21 +137,18 @@ public class Zombie : MonoBehaviour
             float d = away.magnitude;
             if (d > 0.0001f)
             {
-                // Taper separation by distance so close overlaps push stronger
+
                 float falloff = Mathf.Clamp01(1f - (d / _separationRadius));
                 desired += away.normalized * (_separationStrength * falloff);
             }
         }
 
-        // Clamp final desired speed so separation can�t exceed _moveSpeed wildly
         float maxSpeed = _stats.MoveSpeed * (_isEnragedBurning ? _enrageSpeedMult : 1f);
         if (desired.sqrMagnitude > (maxSpeed * maxSpeed))
             desired = desired.normalized * maxSpeed;
 
-        // Smooth toward desired velocity
         _vel = Vector2.MoveTowards(_vel, desired, _accel * Time.fixedDeltaTime);
 
-        // Move via Rigidbody for solid collisions
         _rb.MovePosition(_rb.position + _vel * Time.fixedDeltaTime);
     }
 
@@ -208,7 +202,7 @@ public class Zombie : MonoBehaviour
         _burnDamagePool = 0f;
 
         if (_zombieBite != null) _zombieBite.SetEnraged(true);
-        //if (_burnFxPrefab != null) SpawnBurnVfx();
+
     }
 
     private void DoBurnTick()
@@ -226,16 +220,15 @@ public class Zombie : MonoBehaviour
 
         if (_burnTimer <= 0f && _currentHealth > 0)
         {
-            _morgensternToten = true;    
-            TakeDamage(_currentHealth);  
+            _morgensternToten = true;
+            TakeDamage(_currentHealth);
         }
     }
-
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        // Visualize separation radius
+
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position, _separationRadius);
         Gizmos.color = Color.clear;
@@ -243,7 +236,7 @@ public class Zombie : MonoBehaviour
 
     private void OnValidate()
     {
-        // Keep filter in sync when you tweak values in the Inspector
+
         _filter.useLayerMask = true;
         _filter.layerMask = _zombieMask;
         _filter.useTriggers = _includeTriggers;

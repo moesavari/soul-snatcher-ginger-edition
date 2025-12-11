@@ -5,7 +5,6 @@ public static class DamageCalculator
     private const float ArmorK = 100f;
     private const float CritDamage = 2f;
 
-    // Utility for armor mitigation (returns 0..1, where 1 is full mitigation)
     public static float ArmorMitigation(int armor)
     {
         return armor / (armor + ArmorK);

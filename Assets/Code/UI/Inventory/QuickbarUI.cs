@@ -7,7 +7,7 @@ public class QuickbarUI : MonoBehaviour
     [SerializeField] private Equipment _equipment;
     [SerializeField] private Button[] _buttons;
     [SerializeField] private Image[] _icons;
-    [SerializeField] private CanvasGroup _dockGroup; // toggled by sheet
+    [SerializeField] private CanvasGroup _dockGroup;
 
     public Equipment equipment => _equipment;
 
@@ -53,13 +53,7 @@ public class QuickbarUI : MonoBehaviour
         var sheet = GetComponentInParent<EquipmentUI>(true);
         if (!sheet) sheet = FindFirstObjectByType<EquipmentUI>(FindObjectsInactive.Include);
         if (!sheet) return;
-        //var def = sheet.selectedItem;
-        //if (def == null) { DebugManager.LogWarning("Select a consumable from the bag first.", this); return; }
-        //if (_equipment != null && _equipment.SetQuickItem(index, def))
-        //{
-        //    sheet.SetSelectedItem(null);
-        //    RefreshIcons();
-        //}
+
     }
 
     private void HandleQuickbarChanged(int index, ItemDef def) => RefreshIcons();

@@ -27,8 +27,8 @@ public class Equipment : MonoBehaviour
     public int quickSlots => _quickSlots;
     public ItemDef[] quickItems => _quickItems;
 
-    public event Action<EquipmentSlotType, ItemDef, ItemDef> OnSlotChanged; 
-    public event Action<int, ItemDef> OnQuickSet; 
+    public event Action<EquipmentSlotType, ItemDef, ItemDef> OnSlotChanged;
+    public event Action<int, ItemDef> OnQuickSet;
     public event Action OnEquipmentChanged;
 
     private void OnValidate()
@@ -61,15 +61,13 @@ public class Equipment : MonoBehaviour
             return false;
         }
 
-        // Two-handed main-hand clears offhand
         if (slot == EquipmentSlotType.MainHand && (def?.twoHanded ?? false))
         {
             if (_offHand != null) ReturnToInventory(_offHand);
             _offHand = null;
-            OnSlotChanged?.Invoke(EquipmentSlotType.Offhand, null, null); // clear signal
+            OnSlotChanged?.Invoke(EquipmentSlotType.Offhand, null, null);
         }
 
-        // Offhand blocked if main is two-handed
         if (slot == EquipmentSlotType.Offhand && (_mainHand?.twoHanded ?? false))
         {
             DebugManager.LogWarning("Cannot equip offhand with a two-handed main weapon equipped.", this);
@@ -92,7 +90,7 @@ public class Equipment : MonoBehaviour
 
         if (_inventory != null && !_inventory.TryAdd(current, 1, out int leftover))
         {
-            DebugManager.LogWarning("Inventory full – cannot unequip.", this);
+            DebugManager.LogWarning("Inventory full  cannot unequip.", this);
             return false;
         }
 

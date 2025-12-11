@@ -34,7 +34,6 @@ public class SpawnManager : MonoSingleton<SpawnManager>
             ? Instantiate(prefab, position, rotation)
             : Instantiate(prefab, position, rotation, parent);
 
-
         NormalizeTransform(go.transform);
         return go;
     }

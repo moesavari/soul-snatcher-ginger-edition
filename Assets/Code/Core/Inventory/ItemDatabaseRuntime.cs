@@ -64,9 +64,6 @@ namespace Game.Core.Inventory
         [JsonProperty("override_price")] public int overridePrice;
     }
 
-    /// <summary>
-    /// Runtime view over exported JSON data from the tools backend.
-    /// </summary>
     public class ItemDatabaseRuntime : MonoSingleton<ItemDatabaseRuntime>
     {
         [Header("JSON Sources (TextAssets from Resources or direct refs)")]
@@ -121,7 +118,6 @@ namespace Game.Core.Inventory
                         else
                             Debug.LogWarning($"[ItemDB] Duplicate item id {item.id} in JSON.");
 
-                        // by icon_id (string key used in ItemDef.itemCode)
                         if (!string.IsNullOrWhiteSpace(item.iconId))
                         {
                             _itemsByIconId[item.iconId] = item;
@@ -230,17 +226,16 @@ namespace Game.Core.Inventory
             {
                 if (def == null) continue;
 
-                // First, try by itemCode (which should match icon_id in JSON)
                 ItemJson json = null;
 
                 if (!string.IsNullOrWhiteSpace(def.itemCode) &&
                     _itemsByIconId.TryGetValue(def.itemCode, out json))
                 {
-                    // found by code
+
                 }
                 else
                 {
-                    // Fallback: try matching by display name if you ever align them
+
                     if (!_itemsByIconId.TryGetValue(def.name, out json))
                     {
                         if (_logSyncDetails)
@@ -255,7 +250,6 @@ namespace Game.Core.Inventory
 
             Debug.Log($"[ItemDB] Synced {synced} ItemDefs with JSON data.");
         }
-
 
         private void ApplyItemJsonToDef(ItemDef def, ItemJson data)
         {

@@ -44,7 +44,6 @@ public sealed class EquipmentStatsUI : MonoBehaviour
         WriteFromStats();
     }
 
-    /// <summary>Reads the current totals from CharacterStats and prints them.</summary>
     private void WriteFromStats()
     {
         if (!_stats) return;

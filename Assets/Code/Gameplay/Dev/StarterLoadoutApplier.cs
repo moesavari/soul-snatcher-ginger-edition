@@ -19,11 +19,9 @@ public class StarterLoadoutApplier : MonoBehaviour
     {
         if (_applied && applyOnce) yield break;
 
-        // Wait for PlayerContext and facade to exist (player is spawned later)
         while (PlayerContext.Instance == null) yield return null;
         while (PlayerContext.Instance.facade == null) yield return null;
 
-        // One more frame so player subsystems finish Start()
         yield return null;
 
         var inv = PlayerContext.Instance.facade.inventory;
@@ -37,7 +35,7 @@ public class StarterLoadoutApplier : MonoBehaviour
 
         if (clearInventoryFirst && HasMethod(inv, "Clear"))
         {
-            inv.Clear(); // you added this earlier; if you keep it private, make it public/internal
+            inv.Clear();
         }
 
         int addedStacks = 0;
@@ -62,7 +60,7 @@ public class StarterLoadoutApplier : MonoBehaviour
 
         _applied = true;
         DebugManager.Log($"Applied. Stacks added: {addedStacks}, leftover total: {totalLeftover}", this);
-        // No UI poke needed: Inventory events should already refresh the grid.
+
     }
 
     private static bool HasMethod(object obj, string name)

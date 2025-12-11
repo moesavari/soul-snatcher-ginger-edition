@@ -46,7 +46,7 @@ namespace Game.Core.Inventory
 
             foreach (var row in stockRows)
             {
-                // item_id from JSON -> ItemDef via itemCode we set in the importer
+
                 var itemCode = row.itemId.ToString();
                 if (!registry.TryGet(itemCode, out var itemDef))
                 {
@@ -55,7 +55,6 @@ namespace Game.Core.Inventory
                     continue;
                 }
 
-                // Quantity range
                 var quantity = Mathf.Clamp(
                     Random.Range(row.minQuantity, row.maxQuantity + 1),
                     0,
@@ -64,7 +63,6 @@ namespace Game.Core.Inventory
 
                 if (quantity <= 0) continue;
 
-                // Price: override if provided, else base value * multiplier * (1 + rarity_boost * 10%)
                 var basePrice = itemDef.value <= 0 ? 1 : itemDef.value;
                 var mult = vendorJson.basePriceMultiplier <= 0f ? 1f : vendorJson.basePriceMultiplier;
                 var rarityBoostMult = 1f + (row.rarityBoost * 0.10f);
@@ -78,10 +76,6 @@ namespace Game.Core.Inventory
 
             Debug.Log($"[VendorRuntime] Vendor '{vendorName}' built runtime stock from JSON: {_stock.Count} entries.");
 
-            // ---------------------------------------------------------
-            // Bridge: push JSON stock into Vendor.runtimeInventory so
-            // ShopController buy/sell logic keeps working.
-            // ---------------------------------------------------------
             var vendor = GetComponent<Vendor>();
             if (vendor == null || vendor.runtimeInventory == null)
             {
@@ -91,7 +85,6 @@ namespace Game.Core.Inventory
 
             var inv = vendor.runtimeInventory;
 
-            // Wipe old stock and rebuild from JSON
             if (inv.stock != null)
                 inv.stock.Clear();
 
@@ -100,8 +93,6 @@ namespace Game.Core.Inventory
                 if (entry == null || entry.item == null || entry.quantity <= 0)
                     continue;
 
-                // Use overridePrice so VendorInventory.GetPrice() will respect
-                // this value and still apply reputation multipliers.
                 inv.Ensure(entry.item, entry.quantity, entry.price);
             }
 

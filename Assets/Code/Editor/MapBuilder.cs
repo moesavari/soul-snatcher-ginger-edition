@@ -6,20 +6,18 @@ using UnityEngine.Tilemaps;
 
 public class MapBuilder : EditorWindow
 {
-    // ───────────────────────── Scene ─────────────────────────
+
     [Header("Scene")]
     [SerializeField] private Grid _grid;
-    [SerializeField] private Tilemap _ground;    // grass / outside
-    [SerializeField] private Tilemap _floor;     // stone floors (courtyard, rooms, corridors)
-    [SerializeField] private Tilemap _walls;     // walls only (put your collider here)
+    [SerializeField] private Tilemap _ground;
+    [SerializeField] private Tilemap _floor;
+    [SerializeField] private Tilemap _walls;
 
-    // ─────────────────────── Map Dimensions ──────────────────
     [Header("Map Size")]
     [SerializeField] private int _width = 160;
     [SerializeField] private int _height = 160;
     [SerializeField] private bool _centerOnOrigin = true;
 
-    // ───────────────────── Ground (inner/outer) ──────────────
     [Header("Ground Tiles")]
     [SerializeField] private TileBase _grassInnerBase;
     [SerializeField] private List<TileBase> _grassInnerVar = new();
@@ -29,38 +27,32 @@ public class MapBuilder : EditorWindow
     [SerializeField] private List<TileBase> _grassOuterVar = new();
     [SerializeField, Range(0, 0.4f)] private float _grassOuterVarChance = 0.12f;
 
-    // Inner area where the temple/ruins live (roads/floors/walls will be inside here)
     [Header("Inner Area (Temple Zone)")]
     [SerializeField] private int _innerMarginX = 24;
     [SerializeField] private int _innerMarginY = 24;
 
-    // ──────────────────────── Floors / Walls ─────────────────
     [Header("Floor / Wall Tiles")]
-    [SerializeField] private TileBase _floorTile;        // paved stone
-    [SerializeField] private TileBase _wallTile;         // wall block
-    [SerializeField] private int _wallThickness = 1;     // 1–2 looks good
-    [SerializeField] private float _ruinChance = 0.06f;  // % of wall tiles removed (ruined feel)
+    [SerializeField] private TileBase _floorTile;
+    [SerializeField] private TileBase _wallTile;
+    [SerializeField] private int _wallThickness = 1;
+    [SerializeField] private float _ruinChance = 0.06f;
 
-    // ───────────────────────── Courtyard ─────────────────────
     [Header("Central Courtyard")]
     [SerializeField] private int _courtyardWidth = 36;
     [SerializeField] private int _courtyardHeight = 26;
-    [SerializeField] private int _courtyardWallInset = 2;  // how far outside walls sit from the floor
+    [SerializeField] private int _courtyardWallInset = 2;
 
-    // ────────────────────────── BSP Rooms ────────────────────
     [Header("Rooms (BSP)")]
     [SerializeField] private int _bspMinRoomW = 10;
     [SerializeField] private int _bspMinRoomH = 8;
     [SerializeField] private int _bspMaxRoomW = 28;
     [SerializeField] private int _bspMaxRoomH = 22;
-    [SerializeField] private int _bspSplits = 4;     // more = more rooms
-    [SerializeField] private int _roomPadding = 2;     // space from region edges
+    [SerializeField] private int _bspSplits = 4;
+    [SerializeField] private int _roomPadding = 2;
 
-    // Corridors between room centers (straight L)
     [Header("Corridors")]
     [SerializeField] private int _corridorWidth = 2;
 
-    // ───────────────────────── Build ─────────────────────────
     [Header("Build")]
     [SerializeField] private int _seed = 7;
 
@@ -141,7 +133,6 @@ public class MapBuilder : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    // ───────────────────────── Build ─────────────────────────
     private void Build()
     {
         if (_grid == null || _ground == null || _floor == null || _walls == null)
@@ -162,13 +153,11 @@ public class MapBuilder : EditorWindow
 
         var rng = new System.Random(_seed);
 
-        // Map bounds
         int sx = _centerOnOrigin ? -_width / 2 : 0;
         int sy = _centerOnOrigin ? -_height / 2 : 0;
         int ex = sx + _width - 1;
         int ey = sy + _height - 1;
 
-        // Inner (temple) rect
         var inner = new RectInt(
             sx + _innerMarginX,
             sy + _innerMarginY,
@@ -176,7 +165,6 @@ public class MapBuilder : EditorWindow
             Mathf.Max(1, _height - _innerMarginY * 2)
         );
 
-        // 1) GROUND FILL (inner vs outer)
         for (int y = sy; y <= ey; y++)
             for (int x = sx; x <= ex; x++)
             {
@@ -191,24 +179,20 @@ public class MapBuilder : EditorWindow
                 _ground.SetTile(new Vector3Int(x, y, 0), t);
             }
 
-        // 2) COURTYARD (centered in inner)
         var court = CenteredRect(inner, _courtyardWidth, _courtyardHeight);
         FillRect(_floor, court, _floorTile);
-        // Courtyard ring walls (optional ruined)
+
         var courtWalls = Expand(court, _courtyardWallInset + _wallThickness, _courtyardWallInset + _wallThickness);
         DrawRect(_walls, _wallTile, courtWalls, _wallThickness, rng, _ruinChance);
 
-        // 3) BSP ROOMS around the courtyard (in the remaining inner space)
         var roomRects = GenerateBspRooms(inner, court, rng);
 
-        // 4) Place rooms (floors) + surrounding walls
         foreach (var r in roomRects)
         {
             FillRect(_floor, r, _floorTile);
             DrawRect(_walls, _wallTile, Expand(r, _wallThickness, _wallThickness), _wallThickness, rng, _ruinChance);
         }
 
-        // 5) Corridors: connect room centers + courtyard center (MST over nodes)
         var nodes = new List<Vector2Int>();
         Vector2Int courtCenter = new Vector2Int(court.x + court.width / 2, court.y + court.height / 2);
         nodes.Add(courtCenter);
@@ -217,31 +201,27 @@ public class MapBuilder : EditorWindow
         foreach (var e in BuildMst(nodes, rng))
             DrawLCorridor(_floor, _floorTile, e.a, e.b, _corridorWidth);
 
-        // 6) Wall pass along corridor edges (light): optional—looks nice
-        //    Outline each corridor segment with thin walls (ruined)
-        foreach (var e in BuildMst(nodes, rng)) // reuse same links
+        foreach (var e in BuildMst(nodes, rng))
             OutlineLCorridorWithWalls(_walls, _wallTile, e.a, e.b, _corridorWidth, _wallThickness, rng, _ruinChance);
 
         Debug.Log($"Temple map built: {_width}x{_height} | Inner {inner.width}x{inner.height} | Rooms {roomRects.Count}");
     }
 
-    // ───────────────────────── Rooms: BSP ─────────────────────
     private List<RectInt> GenerateBspRooms(RectInt inner, RectInt exclude, System.Random rng)
     {
-        // Start with inner, remove the courtyard area; split around it
+
         var initial = new List<RectInt> { inner };
-        // carve out the courtyard area from inner
+
         var work = new List<RectInt>();
         foreach (var r in initial)
-            work.AddRange(SubtractRect(r, Expand(exclude, 4, 4))); // leave breathing room
+            work.AddRange(SubtractRect(r, Expand(exclude, 4, 4)));
 
-        // Split a few times
         for (int i = 0; i < _bspSplits; i++)
         {
             var next = new List<RectInt>();
             foreach (var r in work)
             {
-                // Decide to split vertically or horizontally based on proportions
+
                 bool splitVert = r.width > r.height ? true : r.height > r.width ? false : rng.Next(0, 2) == 0;
 
                 if (splitVert && r.width >= _bspMinRoomW * 2 + 4)
@@ -266,7 +246,6 @@ public class MapBuilder : EditorWindow
             work = next;
         }
 
-        // From each region, try to place a room rectangle with padding and max size limits
         var rooms = new List<RectInt>();
         foreach (var r in work)
         {
@@ -276,13 +255,11 @@ public class MapBuilder : EditorWindow
             int rh = Mathf.Clamp(r.height - _roomPadding * 2, _bspMinRoomH, _bspMaxRoomH);
             if (rw < _bspMinRoomW || rh < _bspMinRoomH) continue;
 
-            // jitter width/height a bit within allowed range
             rw = Mathf.Clamp(rw - rng.Next(0, 3), _bspMinRoomW, _bspMaxRoomW);
             rh = Mathf.Clamp(rh - rng.Next(0, 3), _bspMinRoomH, _bspMaxRoomH);
 
-            // center the room in region
             var rr = CenteredRect(new RectInt(rx, ry, r.width - _roomPadding * 2, r.height - _roomPadding * 2), rw, rh);
-            // avoid intersecting the courtyard
+
             if (rr.Overlaps(Expand(_courtyardCache, 2, 2))) continue;
 
             rooms.Add(rr);
@@ -290,7 +267,6 @@ public class MapBuilder : EditorWindow
         return rooms;
     }
 
-    // Keep a cache of courtyard rect for overlap checks
     private RectInt _courtyardCache;
 
     private RectInt CenteredRect(RectInt container, int w, int h)
@@ -304,10 +280,9 @@ public class MapBuilder : EditorWindow
         return r;
     }
 
-    // ──────────────── Corridors & Outlines ───────────────────
     private void DrawLCorridor(Tilemap tm, TileBase tile, Vector2Int a, Vector2Int b, int width)
     {
-        // Horizontal-first or vertical-first deterministically to mix shapes
+
         bool horizFirst = (a.x + a.y + b.x + b.y) % 2 == 0;
 
         if (horizFirst)
@@ -328,7 +303,7 @@ public class MapBuilder : EditorWindow
         int corridorWidth, int wallThickness,
         System.Random rng, float ruinChance)
     {
-        // Outline each straight segment with a thin rectangle of walls
+
         bool horizFirst = (a.x + a.y + b.x + b.y) % 2 == 0;
 
         if (horizFirst)
@@ -349,7 +324,6 @@ public class MapBuilder : EditorWindow
 
     private RectInt ToRect(Vector3Int start, int w, int h) => new RectInt(start.x, start.y, w, h);
 
-    // ──────────────── MST over points (Prim) ─────────────────
     private struct Edge { public Vector2Int a, b; public Edge(Vector2Int A, Vector2Int B) { a = A; b = B; } }
     private List<Edge> BuildMst(List<Vector2Int> nodes, System.Random rng)
     {
@@ -380,7 +354,7 @@ public class MapBuilder : EditorWindow
         foreach (var q in all)
         {
             if (q == p) continue;
-            // neighbors = anything (we keep corridors axis-aligned anyway)
+
             if (!outList.Contains(q)) outList.Add(q);
         }
     }
@@ -397,20 +371,19 @@ public class MapBuilder : EditorWindow
         return best;
     }
 
-    // ────────────────────────── Draw utils ───────────────────
     private RectInt Expand(RectInt r, int ex, int ey) =>
         new RectInt(r.xMin - ex, r.yMin - ey, r.width + ex * 2, r.height + ey * 2);
 
     private void DrawThickLine(Tilemap tm, TileBase tile, Vector3Int a, Vector3Int b, int thickness)
     {
-        if (a.x == b.x) // vertical
+        if (a.x == b.x)
         {
             int y0 = Mathf.Min(a.y, b.y), y1 = Mathf.Max(a.y, b.y);
             for (int y = y0; y <= y1; y++)
                 for (int dx = -thickness / 2; dx <= thickness / 2; dx++)
                     tm.SetTile(new Vector3Int(a.x + dx, y, 0), tile);
         }
-        else if (a.y == b.y) // horizontal
+        else if (a.y == b.y)
         {
             int x0 = Mathf.Min(a.x, b.x), x1 = Mathf.Max(a.x, b.x);
             for (int x = x0; x <= x1; x++)
@@ -419,7 +392,7 @@ public class MapBuilder : EditorWindow
         }
         else
         {
-            // Fallback to L
+
             DrawThickLine(tm, tile, a, new Vector3Int(b.x, a.y, 0), thickness);
             DrawThickLine(tm, tile, new Vector3Int(b.x, a.y, 0), b, thickness);
         }
@@ -427,14 +400,14 @@ public class MapBuilder : EditorWindow
 
     private void DrawRect(Tilemap tm, TileBase tile, RectInt r, int thickness, System.Random rng, float ruinChance)
     {
-        // top/bottom
+
         for (int x = r.xMin; x < r.xMax; x++)
             for (int t = 0; t < thickness; t++)
             {
                 if (rng.NextDouble() > ruinChance) tm.SetTile(new Vector3Int(x, r.yMin + t, 0), tile);
                 if (rng.NextDouble() > ruinChance) tm.SetTile(new Vector3Int(x, r.yMax - 1 - t, 0), tile);
             }
-        // left/right
+
         for (int y = r.yMin; y < r.yMax; y++)
             for (int t = 0; t < thickness; t++)
             {
@@ -450,28 +423,25 @@ public class MapBuilder : EditorWindow
                 tm.SetTile(new Vector3Int(x, y, 0), tile);
     }
 
-    // Subtract r2 from r1 (returns 0–4 rectangles)
     private List<RectInt> SubtractRect(RectInt r1, RectInt r2)
     {
         var outRects = new List<RectInt>();
         if (!r1.Overlaps(r2)) { outRects.Add(r1); return outRects; }
 
-        // Top
         if (r2.yMax < r1.yMax)
             outRects.Add(new RectInt(r1.xMin, r2.yMax, r1.width, r1.yMax - r2.yMax));
-        // Bottom
+
         if (r2.yMin > r1.yMin)
             outRects.Add(new RectInt(r1.xMin, r1.yMin, r1.width, r2.yMin - r1.yMin));
-        // Left
+
         int yMin = Mathf.Max(r1.yMin, r2.yMin);
         int yMax = Mathf.Min(r1.yMax, r2.yMax);
         if (r2.xMin > r1.xMin)
             outRects.Add(new RectInt(r1.xMin, yMin, r2.xMin - r1.xMin, yMax - yMin));
-        // Right
+
         if (r2.xMax < r1.xMax)
             outRects.Add(new RectInt(r2.xMax, yMin, r1.xMax - r2.xMax, yMax - yMin));
 
-        // Remove zero/negative sizes
         for (int i = outRects.Count - 1; i >= 0; i--)
             if (outRects[i].width <= 0 || outRects[i].height <= 0)
                 outRects.RemoveAt(i);

@@ -1,4 +1,3 @@
-// EquipmentUI.cs
 using Game.Core.Inventory;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,13 +5,15 @@ using UnityEngine;
 public class EquipmentUI : MonoBehaviour
 {
     [Header("Root")]
-    [SerializeField] private GameObject _root;   // EquipmentPanel
+    [SerializeField] private GameObject _root;
 
     [Header("Optional explicit refs (can be left blank)")]
     [SerializeField] private Inventory _inventory;
     [SerializeField] private Equipment _equipment;
     [SerializeField] private ItemTooltipUI _tooltip;
     [SerializeField] private ItemContextMenuUI _context;
+    [SerializeField] private EquipmentPaperdollUI _paperdoll;
+    [SerializeField] private HairVisuals _playerHair;
 
     private readonly List<EquipmentSlotWidget> _slots = new();
 
@@ -22,7 +23,6 @@ public class EquipmentUI : MonoBehaviour
     {
         if (_root) _root.SetActive(false);
 
-        // Auto-resolve if not assigned
         if (!_inventory) _inventory = PlayerContext.Instance?.facade?.inventory;
         if (!_equipment) _equipment = PlayerContext.Instance?.facade?.equipment;
         if (!_tooltip) _tooltip = FindFirstObjectByType<ItemTooltipUI>();
@@ -34,9 +34,10 @@ public class EquipmentUI : MonoBehaviour
         else
             GetComponentsInChildren(true, _slots);
 
-        // Bind every slot widget to the same data sources
         foreach (var w in _slots)
             if (w) w.Bind(_equipment, this, _inventory, _tooltip, _context);
+
+        RefreshPaperdollFromPlayer();
     }
 
     private void OnEnable()
@@ -45,12 +46,23 @@ public class EquipmentUI : MonoBehaviour
 
         InputManager.ToggleEquipmentPressed += OnToggleEquipment;
         InputManager.EscapePressed          += OnEscape;
+
+        if (_playerHair == null)
+            _playerHair = FindObjectOfType<HairVisuals>();
+
+        if (_playerHair != null)
+            _playerHair.OnHairStageChanged += HandleHairStageChanged;
+
+        RefreshPaperdollFromPlayer();
     }
 
     private void OnDisable()
     {
         InputManager.ToggleEquipmentPressed -= OnToggleEquipment;
         InputManager.EscapePressed          -= OnEscape;
+
+        if (_playerHair != null)
+            _playerHair.OnHairStageChanged -= HandleHairStageChanged;
     }
 
     private void OnToggleEquipment()
@@ -62,7 +74,7 @@ public class EquipmentUI : MonoBehaviour
 
         bool next = !_root.activeSelf;
         _root.SetActive(next);
-        
+
         if (next) RefreshAll();
         else _context.Hide();
     }
@@ -89,4 +101,31 @@ public class EquipmentUI : MonoBehaviour
     {
         foreach (var w in _slots) if (w) w.Refresh();
     }
+
+    private void HandleHairStageChanged(int newStage)
+    {
+        RefreshPaperdollFromPlayer();
+    }
+
+    public void RefreshPaperdollFromPlayer()
+    {
+        if (_paperdoll == null) return;
+
+        if (_playerHair == null)
+            _playerHair = FindObjectOfType<HairVisuals>();
+
+        if (_playerHair == null)
+        {
+            Debug.LogWarning("[EquipmentUI] No HairVisuals found for paperdoll.");
+            return;
+        }
+
+        bool isMale = _playerHair.genderType == GenderType.Male;
+        int stage = _playerHair.CurrentStage;
+
+        if (stage <= 0) stage = 1;
+
+        _paperdoll.SetPaperdoll(isMale, stage);
+    }
+
 }

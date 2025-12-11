@@ -73,7 +73,7 @@ public class CharacterStats : Stats
 
     public void RecalculateStats()
     {
-        // Reset all gear-contributed stats
+
         _gearHealth = 0;
         _gearArmor = 0;
         _gearAttackPower = 0;
@@ -124,7 +124,7 @@ public class CharacterStats : Stats
         _totalCritChance = _baseCritChance + _gearCritChance;
         _totalMoveSpeed = _baseMoveSpeed + _gearMoveSpeed;
         _totalCooldownReduction = _baseCooldownReduction + _gearCooldownReduction;
-        
+
         OnStatsChanged?.Invoke(this);
         EquipmentEvents.RaiseStatsChanged(this);
     }
