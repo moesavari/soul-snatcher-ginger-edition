@@ -64,10 +64,14 @@ public class NightOutcomeManager : MonoBehaviour
         yield return new WaitForSeconds(_hold);
         yield return CanvasGroupFader.Fade(_hud.bannerGroup, 1f, 0f, _fadeOut);
 
-        if (_logDebug) DebugManager.Log($"Rewards: +{rewards.souls} souls, +{rewards.reputation} rep ({rewards.extra})", this);
+        if (_logDebug)
+        {
+            DebugManager.Log(
+                $"Rewards: +{rewards.souls} souls, +{rewards.reputation} rep ({rewards.extra})",
+                this);
+        }
 
         yield return new WaitForSeconds(_postWinDelayToDay);
-        GameEvents.RaiseDay();
 
         _sequence = null;
     }

@@ -20,7 +20,6 @@ public class GameManager : MonoSingleton<GameManager>
         GameEvents.DayStarted += OnDayStarted;
         GameEvents.NightStarted += OnNightStarted;
         GameEvents.PlayerDied += OnPlayerDied;
-        GameEvents.AllZombiesCleared += OnAllZombiesCleared;
     }
 
     private void OnEnable() => GameEvents.RoundLost += OnRoundLost;
@@ -31,7 +30,6 @@ public class GameManager : MonoSingleton<GameManager>
         GameEvents.DayStarted -= OnDayStarted;
         GameEvents.NightStarted -= OnNightStarted;
         GameEvents.PlayerDied -= OnPlayerDied;
-        GameEvents.AllZombiesCleared -= OnAllZombiesCleared;
     }
 
     private void OnRoundLost()
@@ -49,7 +47,11 @@ public class GameManager : MonoSingleton<GameManager>
                 DebugManager.LogWarning("Missing Player prefab or spawn point.", this);
                 return;
             }
-            _player = SpawnManager.Instance.Spawn(_playerPrefab, _playerSpawnPoint.position, Quaternion.identity);
+
+            _player = SpawnManager.Instance.Spawn(
+                _playerPrefab,
+                _playerSpawnPoint.position,
+                Quaternion.identity);
         }
 
         FindFirstObjectByType<CameraFollow2D>()?.SetTarget(_player.transform);
@@ -83,11 +85,5 @@ public class GameManager : MonoSingleton<GameManager>
         SpawnOrFindPlayer();
         var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
         UnityEngine.SceneManagement.SceneManager.LoadScene(scene.buildIndex);
-    }
-
-    private void OnAllZombiesCleared()
-    {
-        DebugManager.Log("Allzombies cleared. Forcing day.", this);
-        TimeCycleManager.Instance?.ForceDay();
     }
 }

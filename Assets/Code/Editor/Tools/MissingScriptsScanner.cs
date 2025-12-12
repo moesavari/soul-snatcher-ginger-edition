@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class MissingScriptsScanner
 {
-    [MenuItem("Tools/Diagnostics/Find Missing Scripts In Scene")]
+    [MenuItem("Tools/SoulSnatched/Diagnostics/Find Missing Scripts In Scene")]
     private static void FindMissingInScene()
     {
         var all = Object.FindObjectsByType<GameObject>(
@@ -28,7 +28,7 @@ public static class MissingScriptsScanner
         DebugManager.Log($"[MissingScripts] Scan complete. Missing components found: {count}");
     }
 
-    [MenuItem("Tools/Diagnostics/Remove Missing Scripts In Selection")]
+    [MenuItem("Tools/SoulSnatched/Diagnostics/Remove Missing Scripts In Selection")]
     private static void RemoveMissingInSelection()
     {
         int removed = 0;

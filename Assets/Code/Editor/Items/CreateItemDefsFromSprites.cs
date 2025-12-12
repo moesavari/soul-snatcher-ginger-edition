@@ -8,7 +8,7 @@ public static class CreateItemDefsFromSprites
 {
     private const string OUTPUT_DIR = "Assets/Game/Items/Defs";
 
-    [MenuItem("Tools/Items/Create ItemDefs From Selected Sprites")]
+    [MenuItem("Tools/SoulSnatched/Items/Create ItemDefs From Selected Sprites")]
     public static void CreateDefsFromSelection()
     {
         var sprites = Selection.objects

@@ -48,7 +48,7 @@ public class EquipmentUI : MonoBehaviour
         InputManager.EscapePressed          += OnEscape;
 
         if (_playerHair == null)
-            _playerHair = FindObjectOfType<HairVisuals>();
+            _playerHair = FindFirstObjectByType<HairVisuals>();
 
         if (_playerHair != null)
             _playerHair.OnHairStageChanged += HandleHairStageChanged;
@@ -112,7 +112,7 @@ public class EquipmentUI : MonoBehaviour
         if (_paperdoll == null) return;
 
         if (_playerHair == null)
-            _playerHair = FindObjectOfType<HairVisuals>();
+            _playerHair = FindFirstObjectByType<HairVisuals>();
 
         if (_playerHair == null)
         {

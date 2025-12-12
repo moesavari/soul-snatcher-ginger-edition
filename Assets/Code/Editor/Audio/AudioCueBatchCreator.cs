@@ -10,7 +10,7 @@ public class AudioCueBatchCreator : EditorWindow
     private AudioChannel _channel = AudioChannel.SFX;
     private string _folder = "Assets/Audio/Cues";
 
-    [MenuItem("Tools/Audio/Batch Create Cues")]
+    [MenuItem("Tools/SoulSnatched/Audio/Batch Create Cues")]
     public static void Open() => GetWindow<AudioCueBatchCreator>("Batch Create Cues");
 
     private void CreateGUI()

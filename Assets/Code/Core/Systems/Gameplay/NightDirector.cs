@@ -22,7 +22,10 @@ public class NightDirector : MonoSingleton<NightDirector>
 
     private void OnNightStarted()
     {
-        if (_waveManager == null || _nights == null || _nights.Length == 0) return;
+        if (_waveManager == null || _nights == null || _nights.Length == 0)
+        {
+            return;
+        }
 
         _nightIndex = Mathf.Clamp(_nightIndex, 0, _nights.Length - 1);
         _waveManager.SetPreset(_nights[_nightIndex]);
@@ -31,6 +34,15 @@ public class NightDirector : MonoSingleton<NightDirector>
 
     private void OnDayStarted()
     {
+        if (_nights == null || _nights.Length == 0)
+        {
+            return;
+        }
 
+        // Progress to next night preset, clamped to last index.
+        if (_nightIndex < _nights.Length - 1)
+        {
+            _nightIndex++;
+        }
     }
 }

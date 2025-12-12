@@ -56,7 +56,7 @@ public class MapBuilder : EditorWindow
     [Header("Build")]
     [SerializeField] private int _seed = 7;
 
-    [MenuItem("SoulSnatched/Map Builder")]
+    [MenuItem("Tools/SoulSnatched/Map Builder")]
     public static void Open()
     {
         var w = GetWindow<MapBuilder>("Map Builder");

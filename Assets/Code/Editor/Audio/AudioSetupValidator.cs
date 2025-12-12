@@ -8,8 +8,8 @@ public class AudioSetupValidator : EditorWindow
     private AudioMixer _mixer;
     private string[] _requiredParams = { "MasterVol", "MusicVol", "SFXVol", "VoiceVol", "AmbientVol", "UIVol", "FootstepsVol" };
 
-    [MenuItem("Tools/Audio/Setup & Validate")]
-    public static void Open() => GetWindow<AudioSetupValidator>("Audio Setup");
+    [MenuItem("Tools/SoulSnatched/Audio/Setup & Validate")]
+    public static void Open() => GetWindow<AudioSetupValidator>("Audio Setup Validator");
 
     private void CreateGUI()
     {

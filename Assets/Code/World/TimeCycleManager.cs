@@ -25,13 +25,25 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
     protected override void Awake()
     {
         base.Awake();
+
+        if (_dayDurationSeconds <= 0f)
+        {
+            Debug.LogWarning("TimeCycleManager: _dayDurationSeconds must be > 0. Defaulting to 60.");
+            _dayDurationSeconds = 60f;
+        }
+
+        if (_nightDurationSeconds <= 0f)
+        {
+            Debug.LogWarning("TimeCycleManager: _nightDurationSeconds must be > 0. Defaulting to 60.");
+            _nightDurationSeconds = 60f;
+        }
+
         _isNight = _startAtNight;
         _timer = _isNight ? _nightDurationSeconds : _dayDurationSeconds;
     }
 
     private void OnEnable()
     {
-
         GameEvents.AllZombiesCleared += OnNightSuccess;
         GameEvents.RoundLost += OnNightFail;
     }
@@ -40,13 +52,21 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
     {
         GameEvents.AllZombiesCleared -= OnNightSuccess;
         GameEvents.RoundLost -= OnNightFail;
-        if (_runner != null) { StopCoroutine(_runner); _runner = null; }
+
+        if (_runner != null)
+        {
+            StopCoroutine(_runner);
+            _runner = null;
+        }
     }
 
     private void Start()
     {
+        if (_runner != null)
+        {
+            StopCoroutine(_runner);
+        }
 
-        if (_runner != null) StopCoroutine(_runner);
         _runner = StartCoroutine(StateLoop());
     }
 
@@ -56,13 +76,19 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         {
             if (_isNight)
             {
-
+                // NIGHT PHASE
                 NightOverlay.Instance?.SetNight(true);
-                AudioManager.Instance.PlayCue(_nightStartAudioCue, worldPos: transform.position);
                 _timer = Mathf.Max(0f, _nightDurationSeconds);
 
+                if (_nightStartAudioCue != null && AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayCue(_nightStartAudioCue, worldPos: transform.position);
+                }
+
                 if (_nightSpawnDelay > 0f)
+                {
                     yield return new WaitForSeconds(_nightSpawnDelay);
+                }
 
                 GameEvents.RaiseNight();
 
@@ -72,13 +98,17 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
                     yield return null;
                 }
 
-                if (_isNight) StartDayImmediate();
+                if (_isNight)
+                {
+                    StartDayImmediate();
+                }
             }
             else
             {
-
+                // DAY PHASE
                 NightOverlay.Instance?.SetNight(false);
                 _timer = Mathf.Max(0f, _dayDurationSeconds);
+
                 GameEvents.RaiseDay();
 
                 while (!_isNight && _timer > 0f)
@@ -87,7 +117,10 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
                     yield return null;
                 }
 
-                if (!_isNight) _isNight = true;
+                if (!_isNight)
+                {
+                    _isNight = true;
+                }
             }
 
             yield return null;
@@ -96,29 +129,48 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 
     public void ForceNight()
     {
-        if (_runner != null) StopCoroutine(_runner);
+        if (_runner != null)
+        {
+            StopCoroutine(_runner);
+        }
+
         _isNight = true;
         _runner = StartCoroutine(StateLoop());
     }
 
     public void ForceDay()
     {
-        if (_runner != null) StopCoroutine(_runner);
+        if (_runner != null)
+        {
+            StopCoroutine(_runner);
+        }
+
         _isNight = false;
         _runner = StartCoroutine(StateLoop());
     }
 
     private void OnNightSuccess()
     {
-        if (!_isNight) return;
+        if (!_isNight)
+        {
+            return;
+        }
+
         StartDayImmediate();
     }
 
     private void OnNightFail()
     {
-        if (!_isNight) return;
+        if (!_isNight)
+        {
+            return;
+        }
 
-        if (_runner != null) { StopCoroutine(_runner); _runner = null; }
+        if (_runner != null)
+        {
+            StopCoroutine(_runner);
+            _runner = null;
+        }
     }
 
     private void StartDayImmediate()

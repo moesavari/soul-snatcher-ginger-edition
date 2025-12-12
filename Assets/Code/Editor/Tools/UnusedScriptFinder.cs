@@ -15,7 +15,7 @@ public class UnusedScriptFinder : EditorWindow
     private List<string> _unusedScriptPaths = new();
     private HashSet<int> _selected = new();
 
-    [MenuItem("Tools/Find Unused MonoBehaviour Scripts")]
+    [MenuItem("Tools/SoulSnatched/Diagnostics/Find Unused MonoBehaviour Scripts")]
     public static void ShowWindow()
     {
         GetWindow<UnusedScriptFinder>("Unused Script Finder");

@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace Game.EditorTools.Items
 {
-
     public static class ItemJsonImporter
     {
         private const string ItemDefsFolder = "Assets/Game/Items/Defs";
@@ -55,7 +54,7 @@ namespace Game.EditorTools.Items
 
         #endregion
 
-        [MenuItem("Tools/SoulSnatched/Import Items From Selected JSON")]
+        [MenuItem("Tools/SoulSnatched/Items/Import Items From Selected JSON")]
         public static void ImportFromSelectedJson()
         {
             var selected = Selection.activeObject as TextAsset;

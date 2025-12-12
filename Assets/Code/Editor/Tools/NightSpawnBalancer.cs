@@ -21,7 +21,7 @@ public class NightSpawnBalancer : EditorWindow
         public bool enabled = true;
     }
 
-    [MenuItem("Tools/Balance/Night Spawn Balancer")]
+    [MenuItem("Tools/SoulSnatched/Balance/Night Spawn Balancer")]
     public static void ShowWindow() => GetWindow<NightSpawnBalancer>("Night Spawn Balancer");
 
     [Header("Cycle")]

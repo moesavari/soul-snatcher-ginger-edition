@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class MissingScriptsPrefabCleaner
 {
-    [MenuItem("Tools/Diagnostics/Remove Missing Scripts In All Prefabs")]
+    [MenuItem("Tools/SoulSnatched/Diagnostics/Remove Missing Scripts In All Prefabs")]
     private static void CleanAllPrefabs()
     {
         var guids = AssetDatabase.FindAssets("t:Prefab");
