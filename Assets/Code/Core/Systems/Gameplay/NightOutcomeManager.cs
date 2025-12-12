@@ -7,8 +7,10 @@ public class NightOutcomeManager : MonoBehaviour
     [SerializeField] private string _menuSceneName = "MainMenu";
     [SerializeField] private bool _reloadIfMenuMissing = true;
 
-    [Header("UI")]
+    [Header("HUD / Systems")]
     [SerializeField] private HUDRoot _hud;
+    [SerializeField] private SoulSystem _soulSystem;
+    [SerializeField] private MonoBehaviour _reputationSource;
 
     [Header("Timing")]
     [SerializeField] private float _fadeIn = 0.35f;
@@ -25,16 +27,57 @@ public class NightOutcomeManager : MonoBehaviour
     [SerializeField] private bool _logDebug = true;
 
     private Coroutine _sequence;
+    private IReputationReadOnly _repReadOnly;
+
+    private int _soulsAtNightStart;
+    private int _repAtNightStart;
+    private int _displayNightNumber = 1;
+
+    private void Awake()
+    {
+        if (_hud == null) _hud = FindFirstObjectByType<HUDRoot>();
+        if (_soulSystem == null) _soulSystem = FindFirstObjectByType<SoulSystem>();
+
+        if (_reputationSource != null)
+        {
+            _repReadOnly = _reputationSource as IReputationReadOnly;
+            if (_repReadOnly == null)
+            {
+                DebugManager.LogWarning(
+                    "NightOutcomeManager: _reputationSource does not implement IReputationReadOnly.",
+                    this);
+            }
+        }
+    }
 
     private void OnEnable()
     {
         GameEvents.AllZombiesCleared += OnNightSuccess;
         GameEvents.RoundLost += OnNightFail;
+        GameEvents.NightStarted += OnNightStarted;
     }
+
     private void OnDisable()
     {
         GameEvents.AllZombiesCleared -= OnNightSuccess;
         GameEvents.RoundLost -= OnNightFail;
+        GameEvents.NightStarted -= OnNightStarted;
+    }
+
+    private void OnNightStarted()
+    {
+        int index = NightDirector.Instance != null ? NightDirector.Instance.nightIndex : 0;
+        _displayNightNumber = index + 1;
+
+        _soulsAtNightStart = _soulSystem != null ? _soulSystem.souls : 0;
+        _repAtNightStart = _repReadOnly != null ? _repReadOnly.reputation : 0;
+
+        if (_logDebug)
+        {
+            DebugManager.Log(
+                $"NightOutcomeManager: Night start snapshot → souls={_soulsAtNightStart}, rep={_repAtNightStart}",
+                this);
+        }
     }
 
     private void OnNightSuccess()
@@ -49,26 +92,55 @@ public class NightOutcomeManager : MonoBehaviour
         _sequence = StartCoroutine(RunLose());
     }
 
+    private int GetSoulsDelta()
+    {
+        if (_soulSystem == null) return 0;
+        return _soulSystem.souls - _soulsAtNightStart;
+    }
+
+    private int GetRepDelta()
+    {
+        if (_repReadOnly == null) return 0;
+        return _repReadOnly.reputation - _repAtNightStart;
+    }
+
     private IEnumerator RunWin()
     {
-        var rewards = RewardCalculator.Compute(
-            wavesCleared: 1,
-            villagersAlive: CountVillagersAlive(),
-            difficultyTier: 0);
+        int nightIndex = NightDirector.Instance != null ? NightDirector.Instance.nightIndex : 0;
+        int villagersAlive = CountVillagersAlive();
 
-        _hud?.ShowWinBanner(rewards.souls, rewards.reputation, rewards.extra);
+        var rewards = RewardCalculator.ComputeNightRewards(
+            nightIndex: nightIndex,
+            villagersAlive: villagersAlive,
+            difficultyTier: 0); 
 
-        if (_winCue) AudioManager.Instance?.PlayCue(_winCue);
-
-        yield return CanvasGroupFader.Fade(_hud.bannerGroup, 0f, 1f, _fadeIn);
-        yield return new WaitForSeconds(_hold);
-        yield return CanvasGroupFader.Fade(_hud.bannerGroup, 1f, 0f, _fadeOut);
+        int soulsDelta = GetSoulsDelta();
+        int repDelta = GetRepDelta();
 
         if (_logDebug)
         {
             DebugManager.Log(
-                $"Rewards: +{rewards.souls} souls, +{rewards.reputation} rep ({rewards.extra})",
+                $"Night Win → Night {nightIndex + 1}, villagersAlive={villagersAlive}, " +
+                $"gold={rewards.gold}, soulsΔ={soulsDelta}, repΔ={repDelta}.",
                 this);
+        }
+
+        _hud?.ShowWinBanner(soulsDelta, repDelta, rewards.summary);
+
+        if (_winCue && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayCue(_winCue);
+        }
+
+        if (_hud != null && _hud.bannerGroup != null)
+        {
+            yield return CanvasGroupFader.Fade(_hud.bannerGroup, 0f, 1f, _fadeIn);
+            yield return new WaitForSeconds(_hold);
+            yield return CanvasGroupFader.Fade(_hud.bannerGroup, 1f, 0f, _fadeOut);
+        }
+        else
+        {
+            yield return new WaitForSeconds(_hold);
         }
 
         yield return new WaitForSeconds(_postWinDelayToDay);
@@ -78,20 +150,39 @@ public class NightOutcomeManager : MonoBehaviour
 
     private IEnumerator RunLose()
     {
-        _hud?.ShowLoseBanner();
+        int nightIndex = NightDirector.Instance != null ? NightDirector.Instance.nightIndex : 0;
+        int villagersAlive = CountVillagersAlive();
 
-        if (_loseCue) AudioManager.Instance?.PlayCue(_loseCue);
+        int soulsDelta = GetSoulsDelta();
+        int repDelta = GetRepDelta();
 
-        yield return CanvasGroupFader.Fade(_hud.bannerGroup, 0f, 1f, _fadeIn);
-        yield return new WaitForSeconds(_hold);
+        string summary =
+            $"Night {_displayNightNumber} failed.\n" +
+            $"Villagers alive: {villagersAlive}.";
 
-        if (DebugManager.useSoftResetOnLose)
+        if (_logDebug)
         {
-            if (_logDebug) DebugManager.Log("Debug override active → soft reset instead of menu.", this);
-            yield return new WaitForSeconds(_postLoseDelayToMenu);
-            DebugManager.TriggerSoftReset();
-            _sequence = null;
-            yield break;
+            DebugManager.Log(
+                $"Night Lose → Night {nightIndex + 1}, villagersAlive={villagersAlive}, " +
+                $"soulsΔ={soulsDelta}, repΔ={repDelta}.",
+                this);
+        }
+
+        _hud?.ShowLoseBanner(soulsDelta, repDelta, summary);
+
+        if (_loseCue && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayCue(_loseCue);
+        }
+
+        if (_hud != null && _hud.bannerGroup != null)
+        {
+            yield return CanvasGroupFader.Fade(_hud.bannerGroup, 0f, 1f, _fadeIn);
+            yield return new WaitForSeconds(_hold);
+        }
+        else
+        {
+            yield return new WaitForSeconds(_hold);
         }
 
         yield return new WaitForSeconds(_postLoseDelayToMenu);
@@ -100,39 +191,43 @@ public class NightOutcomeManager : MonoBehaviour
         _sequence = null;
     }
 
-    private void ReturnToMenuOrReload()
+    private int CountVillagersAlive()
     {
-        if (!string.IsNullOrEmpty(_menuSceneName) && Application.CanStreamedLevelBeLoaded(_menuSceneName))
+        var villagers = FindObjectsByType<Villager>(FindObjectsSortMode.None);
+        int alive = 0;
+        for (int i = 0; i < villagers.Length; i++)
         {
-            if(_logDebug) DebugManager.Log($"Loading menu scene '{_menuSceneName}'.", this);
-            SceneManager.LoadScene(_menuSceneName);
-            return;
+            if (villagers[i].isAlive)
+            {
+                alive++;
+            }
         }
 
-        if (Application.CanStreamedLevelBeLoaded(0))
+        return alive;
+    }
+
+    private void ReturnToMenuOrReload()
+    {
+        if (!string.IsNullOrEmpty(_menuSceneName))
         {
-            if (_logDebug) DebugManager.Log("Loading build index 0 (fallback, this).");
-            SceneManager.LoadScene(0);
-            return;
+            if (Application.CanStreamedLevelBeLoaded(_menuSceneName))
+            {
+                SceneManager.LoadScene(_menuSceneName);
+                return;
+            }
+
+            if (_logDebug)
+            {
+                DebugManager.LogWarning(
+                    $"NightOutcomeManager: Menu scene '{_menuSceneName}' not found.",
+                    this);
+            }
         }
 
         if (_reloadIfMenuMissing)
         {
             var scene = SceneManager.GetActiveScene();
-            if (_logDebug) DebugManager.Log($"Reloading active scene '{scene.name}'.", this);
-            SceneManager.LoadScene(scene.name);
+            SceneManager.LoadScene(scene.buildIndex);
         }
-        else
-        {
-            DebugManager.LogWarning("No menu scene found and reload disabled. Staying on Lose Banner.", this);
-        }
-    }
-
-    private int CountVillagersAlive()
-    {
-        var villagers = FindObjectsByType<Villager>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        int alive = 0;
-        foreach (var v in villagers) if (v && v.isAlive) alive++;
-        return alive;
     }
 }

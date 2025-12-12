@@ -35,6 +35,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3438515797136419881
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -80,6 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 06c7b17712769e440a2321105b1b2dc0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -89,7 +91,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &8448172158257043551
 Animator:
@@ -298,7 +299,7 @@ MonoBehaviour:
   _primaryTarget: {fileID: 0}
   _visual: {fileID: 3438515797136419881}
   _biteRig: {fileID: 428933817328916565}
-  _animator: {fileID: 0}
+  _animator: {fileID: 8448172158257043551}
   _spawnCue: {fileID: 11400000, guid: c854f87c910698b45b2b665ccae2b36b, type: 2}
   _stats: {fileID: -6759322080404960701}
   _zombieMask:

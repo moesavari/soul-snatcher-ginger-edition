@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 
@@ -14,6 +15,7 @@ public class Zombie : MonoBehaviour
     [Header("Visuals")]
     [SerializeField] private SpriteRenderer _visual;
     [SerializeField] private Transform _biteRig;
+    [SerializeField] private Animator _animator;
 
     [Header("AudioCues")]
     [SerializeField] private AudioCue _spawnCue;
@@ -25,6 +27,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private float _separationStrength = 0.5f;
     [SerializeField] private float _separationRadius = 0.25f;
     [SerializeField] private ZombieBite _zombieBite;
+    [SerializeField] private float _deathAnimDuration = 0.8f; 
 
     [Header("Sunrise Enraged-Burning")]
     [SerializeField] private float _burnDuration = 7f;
@@ -33,12 +36,13 @@ public class Zombie : MonoBehaviour
     [SerializeField] private GameObject _burnFxPrefab;
     [SerializeField] private float _sunKillTime = 7f;
 
+    private Coroutine _deathRoutine;
     private Rigidbody2D _rb;
-    private ContactFilter2D _filter;
-
+    private ContactFilter2D _filter;    
     private Vector2 _vel;
-    private bool _deathNotified;
     private readonly Collider2D[] _overlapBuffer = new Collider2D[16];
+
+    private bool _isDead = false;
 
     private bool _isEnragedBurning;
     private bool _morgensternToten;
@@ -51,10 +55,18 @@ public class Zombie : MonoBehaviour
     public System.Action OnDeath;
     public System.Action OnDamaged;
 
+    private static readonly int WalkParam = Animator.StringToHash("walk");
+    private static readonly int DeadParam = Animator.StringToHash("dead");
+
     private void Awake()
     {
         _rb = this.Require<Rigidbody2D>();
         _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        if (_animator == null)
+        {
+            _animator = GetComponentInChildren<Animator>();
+        }
 
         _currentHealth = _stats != null ? _stats.Health : 1;
 
@@ -73,8 +85,6 @@ public class Zombie : MonoBehaviour
             useTriggers = _includeTriggers,
             useDepth = false
         };
-
-        _deathNotified = false;
 
         if (_spawnCue != null) AudioManager.Instance.PlayCue(_spawnCue, worldPos: transform.position);
 
@@ -150,6 +160,12 @@ public class Zombie : MonoBehaviour
         _vel = Vector2.MoveTowards(_vel, desired, _accel * Time.fixedDeltaTime);
 
         _rb.MovePosition(_rb.position + _vel * Time.fixedDeltaTime);
+
+        if (_animator != null)
+        {
+            bool isWalking = _vel.sqrMagnitude > 0.01f && _currentHealth > 0;
+            _animator.SetBool(WalkParam, isWalking);
+        }
     }
 
     private Transform ResolveTarget()
@@ -161,15 +177,44 @@ public class Zombie : MonoBehaviour
 
     private void OnDied()
     {
-        if (_deathNotified) return;
+        if (_isDead) return;
+        _isDead = true;
 
-        if (_zombieBite != null) _zombieBite.SetEnraged(false);
+        if (_rb != null)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.simulated = false;
+        }
+
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        if (_zombieBite != null)
+        {
+            _zombieBite.enabled = false;
+        }
+
         _isEnragedBurning = false;
 
-        if (_morgensternToten) DebugManager.Log("Skipping Loot", this);
+        enabled = false;
 
-        _deathNotified = true;
+        if (_animator != null)
+        {
+            _animator.enabled = true;
+            _animator.SetBool(WalkParam, false);
+            _animator.SetBool(DeadParam, true);
+        }
+
+        if (_deathRoutine == null)
+            _deathRoutine = StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        yield return new WaitForSeconds(_deathAnimDuration);
+
         OnDeath?.Invoke();
+
         Destroy(gameObject);
     }
 

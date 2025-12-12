@@ -312,7 +312,7 @@ namespace Game.EditorTools.Items
             if (defs == null || defs.Count == 0)
                 return;
 
-            var registry = UnityEngine.Object.FindObjectOfType<ItemDefRegistry>();
+            var registry = UnityEngine.Object.FindFirstObjectByType<ItemDefRegistry>();
             if (registry == null)
                 return;
 

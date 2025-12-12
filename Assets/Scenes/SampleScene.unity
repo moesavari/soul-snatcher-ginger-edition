@@ -943,6 +943,8 @@ MonoBehaviour:
   _menuSceneName: MainMenu
   _reloadIfMenuMissing: 1
   _hud: {fileID: 1368049326}
+  _soulSystem: {fileID: 0}
+  _reputationSource: {fileID: 0}
   _fadeIn: 0.35
   _hold: 1.6
   _fadeOut: 0.45
@@ -11332,6 +11334,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1802099482}
   - component: {fileID: 1802099483}
+  - component: {fileID: 1802099484}
   m_Layer: 0
   m_Name: WaveManager
   m_TagString: Untagged
@@ -11366,7 +11369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdec527edc140f043b460e109ed2c734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveManager
-  _nightPreset: {fileID: 11400000, guid: 7d0ead27fc3f51540b4d125c3d90fbb5, type: 2}
+  _nightPreset: {fileID: 11400000, guid: b2ffda6d110c03b4681f2a038e5150a8, type: 2}
   _spawnPoints:
   - {fileID: 739067929}
   - {fileID: 716039229}
@@ -11377,6 +11380,23 @@ MonoBehaviour:
   _mixStaggerMs: 150
   _autoStartOnPlay: 0
   _logDebug: 0
+--- !u!114 &1802099484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802099481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 863da11555bf23f45b77e7e8cbc91cd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NightDirector
+  _persistAcrossScenes: 1
+  _waveManager: {fileID: 1802099483}
+  _nightSet: {fileID: 11400000, guid: 73f94994f95ea8043911cbc54cc63870, type: 2}
+  _logDebug: 1
+  _nightIndex: 0
 --- !u!1 &1809890329
 GameObject:
   m_ObjectHideFlags: 0

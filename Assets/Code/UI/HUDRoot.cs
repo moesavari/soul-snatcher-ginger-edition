@@ -204,28 +204,40 @@ public class HUDRoot : MonoBehaviour
         _waveText?.SetText(text);
     }
 
-    public void ShowLoseBanner()
-    {
-        SetActive(_rewardsRoot, false);
-        SetText(_bannerTitle, "You lose!");
-        SetText(_bannerSubtitle, "Village is destroyed kekw");
-
-        if (_bannerGroup != null) _bannerGroup.alpha = 0;
-        _bannerGroup?.gameObject.SetActive(true);
-    }
-
-    public void ShowWinBanner(int souls, int rep, string extra = null)
+    public void ShowWinBanner(int soulsDelta, int repDelta, string extra = null)
     {
         SetActive(_rewardsRoot, true);
         SetText(_bannerTitle, "Night Survived!");
         SetText(_bannerSubtitle, "All threats neutralized");
 
-        SetText(_soulsValueText, $"+{souls} Souls");
-        SetText(_repValueText, $"+{rep} Reputation");
+        SetText(_soulsValueText, FormatDelta("Souls", soulsDelta));
+        SetText(_repValueText, FormatDelta("Reputation", repDelta));
         SetText(_extraText, string.IsNullOrEmpty(extra) ? "" : extra);
 
         if (_bannerGroup != null) _bannerGroup.alpha = 0f;
         _bannerGroup?.gameObject.SetActive(true);
+    }
+
+    public void ShowLoseBanner(int soulsDelta, int repDelta, string extra = null)
+    {
+        SetActive(_rewardsRoot, true);
+        SetText(_bannerTitle, "You lose!");
+        SetText(_bannerSubtitle, "Village is destroyed kekw");
+
+        SetText(_soulsValueText, FormatDelta("Souls", soulsDelta));
+        SetText(_repValueText, FormatDelta("Reputation", repDelta));
+        SetText(_extraText, string.IsNullOrEmpty(extra) ? "" : extra);
+
+        if (_bannerGroup != null) _bannerGroup.alpha = 0f;
+        _bannerGroup?.gameObject.SetActive(true);
+    }
+
+    private string FormatDelta(string label, int value)
+    {
+        if (value == 0) return $"{label}: 0";
+        return value > 0
+            ? $"{label}: +{value}"
+            : $"{label}: {value}";
     }
 
     private void SetText(TMP_Text t, string s) { if (t) t.text = s; }

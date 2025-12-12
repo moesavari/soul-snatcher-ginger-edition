@@ -3,7 +3,10 @@ using UnityEngine;
 public class NightDirector : MonoSingleton<NightDirector>
 {
     [SerializeField] private WaveManager _waveManager;
-    [SerializeField] private NightPreset[] _nights;
+
+    [SerializeField] private NightPresetSet _nightSet;
+    [SerializeField] private bool _logDebug = true;
+
     [SerializeField] private int _nightIndex = 0;
 
     public int nightIndex => _nightIndex;
@@ -22,27 +25,55 @@ public class NightDirector : MonoSingleton<NightDirector>
 
     private void OnNightStarted()
     {
-        if (_waveManager == null || _nights == null || _nights.Length == 0)
+        if (_waveManager == null)
         {
+            DebugManager.LogWarning("NightDirector: WaveManager is missing.", this);
             return;
         }
 
-        _nightIndex = Mathf.Clamp(_nightIndex, 0, _nights.Length - 1);
-        _waveManager.SetPreset(_nights[_nightIndex]);
-        _waveManager.StartNight();
-    }
+        NightPreset preset = ResolvePresetForCurrentNight();
+        if (preset == null)
+        {
+            DebugManager.LogWarning($"NightDirector: No preset resolved for night index {_nightIndex}.", this);
+            return;
+        }
 
+        _waveManager.SetPreset(preset);
+        _waveManager.StartNight();
+
+        if (_logDebug)
+        {
+            DebugManager.Log(
+                $"NightDirector: Starting night {_nightIndex + 1} using preset '{preset.name}'.",
+                this);
+        }
+    }
     private void OnDayStarted()
     {
-        if (_nights == null || _nights.Length == 0)
+        if (_nightSet == null)
         {
             return;
         }
 
-        // Progress to next night preset, clamped to last index.
-        if (_nightIndex < _nights.Length - 1)
+        if (_nightIndex < _nightSet.nightCount - 1)
         {
             _nightIndex++;
         }
+
+        if (_logDebug)
+        {
+            DebugManager.Log($"NightDirector: Advancing to night index {_nightIndex}.", this);
+        }
+    }
+
+    private NightPreset ResolvePresetForCurrentNight()
+    {
+        if (_nightSet == null || _nightSet.nightCount == 0)
+        {
+            DebugManager.LogWarning("NightDirector: NightPresetSet is missing or empty.", this);
+            return null;
+        }
+
+        return _nightSet.GetRandomPresetForNight(_nightIndex);
     }
 }

@@ -10,49 +10,49 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c13af56f12c077244af25281f0eac183, type: 3}
-  m_Name: Night01
+  m_Name: Night_06
   m_EditorClassIdentifier: Assembly-CSharp::NightPreset
-  _nightName: Night 01
+  _nightName: Night 06
   _waves:
-  - name: Wave1
-    startDelay: 3
-    endDelay: 5
+  - name: Wave 1
+    startDelay: 2
+    endDelay: 3
     maxAliveOverride: 0
     entries:
     - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
+      count: 14
+      interval: 2.049326
+    - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
+      count: 6
+      interval: 2.5202084
+    - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
       count: 8
-      interval: 4.5
-    - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
-      count: 5
-      interval: 7.2
-    - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
-      count: 2
-      interval: 8
-  - name: Wave2
+      interval: 3.6179874
+  - name: Wave 2
     startDelay: 3
-    endDelay: 5
+    endDelay: 3
     maxAliveOverride: 0
     entries:
     - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
-      count: 9
-      interval: 4.5
+      count: 22
+      interval: 1.7934805
     - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
-      count: 5
-      interval: 8
+      count: 15
+      interval: 1.7285602
     - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
-      count: 3
-      interval: 8
-  - name: Wave3
-    startDelay: 3
-    endDelay: 5
-    maxAliveOverride: 0
-    entries:
-    - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
       count: 10
-      interval: 4.3
+      interval: 3.121426
+  - name: Wave 3
+    startDelay: 4
+    endDelay: 3
+    maxAliveOverride: 0
+    entries:
+    - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
+      count: 24
+      interval: 1.48479
     - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
-      count: 5
-      interval: 8
+      count: 12
+      interval: 1.6438131
     - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
-      count: 3
-      interval: 8
+      count: 9
+      interval: 2.3749282

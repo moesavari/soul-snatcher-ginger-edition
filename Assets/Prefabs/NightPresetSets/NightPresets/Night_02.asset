@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c13af56f12c077244af25281f0eac183, type: 3}
+  m_Name: Night_02
+  m_EditorClassIdentifier: Assembly-CSharp::NightPreset
+  _nightName: Night 02
+  _waves:
+  - name: Wave 1
+    startDelay: 2
+    endDelay: 3
+    maxAliveOverride: 0
+    entries:
+    - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
+      count: 11
+      interval: 2.82022
+    - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
+      count: 6
+      interval: 3.3504207
+    - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
+      count: 2
+      interval: 6.631333
+  - name: Wave 2
+    startDelay: 3
+    endDelay: 3
+    maxAliveOverride: 0
+    entries:
+    - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
+      count: 4
+      interval: 2.2110431
+    - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
+      count: 4
+      interval: 2.974265
+    - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
+      count: 4
+      interval: 5.0784035
+  - name: Wave 3
+    startDelay: 4
+    endDelay: 3
+    maxAliveOverride: 0
+    entries:
+    - prefab: {fileID: 5734115558638814024, guid: 4945cfd8acbaba049aaf5f0f1f4ec182, type: 3}
+      count: 18
+      interval: 1.6900152
+    - prefab: {fileID: 5734115558638814024, guid: a0142e688d5b22c4b8e1ee133c24778f, type: 3}
+      count: 5
+      interval: 2.8937879
+    - prefab: {fileID: 5734115558638814024, guid: a172de6ffc6b5634db6ad767a460904e, type: 3}
+      count: 5
+      interval: 4.0083284

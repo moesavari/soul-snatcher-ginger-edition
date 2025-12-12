@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Systems
 {
     [DefaultExecutionOrder(-200)]
-    public class ReputationSystem : MonoSingleton<ReputationSystem>
+    public class ReputationSystem : MonoSingleton<ReputationSystem>, IReputationReadOnly
     {
         public const int MIN_REPUTATION = -100;
         public const int MAX_REPUTATION = 100;
