@@ -48,12 +48,12 @@ public class NightDirector : MonoSingleton<NightDirector>
                 this);
         }
     }
+
     private void OnDayStarted()
     {
-        if (_nightSet == null)
-        {
-            return;
-        }
+        if (_nightSet == null || _nightSet.nightCount == 0) return;
+
+        int oldIndex = _nightIndex;
 
         if (_nightIndex < _nightSet.nightCount - 1)
         {
@@ -62,7 +62,9 @@ public class NightDirector : MonoSingleton<NightDirector>
 
         if (_logDebug)
         {
-            DebugManager.Log($"NightDirector: Advancing to night index {_nightIndex}.", this);
+            DebugManager.Log(
+                $"NightDirector: Completed night {oldIndex + 1}. Next night index will be {_nightIndex} (Night {_nightIndex + 1}).",
+                this);
         }
     }
 

@@ -96,7 +96,7 @@ public class ZombieBite : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("ZombieBite: Target has no Stats component on root.");
+                DebugManager.LogWarning("ZombieBite: Target has no Stats component on root.", this);
                 _isBiting = false;
                 break;
             }

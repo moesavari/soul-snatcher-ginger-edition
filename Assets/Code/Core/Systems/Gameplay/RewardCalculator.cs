@@ -1,67 +1,57 @@
+using System.Text;
 using UnityEngine;
 
 public static class RewardCalculator
 {
-    public readonly struct NightRewards
-    {
-        public readonly int gold;
-        public readonly string summary;
-
-        public NightRewards(int gold, string summary)
-        {
-            this.gold = gold;
-            this.summary = summary;
-        }
-    }
-
-    /// <summary>
-    /// Computes end-of-night rewards (gold + flavour text).
-    /// Souls / reputation are handled live elsewhere – this just
-    /// decides what kind of payout the player should get AND applies
-    /// the gold to the CurrencyWallet.
-    /// </summary>
-    public static NightRewards ComputeNightRewards(
+    public static NightRewardResult ComputeTierRewards(
+        NightRewardProfile profile,
         int nightIndex,
-        int villagersAlive,
-        int difficultyTier)
+        int villagersAlive)
     {
-        int nightLevel = Mathf.Max(0, nightIndex + difficultyTier);
+        var result = new NightRewardResult();
 
-        const int baseGold = 20;
-        const int goldPerNight = 10;
-        const int goldPerVillager = 2;
-
-        int gold =
-            baseGold +
-            (nightLevel * goldPerNight) +
-            (villagersAlive * goldPerVillager);
-
-        // flavour text based on outcome
-        string flavour;
-        if (villagersAlive <= 0)
+        if (profile == null)
         {
-            flavour = "No villagers survived. Merchants are hesitant to trade with you.";
-        }
-        else if (villagersAlive <= 2)
-        {
-            flavour = "A handful of villagers cling to life. Supplies are scarce.";
-        }
-        else if (villagersAlive <= 5)
-        {
-            flavour = "Most of the village made it through. The smith sets aside a few crates for you.";
-        }
-        else
-        {
-            flavour = "The village slept light while you did the work. Traders line up to pay you.";
+            DebugManager.LogWarning("RewardCalculator: profile is null.", null);
+            result.summary = "No reward profile assigned.";
+            return result;
         }
 
-        var wallet = CurrencyWallet.Instance;
-        if (wallet != null && gold > 0)
+        var tier = profile.GetTierForNightIndex(nightIndex);
+        if (tier == null)
         {
-            wallet.AddGold(gold);
+            result.summary = "No reward tier found.";
+            return result;
         }
 
-        string summary = $"You earned {gold} gold.\n{flavour}";
-        return new NightRewards(gold, summary);
+        result.gold = Random.Range(tier.minGold, tier.maxGold + 1);
+
+        int itemRolls = Random.Range(tier.minItemRolls, tier.maxItemRolls + 1);
+        int conRolls = Random.Range(tier.minConsumableRolls, tier.maxConsumableRolls + 1);
+
+        for (int i = 0; i < itemRolls; i++)
+        {
+            if (tier.itemLootTable != null && tier.itemLootTable.TryRoll(out var item, out var qty))
+                result.items.Add((item, qty));
+        }
+
+        for (int i = 0; i < conRolls; i++)
+        {
+            if (tier.consumableLootTable != null && tier.consumableLootTable.TryRoll(out var item, out var qty))
+                result.consumables.Add((item, qty));
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"Gold earned: {result.gold}");
+
+        if (result.items.Count > 0) sb.AppendLine($"Items: {result.items.Count}");
+        if (result.consumables.Count > 0) sb.AppendLine($"Consumables: {result.consumables.Count}");
+
+        sb.AppendLine(villagersAlive <= 0
+            ? "No villagers survived. Rewards are… awkward."
+            : "Night rewards delivered.");
+
+        result.summary = sb.ToString();
+        return result;
     }
 }

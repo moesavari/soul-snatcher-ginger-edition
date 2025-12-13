@@ -74,7 +74,7 @@ public class DebugOverlay : MonoBehaviour
                 if (float.TryParse(_repInput, out var v))
                     _reputation.AnimateTo(v);
                 else
-                    Debug.LogWarning("DebugOverlay: Invalid reputation value text.");
+                    DebugManager.LogWarning("DebugOverlay: Invalid reputation value text.", this);
             }
             if (GUILayout.Button("Neutral (0)", GUILayout.Width(90)))
             {

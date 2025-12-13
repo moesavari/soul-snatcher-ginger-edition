@@ -17,7 +17,7 @@ public class UIGridPool<TCell> : MonoBehaviour where TCell : Component
         if (_cells.Count > 0) return;
         if (!_template)
         {
-            Debug.LogError($"{name}: UIGridPool needs a template.");
+            DebugManager.LogError($"{name}: UIGridPool needs a template.", this);
             return;
         }
 

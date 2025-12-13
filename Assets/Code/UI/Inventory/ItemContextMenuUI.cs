@@ -194,7 +194,7 @@ public class ItemContextMenuUI : MonoBehaviour
 
                 if (clampedMax <= 0)
                 {
-                    Debug.Log("Not enough gold to buy any of this item.");
+                    DebugManager.Log("Not enough gold to buy any of this item.", this);
                     return;
                 }
 

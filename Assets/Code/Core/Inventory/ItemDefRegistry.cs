@@ -20,20 +20,20 @@ public class ItemDefRegistry : MonoSingleton<ItemDefRegistry>
             if (def == null) continue;
             if (string.IsNullOrWhiteSpace(def.itemCode))
             {
-                Debug.LogWarning($"[ItemDefRegistry] ItemDef '{def.displayName}' has empty itemCode.");
+                DebugManager.LogWarning($"[ItemDefRegistry] ItemDef '{def.displayName}' has empty itemCode.", this);
                 continue;
             }
 
             if (_byCode.ContainsKey(def.itemCode))
             {
-                Debug.LogWarning($"[ItemDefRegistry] Duplicate itemCode '{def.itemCode}'.");
+                DebugManager.LogWarning($"[ItemDefRegistry] Duplicate itemCode '{def.itemCode}'.", this);
                 continue;
             }
 
             _byCode[def.itemCode] = def;
         }
 
-        Debug.Log($"[ItemDefRegistry] Registered {_byCode.Count} ItemDefs.");
+        DebugManager.Log($"[ItemDefRegistry] Registered {_byCode.Count} ItemDefs.", this);
     }
 
     public bool TryGet(string code, out ItemDef def)

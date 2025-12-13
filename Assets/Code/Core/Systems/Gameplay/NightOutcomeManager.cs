@@ -11,6 +11,8 @@ public class NightOutcomeManager : MonoBehaviour
     [SerializeField] private HUDRoot _hud;
     [SerializeField] private SoulSystem _soulSystem;
     [SerializeField] private MonoBehaviour _reputationSource;
+    [SerializeField] private NightRewardProfile _rewardProfile;
+    [SerializeField] private CurrencyWallet _currencyWallet; 
 
     [Header("Timing")]
     [SerializeField] private float _fadeIn = 0.35f;
@@ -48,6 +50,9 @@ public class NightOutcomeManager : MonoBehaviour
                     this);
             }
         }
+
+        if (_currencyWallet == null)
+            _currencyWallet = CurrencyWallet.Instance;
     }
 
     private void OnEnable()
@@ -109,10 +114,14 @@ public class NightOutcomeManager : MonoBehaviour
         int nightIndex = NightDirector.Instance != null ? NightDirector.Instance.nightIndex : 0;
         int villagersAlive = CountVillagersAlive();
 
-        var rewards = RewardCalculator.ComputeNightRewards(
-            nightIndex: nightIndex,
-            villagersAlive: villagersAlive,
-            difficultyTier: 0); 
+        var rewards = RewardCalculator.ComputeTierRewards(_rewardProfile, nightIndex, villagersAlive);
+
+        if (_currencyWallet != null)
+        {
+            _currencyWallet.AddGold(rewards.gold);
+
+            DebugManager.LogWarning("TODO: Hook CurrencyWallet gold add method here.", this);
+        }
 
         int soulsDelta = GetSoulsDelta();
         int repDelta = GetRepDelta();

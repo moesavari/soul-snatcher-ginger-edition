@@ -88,9 +88,9 @@ namespace Game.Core.Inventory
             base.OnSingletonAwake();
             LoadAll();
 
-            Debug.Log($"[ItemDB] Items loaded: {_itemsById.Count}, " +
+            DebugManager.Log($"[ItemDB] Items loaded: {_itemsById.Count}, " +
                       $"vendors: {_vendorsById.Count}, " +
-                      $"vendor stock groups: {_stockByVendorId.Count}");
+                      $"vendor stock groups: {_stockByVendorId.Count}", this);
         }
 
         private void LoadAll()
@@ -116,7 +116,7 @@ namespace Game.Core.Inventory
                         if (!_itemsById.ContainsKey(item.id))
                             _itemsById[item.id] = item;
                         else
-                            Debug.LogWarning($"[ItemDB] Duplicate item id {item.id} in JSON.");
+                            DebugManager.LogWarning($"[ItemDB] Duplicate item id {item.id} in JSON.", this);
 
                         if (!string.IsNullOrWhiteSpace(item.iconId))
                         {
@@ -127,7 +127,7 @@ namespace Game.Core.Inventory
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ItemDB] Failed to parse items JSON: {ex.Message}");
+                DebugManager.LogError($"[ItemDB] Failed to parse items JSON: {ex.Message}", this);
             }
         }
 
@@ -147,13 +147,13 @@ namespace Game.Core.Inventory
                         if (!_vendorsById.ContainsKey(v.id))
                             _vendorsById[v.id] = v;
                         else
-                            Debug.LogWarning($"[ItemDB] Duplicate vendor id {v.id} in JSON.");
+                            DebugManager.LogWarning($"[ItemDB] Duplicate vendor id {v.id} in JSON.", this);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ItemDB] Failed to parse vendors JSON: {ex.Message}");
+                DebugManager.LogError($"[ItemDB] Failed to parse vendors JSON: {ex.Message}", this);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Game.Core.Inventory
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ItemDB] Failed to parse vendor_stock JSON: {ex.Message}");
+                DebugManager.LogError($"[ItemDB] Failed to parse vendor_stock JSON: {ex.Message}", this);
             }
         }
 
@@ -192,7 +192,7 @@ namespace Game.Core.Inventory
             var fromResources = Resources.Load<TextAsset>(fallbackResourcePath);
             if (fromResources != null) return fromResources.text;
 
-            Debug.LogWarning($"[ItemDB] No JSON TextAsset assigned and nothing found at Resources/{fallbackResourcePath}.");
+            DebugManager.LogWarning($"[ItemDB] No JSON TextAsset assigned and nothing found at Resources/{fallbackResourcePath}.", this);
             return null;
         }
 
@@ -216,7 +216,7 @@ namespace Game.Core.Inventory
             var registry = ItemDefRegistry.Instance;
             if (registry == null)
             {
-                Debug.LogWarning("[ItemDB] No ItemDefRegistry found, cannot sync ItemDefs.");
+                DebugManager.LogWarning("[ItemDB] No ItemDefRegistry found, cannot sync ItemDefs.", this);
                 return;
             }
 
@@ -239,7 +239,7 @@ namespace Game.Core.Inventory
                     if (!_itemsByIconId.TryGetValue(def.name, out json))
                     {
                         if (_logSyncDetails)
-                            Debug.LogWarning($"[ItemDB] No JSON item found for ItemDef '{def.name}' (itemCode='{def.itemCode}').");
+                            DebugManager.LogWarning($"[ItemDB] No JSON item found for ItemDef '{def.name}' (itemCode='{def.itemCode}').", this);
                         continue;
                     }
                 }
@@ -248,7 +248,7 @@ namespace Game.Core.Inventory
                 synced++;
             }
 
-            Debug.Log($"[ItemDB] Synced {synced} ItemDefs with JSON data.");
+            DebugManager.Log($"[ItemDB] Synced {synced} ItemDefs with JSON data.", this);
         }
 
         private void ApplyItemJsonToDef(ItemDef def, ItemJson data)
@@ -268,7 +268,7 @@ namespace Game.Core.Inventory
                     if (type == null)
                     {
                         if (_logSyncDetails)
-                            Debug.LogWarning($"[ItemDB] Unknown stat code '{s.code}' for '{data.name}'.");
+                            DebugManager.LogWarning($"[ItemDB] Unknown stat code '{s.code}' for '{data.name}'.", this);
                         continue;
                     }
 

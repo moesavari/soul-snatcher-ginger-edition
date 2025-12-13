@@ -28,13 +28,13 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
 
         if (_dayDurationSeconds <= 0f)
         {
-            Debug.LogWarning("TimeCycleManager: _dayDurationSeconds must be > 0. Defaulting to 60.");
+            DebugManager.LogWarning("TimeCycleManager: _dayDurationSeconds must be > 0. Defaulting to 60.", this);
             _dayDurationSeconds = 60f;
         }
 
         if (_nightDurationSeconds <= 0f)
         {
-            Debug.LogWarning("TimeCycleManager: _nightDurationSeconds must be > 0. Defaulting to 60.");
+            DebugManager.LogWarning("TimeCycleManager: _nightDurationSeconds must be > 0. Defaulting to 60.", this);
             _nightDurationSeconds = 60f;
         }
 

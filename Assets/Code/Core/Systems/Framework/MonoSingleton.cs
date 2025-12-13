@@ -12,7 +12,7 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     protected static T Require(object caller)
     {
         if (_instance != null) return _instance;
-        Debug.LogError($"[{typeof(T).Name}] Instance is not ready. Called by: {caller}", caller as Object);
+        DebugManager.LogError($"[{typeof(T).Name}] Instance is not ready. Called by: {caller}", caller as Object);
         return null;
     }
 

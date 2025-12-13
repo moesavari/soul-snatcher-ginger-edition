@@ -48,7 +48,7 @@ public class ShopController : MonoSingleton<ShopController>
 
     public void Open(Vendor vendor)
     {
-        if (vendor == null) { Debug.LogWarning("[Shop] Open called with null vendor"); return; }
+        if (vendor == null) { DebugManager.LogWarning("[Shop] Open called with null vendor", this); return; }
 
         _activeVendor = vendor;
         OnShopOpened?.Invoke(vendor);

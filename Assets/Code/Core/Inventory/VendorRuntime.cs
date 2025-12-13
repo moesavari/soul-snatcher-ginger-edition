@@ -27,13 +27,13 @@ namespace Game.Core.Inventory
 
             if (db == null || registry == null)
             {
-                Debug.LogWarning("[VendorRuntime] Missing ItemDatabaseRuntime or ItemDefRegistry.");
+                DebugManager.LogWarning("[VendorRuntime] Missing ItemDatabaseRuntime or ItemDefRegistry.", this);
                 return;
             }
 
             if (!db.TryGetVendor(_vendorId, out var vendorJson))
             {
-                Debug.LogWarning($"[VendorRuntime] No vendor JSON found for vendorId={_vendorId}.");
+                DebugManager.LogWarning($"[VendorRuntime] No vendor JSON found for vendorId={_vendorId}.", this);
                 return;
             }
 
@@ -50,8 +50,7 @@ namespace Game.Core.Inventory
                 var itemCode = row.itemId.ToString();
                 if (!registry.TryGet(itemCode, out var itemDef))
                 {
-                    Debug.LogWarning(
-                        $"[VendorRuntime] Vendor '{vendorName}' could not find ItemDef for item_id={row.itemId} (itemCode='{itemCode}').");
+                    DebugManager.LogWarning($"[VendorRuntime] Vendor '{vendorName}' could not find ItemDef for item_id={row.itemId} (itemCode='{itemCode}').", this);
                     continue;
                 }
 
@@ -74,12 +73,12 @@ namespace Game.Core.Inventory
                 _stock.Add(new VendorRuntimeItem(itemDef, quantity, price));
             }
 
-            Debug.Log($"[VendorRuntime] Vendor '{vendorName}' built runtime stock from JSON: {_stock.Count} entries.");
+            DebugManager.Log($"[VendorRuntime] Vendor '{vendorName}' built runtime stock from JSON: {_stock.Count} entries.", this);
 
             var vendor = GetComponent<Vendor>();
             if (vendor == null || vendor.runtimeInventory == null)
             {
-                Debug.Log($"[VendorRuntime] Vendor '{vendorName}' has no Vendor component or runtimeInventory; JSON stock will be UI-only.");
+                DebugManager.Log($"[VendorRuntime] Vendor '{vendorName}' has no Vendor component or runtimeInventory; JSON stock will be UI-only.", this);
                 return;
             }
 
@@ -96,8 +95,7 @@ namespace Game.Core.Inventory
                 inv.Ensure(entry.item, entry.quantity, entry.price);
             }
 
-            Debug.Log(
-                $"[VendorRuntime] Synced {_stock.Count} JSON entries into runtimeInventory for vendor '{vendorName}'.");
+            DebugManager.Log($"[VendorRuntime] Synced {_stock.Count} JSON entries into runtimeInventory for vendor '{vendorName}'.", this);
         }
     }
 }

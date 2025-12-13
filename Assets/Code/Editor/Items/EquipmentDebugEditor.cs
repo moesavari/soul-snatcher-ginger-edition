@@ -48,7 +48,7 @@ public class EquipmentDebugEditor : Editor
                 for (int i = 0; i < data.Count; i++)
                 {
                     var e = data[i];
-                    Debug.Log($"{e.slot}: {(e.item ? e.item.name : "(empty)")}");
+                    DebugManager.Log($"{e.slot}: {(e.item ? e.item.name : "(empty)")}", this);
                 }
             }
         }

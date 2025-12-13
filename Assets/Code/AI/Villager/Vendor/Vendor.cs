@@ -41,7 +41,7 @@ public class Vendor : Villager
         {
 
             _runtimeInventory = Instantiate(_inventory);
-            Debug.Log($"[Vendor] '{_vendorName}' using legacy inventory (vendorId={_vendorId}).");
+            DebugManager.Log($"[Vendor] '{_vendorName}' using legacy inventory (vendorId={_vendorId}).", this);
         }
         else
         {
@@ -139,7 +139,7 @@ public class Vendor : Villager
 
         if (!db.TryGetVendor(_vendorId, out var vendorJson))
         {
-            Debug.LogWarning($"[Vendor] No vendor.json entry for id={_vendorId}, using legacy inventory.");
+            DebugManager.LogWarning($"[Vendor] No vendor.json entry for id={_vendorId}, using legacy inventory.", this);
             _runtimeInventory = Instantiate(_inventory);
             return;
         }
@@ -157,7 +157,7 @@ public class Vendor : Villager
 
             if (!registry.TryGet(itemJson.iconId, out var def))
             {
-                Debug.LogWarning($"[Vendor] No ItemDef for code '{itemJson.iconId}' (vendorId={_vendorId}).");
+                DebugManager.LogWarning($"[Vendor] No ItemDef for code '{itemJson.iconId}' (vendorId={_vendorId}).", this);
                 continue;
             }
 
@@ -171,7 +171,7 @@ public class Vendor : Villager
             _runtimeInventory.stock.Add(entry);
         }
 
-        Debug.Log($"[Vendor] '{vendorJson.name}' built runtime stock from JSON: {_runtimeInventory.stock.Count} entries.");
+        DebugManager.Log($"[Vendor] '{vendorJson.name}' built runtime stock from JSON: {_runtimeInventory.stock.Count} entries.", this);
     }
 
 }

@@ -60,7 +60,7 @@ namespace Game.EditorTools.Items
             var selected = Selection.activeObject as TextAsset;
             if (selected == null)
             {
-                Debug.LogError("[ItemImporter] Please select the exported items.json TextAsset in the Project window first.");
+                DebugManager.LogError("[ItemImporter] Please select the exported items.json TextAsset in the Project window first.", null);
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace Game.EditorTools.Items
         {
             if (itemsJsonAsset == null)
             {
-                Debug.LogError("[ItemImporter] itemsJsonAsset was null.");
+                DebugManager.LogError("[ItemImporter] itemsJsonAsset was null.", null);
                 return;
             }
 
@@ -82,13 +82,13 @@ namespace Game.EditorTools.Items
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[ItemImporter] Failed to parse JSON: {ex.Message}");
+                DebugManager.LogError($"[ItemImporter] Failed to parse JSON: {ex.Message}", null);
                 return;
             }
 
             if (items == null || items.Count == 0)
             {
-                Debug.LogWarning("[ItemImporter] Parsed items.json but it contained no items.");
+                DebugManager.LogWarning("[ItemImporter] Parsed items.json but it contained no items.", null);
                 return;
             }
 
@@ -106,7 +106,7 @@ namespace Game.EditorTools.Items
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"[ItemImporter] Imported {createdDefs.Count} ItemDefs from JSON.");
+            DebugManager.Log($"[ItemImporter] Imported {createdDefs.Count} ItemDefs from JSON.", null);
 
             TryPopulateRegistry(createdDefs);
         }
@@ -137,7 +137,7 @@ namespace Game.EditorTools.Items
             }
 
             if (guids.Length > 0)
-                Debug.Log($"[ItemImporter] Deleted {guids.Length} existing ItemDef assets.");
+                DebugManager.Log($"[ItemImporter] Deleted {guids.Length} existing ItemDef assets.", null);
         }
 
         private static ItemDef CreateItemDef(ImportItem item)
@@ -166,7 +166,7 @@ namespace Game.EditorTools.Items
             {
                 var sprite = Resources.Load<Sprite>($"ItemIcons/{item.iconId}");
                 if (sprite == null)
-                    Debug.LogWarning($"[ItemImporter] No sprite found in Resources/ItemIcons for icon id '{item.iconId}'.");
+                    DebugManager.LogWarning($"[ItemImporter] No sprite found in Resources/ItemIcons for icon id '{item.iconId}'.", null);
                 def.icon = sprite;
             }
 
@@ -240,7 +240,7 @@ namespace Game.EditorTools.Items
             {
                 if (!TryMapStatCode(s.id, out var statType))
                 {
-                    Debug.LogWarning($"[ItemImporter] Unknown stat code '{s.id}' on item stat.");
+                    DebugManager.LogWarning($"[ItemImporter] Unknown stat code '{s.id}' on item stat.", null);
                     continue;
                 }
 
@@ -321,7 +321,7 @@ namespace Game.EditorTools.Items
 
             if (listProp == null || !listProp.isArray)
             {
-                Debug.LogWarning("[ItemImporter] Found ItemDefRegistry but could not locate an ItemDef list property.");
+                DebugManager.LogWarning("[ItemImporter] Found ItemDefRegistry but could not locate an ItemDef list property.", null);
                 return;
             }
 
@@ -334,7 +334,7 @@ namespace Game.EditorTools.Items
 
             so.ApplyModifiedProperties();
 
-            Debug.Log($"[ItemImporter] Populated ItemDefRegistry with {defs.Count} entries.");
+            DebugManager.Log($"[ItemImporter] Populated ItemDefRegistry with {defs.Count} entries.", null);
         }
     }
 }

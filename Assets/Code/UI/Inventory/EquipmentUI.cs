@@ -116,7 +116,7 @@ public class EquipmentUI : MonoBehaviour
 
         if (_playerHair == null)
         {
-            Debug.LogWarning("[EquipmentUI] No HairVisuals found for paperdoll.");
+            DebugManager.LogWarning("[EquipmentUI] No HairVisuals found for paperdoll.", this);
             return;
         }
 

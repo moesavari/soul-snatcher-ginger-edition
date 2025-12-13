@@ -137,12 +137,12 @@ public class MapBuilder : EditorWindow
     {
         if (_grid == null || _ground == null || _floor == null || _walls == null)
         {
-            Debug.LogWarning("Assign Grid, Ground, Floor, and Walls tilemaps.");
+            DebugManager.LogWarning("Assign Grid, Ground, Floor, and Walls tilemaps.", this);
             return;
         }
         if (_grassInnerBase == null || _grassOuterBase == null || _floorTile == null || _wallTile == null)
         {
-            Debug.LogWarning("Assign base tiles for inner/outer grass, floor, and wall.");
+            DebugManager.LogWarning("Assign base tiles for inner/outer grass, floor, and wall.", this);
             return;
         }
 
@@ -204,7 +204,7 @@ public class MapBuilder : EditorWindow
         foreach (var e in BuildMst(nodes, rng))
             OutlineLCorridorWithWalls(_walls, _wallTile, e.a, e.b, _corridorWidth, _wallThickness, rng, _ruinChance);
 
-        Debug.Log($"Temple map built: {_width}x{_height} | Inner {inner.width}x{inner.height} | Rooms {roomRects.Count}");
+        DebugManager.Log($"Temple map built: {_width}x{_height} | Inner {inner.width}x{inner.height} | Rooms {roomRects.Count}", this);
     }
 
     private List<RectInt> GenerateBspRooms(RectInt inner, RectInt exclude, System.Random rng)

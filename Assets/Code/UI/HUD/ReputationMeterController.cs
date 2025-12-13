@@ -168,7 +168,7 @@ public class ReputationMeterController : MonoBehaviour
 
         if (sprite == null)
         {
-            Debug.LogWarning($"Missing sprite for tier {t}. " +
+            DebugManager.LogWarning($"Missing sprite for tier {t}. " +
                              $"Provided sprites = {(_tierSprites == null ? 0 : _tierSprites.Length)}", this);
         }
     }
@@ -183,7 +183,7 @@ public class ReputationMeterController : MonoBehaviour
         {
             if (!_warnedColorCount)
             {
-                Debug.LogWarning("No _tierDisabledColors set; disabled color will not change.", this);
+                DebugManager.LogWarning("No _tierDisabledColors set; disabled color will not change.", this);
                 _warnedColorCount = true;
             }
             return;
@@ -193,7 +193,7 @@ public class ReputationMeterController : MonoBehaviour
         {
             if (!_warnedColorCount)
             {
-                Debug.LogWarning($"Tier {t} exceeds color array length {_tierDisabledColors.Length}. " +
+                DebugManager.LogWarning($"Tier {t} exceeds color array length {_tierDisabledColors.Length}. " +
                                  $"Clamping to last color.", this);
                 _warnedColorCount = true;
             }

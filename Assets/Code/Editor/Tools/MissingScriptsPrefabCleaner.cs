@@ -18,11 +18,11 @@ public static class MissingScriptsPrefabCleaner
             if (removed > 0)
             {
                 totalRemoved += removed;
-                Debug.Log($"Removed {removed} on prefab: {path}", prefab);
+                DebugManager.Log($"Removed {removed} on prefab: {path}", prefab);
                 EditorUtility.SetDirty(prefab);
             }
         }
         if (totalRemoved > 0) AssetDatabase.SaveAssets();
-        Debug.Log($"Done. Total removed: {totalRemoved}");
+        DebugManager.Log($"Done. Total removed: {totalRemoved}", null);
     }
 }
