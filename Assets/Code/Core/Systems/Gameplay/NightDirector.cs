@@ -23,12 +23,26 @@ public class NightDirector : MonoSingleton<NightDirector>
         GameEvents.DayStarted -= OnDayStarted;
     }
 
+    public void ResetToDay1()
+    {
+        _nightIndex = 0;
+
+        if (_logDebug)
+        {
+            DebugManager.Log("NightDirector: Reset to Day 1 (night index = 0).", this);
+        }
+    }
+
     private void OnNightStarted()
     {
         if (_waveManager == null)
         {
-            DebugManager.LogWarning("NightDirector: WaveManager is missing.", this);
-            return;
+            _waveManager = FindFirstObjectByType<WaveManager>();
+            if (_waveManager == null)
+            {
+                DebugManager.LogWarning("NightDirector: WaveManager is missing.", this);
+                return;
+            }
         }
 
         NightPreset preset = ResolvePresetForCurrentNight();
@@ -43,17 +57,13 @@ public class NightDirector : MonoSingleton<NightDirector>
 
         if (_logDebug)
         {
-            DebugManager.Log(
-                $"NightDirector: Starting night {_nightIndex + 1} using preset '{preset.name}'.",
-                this);
+            DebugManager.Log($"NightDirector: Starting night {_nightIndex + 1} using preset '{preset.name}'.", this);
         }
     }
 
     private void OnDayStarted()
     {
-        if (_nightSet == null || _nightSet.nightCount == 0) return;
-
-        int oldIndex = _nightIndex;
+        if (_nightSet == null) return;
 
         if (_nightIndex < _nightSet.nightCount - 1)
         {
@@ -62,9 +72,7 @@ public class NightDirector : MonoSingleton<NightDirector>
 
         if (_logDebug)
         {
-            DebugManager.Log(
-                $"NightDirector: Completed night {oldIndex + 1}. Next night index will be {_nightIndex} (Night {_nightIndex + 1}).",
-                this);
+            DebugManager.Log($"NightDirector: Advancing to night index {_nightIndex}.", this);
         }
     }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WaveManager : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class WaveManager : MonoBehaviour
 
     [Header("Spawn")]
     [SerializeField] private Transform[] _spawnPoints;
+
+    [Header("Auto Rebind")]
+    [SerializeField] private bool _autoRebindSpawnPoints = true;
+    [SerializeField] private string _spawnPointTag = "ZombieSpawn";
 
     [Header("Pacing")]
     [SerializeField] private int _maxAlive = 35;
@@ -27,6 +32,11 @@ public class WaveManager : MonoBehaviour
     private bool _successRaised;
 
     public int alive => _alive;
+
+    private void Awake()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
     private void Start()
     {
@@ -53,6 +63,8 @@ public class WaveManager : MonoBehaviour
     {
         GameEvents.NightStarted += OnNightStarted;
         GameEvents.DayStarted += OnDayStarted;
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnDisable()
@@ -60,6 +72,51 @@ public class WaveManager : MonoBehaviour
         GameEvents.NightStarted -= OnNightStarted;
         GameEvents.DayStarted -= OnDayStarted;
         StopNight();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (_autoRebindSpawnPoints)
+        {
+            RebindSpawnPoints(force: true);
+        }
+    }
+
+    public void RebindSpawnPoints(bool force)
+    {
+        bool needsRebind = force || _spawnPoints == null || _spawnPoints.Length == 0;
+
+        if (!needsRebind)
+        {
+            for (int i = 0; i < _spawnPoints.Length; i++)
+            {
+                if (_spawnPoints[i] == null)
+                {
+                    needsRebind = true;
+                    break;
+                }
+            }
+        }
+
+        if (!needsRebind) return;
+
+        var gos = GameObject.FindGameObjectsWithTag(_spawnPointTag);
+        if (gos == null || gos.Length == 0)
+        {
+            Debug.LogWarning($"WaveManager: No spawn points found with tag '{_spawnPointTag}'.");
+            _spawnPoints = System.Array.Empty<Transform>();
+            return;
+        }
+
+        System.Array.Sort(gos, (a, b) => string.CompareOrdinal(a.name, b.name));
+
+        _spawnPoints = new Transform[gos.Length];
+        for (int i = 0; i < gos.Length; i++)
+        {
+            _spawnPoints[i] = gos[i].transform;
+        }
+
+        Debug.Log($"WaveManager: Rebound {_spawnPoints.Length} spawn points.");
     }
 
     private void OnNightStarted()
@@ -75,6 +132,17 @@ public class WaveManager : MonoBehaviour
 
     public void StartNight()
     {
+        if (_autoRebindSpawnPoints)
+        {
+            RebindSpawnPoints(force: false);
+        }
+
+        if (_spawnPoints == null || _spawnPoints.Length == 0)
+        {
+            Debug.LogWarning("WaveManager: StartNight called but no spawn points are bound.");
+            return;
+        }
+
         if (_runner != null) StopCoroutine(_runner);
 
         _successRaised = false;

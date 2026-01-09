@@ -16,7 +16,9 @@ public class PlayerController : MonoBehaviour
 
     private int _currentHealth;
     public int currentHealth => _currentHealth;
-    public bool isDead => _currentHealth <= 0;
+
+    private bool _isDead;
+    public bool isDead => _isDead;
 
     public System.Action<int> OnDamaged;
     public System.Action OnDeath;
@@ -24,6 +26,8 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _currentHealth = _stats != null ? _stats.Health : 1;
+        _isDead = false;
+
         _melee.SetOwner(_stats);
         _ranged.SetOwner(_stats);
     }
@@ -62,7 +66,8 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        if (isDead) return;
+        if (_isDead) return;
+
         int prev = _currentHealth;
         _currentHealth = Mathf.Max(0, _currentHealth - Mathf.Max(0, amount));
         OnDamaged?.Invoke(prev - _currentHealth);
@@ -71,12 +76,15 @@ public class PlayerController : MonoBehaviour
 
     public void Heal(int amount)
     {
-        if (isDead) return;
+        if (_isDead) return;
         _currentHealth = Mathf.Clamp(_currentHealth + Mathf.Max(0, amount), 0, _stats.Health);
     }
 
     private void Die()
     {
+        if (_isDead) return;
+        _isDead = true;
+
         OnDeath?.Invoke();
 
         GameEvents.RaisePlayerDied();

@@ -7,6 +7,9 @@ TagManager:
   - Enemy
   - Villager
   - VillagerSpawn
+  - PlayerSpawn
+  - ZombieSpawn
+  - NightOverlay
   layers:
   - Default
   - TransparentFX

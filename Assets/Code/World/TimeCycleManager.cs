@@ -26,18 +26,6 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
     {
         base.Awake();
 
-        if (_dayDurationSeconds <= 0f)
-        {
-            DebugManager.LogWarning("TimeCycleManager: _dayDurationSeconds must be > 0. Defaulting to 60.", this);
-            _dayDurationSeconds = 60f;
-        }
-
-        if (_nightDurationSeconds <= 0f)
-        {
-            DebugManager.LogWarning("TimeCycleManager: _nightDurationSeconds must be > 0. Defaulting to 60.", this);
-            _nightDurationSeconds = 60f;
-        }
-
         _isNight = _startAtNight;
         _timer = _isNight ? _nightDurationSeconds : _dayDurationSeconds;
     }
@@ -53,6 +41,16 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         GameEvents.AllZombiesCleared -= OnNightSuccess;
         GameEvents.RoundLost -= OnNightFail;
 
+        StopCycle();
+    }
+
+    private void Start()
+    {
+        StartOrRestartLoop();
+    }
+
+    public void StopCycle()
+    {
         if (_runner != null)
         {
             StopCoroutine(_runner);
@@ -60,13 +58,24 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         }
     }
 
-    private void Start()
+    public void ResetToDay1()
     {
-        if (_runner != null)
-        {
-            StopCoroutine(_runner);
-        }
+        _startAtNight = false;
+        _isNight = false;
+        _timer = Mathf.Max(0f, _dayDurationSeconds);
 
+        NightOverlay.Instance?.TryRebindOverlay();
+        NightOverlay.Instance?.SetNight(false);
+
+        StartOrRestartLoop();
+
+        // Make sure day listeners (NightDirector/WaveManager/etc.) get the signal.
+        GameEvents.RaiseDay();
+    }
+
+    private void StartOrRestartLoop()
+    {
+        StopCycle();
         _runner = StartCoroutine(StateLoop());
     }
 
@@ -76,7 +85,6 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         {
             if (_isNight)
             {
-                // NIGHT PHASE
                 NightOverlay.Instance?.SetNight(true);
                 _timer = Mathf.Max(0f, _nightDurationSeconds);
 
@@ -105,7 +113,6 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
             }
             else
             {
-                // DAY PHASE
                 NightOverlay.Instance?.SetNight(false);
                 _timer = Mathf.Max(0f, _dayDurationSeconds);
 
@@ -127,50 +134,16 @@ public class TimeCycleManager : MonoSingleton<TimeCycleManager>
         }
     }
 
-    public void ForceNight()
-    {
-        if (_runner != null)
-        {
-            StopCoroutine(_runner);
-        }
-
-        _isNight = true;
-        _runner = StartCoroutine(StateLoop());
-    }
-
-    public void ForceDay()
-    {
-        if (_runner != null)
-        {
-            StopCoroutine(_runner);
-        }
-
-        _isNight = false;
-        _runner = StartCoroutine(StateLoop());
-    }
-
     private void OnNightSuccess()
     {
-        if (!_isNight)
-        {
-            return;
-        }
-
+        if (!_isNight) return;
         StartDayImmediate();
     }
 
     private void OnNightFail()
     {
-        if (!_isNight)
-        {
-            return;
-        }
-
-        if (_runner != null)
-        {
-            StopCoroutine(_runner);
-            _runner = null;
-        }
+        // Instead of killing the loop forever, reset to Day 1.
+        ResetToDay1();
     }
 
     private void StartDayImmediate()

@@ -5,8 +5,6 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     private static T _instance;
     public static T Instance => _instance;
 
-    [SerializeField] private bool _persistAcrossScenes = true;
-
     public static bool IsReady => _instance != null;
 
     protected static T Require(object caller)
@@ -25,14 +23,7 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         _instance = this as T;
-
-        if (_persistAcrossScenes)
-        {
-            if (transform.parent != null) transform.SetParent(null, true);
-            DontDestroyOnLoad(gameObject);
-        }
-
-        OnSingletonAwake();
+        DontDestroyOnLoad(gameObject);
     }
 
     protected virtual void OnSingletonAwake() { }

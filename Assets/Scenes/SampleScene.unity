@@ -335,7 +335,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77d958113bcd437459dcbbe621be1202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _persistAcrossScenes: 1
   _souls: 0
 --- !u!1 &26645603
 GameObject:
@@ -868,7 +867,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c482b768f3c3cca4eabc32ee196a1c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _persistAcrossScenes: 1
   _targetZ: -0.01
   _applyToAll: 0
   _layerMask:
@@ -923,7 +921,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157aafaf614023348b04c69e1cd52de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _persistAcrossScenes: 1
   _playerSpawnPoint: {fileID: 294409942}
   _playerPrefab: {fileID: 1581893386220379434, guid: ca1350276e2777c41a9825e880ba50ae, type: 3}
   _restartDelaySeconds: 10
@@ -1655,7 +1652,7 @@ GameObject:
   - component: {fileID: 117753428}
   m_Layer: 0
   m_Name: SpawnPoint_SW
-  m_TagString: Untagged
+  m_TagString: ZombieSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3401,7 +3398,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a7ed6300b4395418704b26e75b51b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReputationSystem
-  _persistAcrossScenes: 1
   _reputation: 0
 --- !u!1 &478149184
 GameObject:
@@ -3607,7 +3603,7 @@ GameObject:
   - component: {fileID: 491108865}
   m_Layer: 5
   m_Name: NightTimeSheet
-  m_TagString: Untagged
+  m_TagString: NightOverlay
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4884,7 +4880,7 @@ GameObject:
   - component: {fileID: 716039229}
   m_Layer: 0
   m_Name: SpawnPoint_NE
-  m_TagString: Untagged
+  m_TagString: ZombieSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4915,7 +4911,7 @@ GameObject:
   - component: {fileID: 739067929}
   m_Layer: 0
   m_Name: SpawnPoint_NW
-  m_TagString: Untagged
+  m_TagString: ZombieSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4979,7 +4975,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e844c92e1dc44d9459baaf9897323e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _persistAcrossScenes: 1
   _mixer: {fileID: 24100000, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
   _musicGroup: {fileID: -2883141574003326328, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
   _sfxGroup: {fileID: 1788209968822303608, guid: 0dd70f07b6591a74589c9e33f710485c, type: 2}
@@ -5654,8 +5649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e75071f052b8c9479881ba2f5ca2f4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _persistAcrossScenes: 1
-  _dayDurationSeconds: 120
+  _dayDurationSeconds: 15
   _nightDurationSeconds: 180
   _nightSpawnDelay: 5
   _nightStartAudioCue: {fileID: 11400000, guid: b934370479e15b94b9cd6ed6dd645789, type: 2}
@@ -5672,9 +5666,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd5f5712464ea44d9b262e06ff992b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NightOverlay
-  _persistAcrossScenes: 1
-  _overlay: {fileID: 491108865}
-  _transitionSeconds: 1
+  _nightTimeSheet: {fileID: 0}
+  _fadeSeconds: 0.5
+  _overlayTag: NightOverlay
+  _overlayNameFallback: NightTimeSheet
 --- !u!1 &908376229
 GameObject:
   m_ObjectHideFlags: 0
@@ -6749,7 +6744,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3b3dad2b77b27458b9246735580cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopController
-  _persistAcrossScenes: 1
   _shopRoot: {fileID: 528720410}
   _buybackCapacity: 10
   _vendorPanel: {fileID: 431953960}
@@ -6765,7 +6759,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 466c8f2a436bea941a210e95ed52b60b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyWallet
-  _persistAcrossScenes: 1
   _gold: 12500
 --- !u!1 &1047910645
 GameObject:
@@ -7531,7 +7524,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60276710b3fc11247b02b72d4941d3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputManager
-  _persistAcrossScenes: 1
   _useRawAxes: 1
   _horizontalAxis: Horizontal
   _verticalAxis: Vertical
@@ -9970,7 +9962,7 @@ GameObject:
   - component: {fileID: 1490960237}
   m_Layer: 0
   m_Name: SpawnPoint_SE
-  m_TagString: Untagged
+  m_TagString: ZombieSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10672,7 +10664,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70826d8605f4c0c428f74ad55e67db7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerContext
-  _persistAcrossScenes: 1
   _facade: {fileID: 0}
 --- !u!1 &1678791525
 GameObject:
@@ -11377,6 +11368,8 @@ MonoBehaviour:
   - {fileID: 716039229}
   - {fileID: 117753428}
   - {fileID: 1490960237}
+  _autoRebindSpawnPoints: 1
+  _spawnPointTag: ZombieSpawn
   _maxAlive: 80
   _betweenWavesGrace: 12
   _mixStaggerMs: 150
@@ -11394,7 +11387,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863da11555bf23f45b77e7e8cbc91cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NightDirector
-  _persistAcrossScenes: 1
   _waveManager: {fileID: 1802099483}
   _nightSet: {fileID: 11400000, guid: 73f94994f95ea8043911cbc54cc63870, type: 2}
   _logDebug: 1
@@ -12860,7 +12852,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2bcaefe5816bc4488a8460520e0d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Core.Inventory.ItemDatabaseRuntime
-  _persistAcrossScenes: 1
   _itemsJson: {fileID: 4900000, guid: 86934a38293387f449dea8b2d3993aec, type: 3}
   _vendorsJson: {fileID: 4900000, guid: fff04258113e3784698c4b841f14eb3f, type: 3}
   _vendorStockJson: {fileID: 4900000, guid: cda7cd2081c5c9140a4b628a6880256c, type: 3}
@@ -12877,7 +12868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 022b178f6c1246e44ba8889da1ce415d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefRegistry
-  _persistAcrossScenes: 1
   _itemDefs:
   - {fileID: 11400000, guid: 093683f0c47b783468b863946f62ccab, type: 2}
   - {fileID: 11400000, guid: 92202a8e56744f74bba7ffd8ed3ef3c7, type: 2}
